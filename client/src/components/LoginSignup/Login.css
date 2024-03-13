@@ -1,0 +1,28 @@
+.form-container {
+    flex: 1;
+    margin-right: 20px; /* Adjust the margin as needed */
+  }
+  
+  .image-container {
+    flex: 1;
+    align-self: center;
+  }
+  
+  .responsive-image {
+    width: 100%; /* Ensures the image takes the full width of its container */
+    height: auto; /* Maintains aspect ratio */
+  }
+  
+  /* Media query for mobile view */
+  @media screen and (max-width: 600px) {
+    .bg-white {
+      flex-direction:column; /* On mobile, switch to a column layout */
+    }
+  
+    .form-container,
+    .image-container {
+      width: 100%; /* Make both divs take full width on mobile */
+      margin-right: 0; /* Remove margin on mobile */
+    }
+  }
+  
