@@ -61,7 +61,7 @@ function DashProfile() {
                 setUpdateUserError(data.message);
             } else {
                 dispatch(updateSuccess(data));
-                setUpdateUserSuccess("User's profile updates successfully");
+                setUpdateUserSuccess("User's profile updates Successfully");
             }
         } catch (error) {
             dispatch(updateFaillure(error.message));
