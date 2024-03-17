@@ -17,8 +17,8 @@ function Header() {
 
       {currentUser ? (
         <>
-          <div className='flex justify-center items-center gap-5 md:pr-[10vh]'>
-            <div className='hidden md:flex justify-center items-center gap-5'>
+          <div className='flex justify-center items-center lg:pl-[30vh] md:pr-[8vh]'>
+            <div className='hidden md:flex justify-center items-center lg:gap-5 md:gap-0'>
               <NavLink
                 to="/allposts"
                 className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
@@ -40,7 +40,7 @@ function Header() {
             </div>
           </div>
           <div className='flex gap-2'>
-            <Dropdown arrowIcon={false} inline label={<Navbar.Toggle/>}>
+            <Dropdown arrowIcon={false} inline label={<Navbar.Toggle />}>
               <Navbar.Collapse>
                 <NavLink
                   to="/allposts"
@@ -62,6 +62,9 @@ function Header() {
                 </NavLink>
               </Navbar.Collapse>
             </Dropdown>
+            <h1 className={`text-sm font-medium truncate lg:block py-2 pr-4 pl-3 hidden md:hidden`} style={{fontVariant: "petite-caps"}}>
+              Welcome, {<span className='text-green-600'>{currentUser.name}</span>}
+            </h1>
             <Dropdown
               arrowIcon={false}
               inline
@@ -75,8 +78,8 @@ function Header() {
                 <span className='block text-sm'>@{currentUser.username}</span>
                 <span className='block text-sm font-medium truncate'>{currentUser.name}</span>
               </Dropdown.Header>
-              <DashSidebar/>
-              
+              <DashSidebar />
+
             </Dropdown>
           </div>
         </>

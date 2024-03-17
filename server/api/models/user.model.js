@@ -22,6 +22,13 @@ const userSchema = new mongoose.Schema({
     name : {
         type : String,
         required: true,
+    },
+    mobileNo : {
+        type: String,
+        unique: true
+    },
+    dateOfBirth : {
+        type: String,
     }
 },{timestamps: true});
 
