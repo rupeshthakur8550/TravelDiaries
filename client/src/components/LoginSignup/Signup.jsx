@@ -1,7 +1,7 @@
 import { Alert, Button, Stack, TextField, Typography, colors } from '@mui/material';
 import { ScreenMode } from '../pages/SignInPage';
 import React, { useState } from 'react'
-import { Spinner } from 'flowbite-react'
+import { Spinner, Modal } from 'flowbite-react'
 import OAuth from './OAuth';
 
 const Signup = ({ onSwitchMode }) => {
@@ -9,6 +9,8 @@ const Signup = ({ onSwitchMode }) => {
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [verifyValue, setVerifyValue] = useState('verify');
+  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -33,7 +35,7 @@ const Signup = ({ onSwitchMode }) => {
         return setErrorMessage(data.message);
       }
       setLoading(false)
-      if(res.ok){
+      if (res.ok) {
         onSwitchMode(ScreenMode.SIGN_IN)
       }
     } catch (error) {
@@ -68,7 +70,7 @@ const Signup = ({ onSwitchMode }) => {
 
             <Stack spacing={4}>
               <Stack spacing={2}>
-              <Stack spacing={1}>
+                <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Full Name</Typography>
                   <TextField
                     onChange={handleChange}
@@ -88,12 +90,26 @@ const Signup = ({ onSwitchMode }) => {
                 </Stack>
                 <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Email</Typography>
-                  <TextField
-                    onChange={handleChange}
-                    type='text'
-                    id='email'
-                    placeholder="email"
-                  />
+                  <div className='flex justify-center items-center gap-2'>
+                    <TextField
+                      onChange={handleChange}
+                      type='text'
+                      id='email'
+                      placeholder="email"
+                      className='w-[90%]'
+                    />
+                    <Typography
+                      sx={{
+                        cursor: "pointer",
+                        userSelect: "none",
+                        color: verifyValue === 'verify' ? "red" : 'green'
+                      }}
+                      onClick={() => setShowModal(true)}
+                    >
+                      {verifyValue}
+                    </Typography>
+
+                  </div>
                 </Stack>
                 <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Password</Typography>
@@ -119,32 +135,67 @@ const Signup = ({ onSwitchMode }) => {
                 {
                   loading ? (
                     <><Spinner size="sm" /><span className='pl-3'>Loading...</span></>
-                   ) : 'Sign Up'
+                  ) : 'Sign Up'
                 }
-            </Button>
+              </Button>
+            </Stack>
+            <OAuth />
+            <Stack direction="row" spacing={2} justifyContent="center">
+              <Typography>Already have an account?</Typography>
+              <Typography
+                onClick={() => onSwitchMode(ScreenMode.SIGN_IN)}
+                fontWeight={600}
+                sx={{
+                  cursor: "pointer",
+                  userSelect: "none"
+                }}
+              >
+                Sign In
+              </Typography>
+            </Stack>
+            {errorMessage && (
+              <Alert className='mt-5 self-center' severity="error">
+                {errorMessage}
+              </Alert>)
+            }
           </Stack>
-          <OAuth/>
-          <Stack direction="row" spacing={2} justifyContent="center">
-            <Typography>Already have an account?</Typography>
-            <Typography
-              onClick={() => onSwitchMode(ScreenMode.SIGN_IN)}
-              fontWeight={600}
-              sx={{
-                cursor: "pointer",
-                userSelect: "none"
-              }}
-            >
-              Sign In
-            </Typography>
-          </Stack>
-          {errorMessage && (
-            <Alert className='mt-5 self-center' severity="error">
-              {errorMessage}
-            </Alert>)
-          }
         </Stack>
-      </Stack>
-    </form>
+      </form>
+      <Modal show={showModal} onClose={() => setShowModal(false)} popup size='sm'>
+        <Modal.Header />
+        <div className="text-center">
+          <h3 className='mb-5 text-lg text-gray-700'>Enter OTP below:</h3>
+          <div className='mb-10 flex justify-center items-center gap-3'>
+            <TextField
+              type='text'
+              id='otp'
+              placeholder="OTP"
+              size="small"
+            />
+            <Button
+              type="submit"
+              variant='contained'
+              size='small' 
+              sx={{
+                bgcolor: colors.green[800],
+                "&:hover": {
+                  bgcolor: colors.blue[600]
+                }
+              }}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className='pl-3'>Verifying...</span>
+                </>
+              ) : 'Verify'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+
     </div >
   );
 };

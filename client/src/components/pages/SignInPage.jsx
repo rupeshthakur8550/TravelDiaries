@@ -43,7 +43,6 @@ const SignInPage = () => {
       clearTimeout(timeout3);
     };
   };
-
   return (
     <Grid container className='p-[2vh] md:p-[6vh] flex justify-center items-center'>
       <Grid item xs={12} md={6} lg={4} className='relative pr-[1vw] px-5 py-5'>
@@ -53,7 +52,17 @@ const SignInPage = () => {
           <SignupForm onSwitchMode={onSwitchMode} />
         ) : <ResetpassForm onSwitchMode={onSwitchMode} />)}
         <Box
-          className={`absolute top-0 left-${left} right-${right} w-${width} h-full bg-gray-800 transition-all duration-1000 ease-in-out z-10`}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: left,
+            right: right,
+            width: `${width}%`,
+            height: '100%',
+            bgcolor: colors.grey[800],
+            transition: 'all 1s ease-in-out',
+            zIndex: 0,
+          }}
         />
       </Grid>
       <Grid
@@ -71,7 +80,17 @@ const SignInPage = () => {
         }}
       >
         <Box
-          className={`absolute top-0 left-${left} right-${right} w-${width} h-full transition-all duration-1000 ease-in-out z-0`}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: left,
+            right: right,
+            width: `${width}%`,
+            height: '100%',
+            bgcolor: colors.grey[800],
+            transition: 'all 1s ease-in-out',
+            zIndex: 0,
+          }}
         />
       </Grid>
     </Grid>
