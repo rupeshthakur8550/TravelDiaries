@@ -32,7 +32,7 @@ const Login = ({ onSwitchMode }) => {
             });
             const data = await res.json();
             if (data.success === false) {
-                dispath(signInFailure(data.message));
+                dispath(signInFailure(date.message));
             }
             if (res.ok) {
                 dispath(signInSuccess(data));

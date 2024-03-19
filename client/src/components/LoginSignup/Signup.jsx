@@ -9,12 +9,18 @@ const Signup = ({ onSwitchMode }) => {
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [verifyValue, setVerifyValue] = useState('verify');
+  const [verifyValue, setVerifyValue] = useState('Verify');
   const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
+  const handleEmailVerify = (e) => {
+    setVerifyValue('verified');
+    setShowModal(false);
+    setLoading(false);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,18 +31,22 @@ const Signup = ({ onSwitchMode }) => {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (data.success === false) {
-        return setErrorMessage(data.message);
-      }
-      setLoading(false)
-      if (res.ok) {
-        onSwitchMode(ScreenMode.SIGN_IN)
+      if (verifyValue === 'verified') {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+        if (data.success === false) {
+          return setErrorMessage(data.message);
+        }
+        setLoading(false)
+        if (res.ok) {
+          onSwitchMode(ScreenMode.SIGN_IN)
+        }
+      } else {
+        return setErrorMessage('Please verify email..')
       }
     } catch (error) {
       setErrorMessage(error.message);
@@ -90,26 +100,34 @@ const Signup = ({ onSwitchMode }) => {
                 </Stack>
                 <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Email</Typography>
-                  <div className='flex justify-center items-center gap-2'>
+                  <div className='flex justify-center items-center gap-2' style={{ position: 'relative' }}>
                     <TextField
                       onChange={handleChange}
                       type='text'
                       id='email'
-                      placeholder="email"
-                      className='w-[90%]'
+                      placeholder="Email"
+                      className='w-[100%]'
+                      InputProps={{
+                        disableUnderline: true,
+                      }}
                     />
                     <Typography
                       sx={{
                         cursor: "pointer",
                         userSelect: "none",
-                        color: verifyValue === 'verify' ? "red" : 'green'
+                        position: 'absolute',
+                        top: '50%',
+                        right: '10px', // Adjust this value as needed
+                        transform: 'translateY(-50%)',
+                        fontSize: '16px',
+                        color: verifyValue === 'Verify' ? "red" : 'green'
                       }}
                       onClick={() => setShowModal(true)}
                     >
                       {verifyValue}
                     </Typography>
-
                   </div>
+
                 </Stack>
                 <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Password</Typography>
@@ -174,28 +192,21 @@ const Signup = ({ onSwitchMode }) => {
             />
             <Button
               type="submit"
+              onClick={handleEmailVerify}
               variant='contained'
-              size='small' 
+              size='small'
               sx={{
                 bgcolor: colors.green[800],
                 "&:hover": {
                   bgcolor: colors.blue[600]
                 }
               }}
-              disabled={loading}
             >
-              {loading ? (
-                <>
-                  <Spinner size="sm" />
-                  <span className='pl-3'>Verifying...</span>
-                </>
-              ) : 'Verify'}
+              Verify
             </Button>
           </div>
         </div>
       </Modal>
-
-
     </div >
   );
 };

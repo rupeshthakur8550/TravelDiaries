@@ -8,9 +8,7 @@ export const signup = async (req, res, next) => {
     if (!username || !email || !password || !name || username === "" || email === "" || password === "" || name === "" ) {
         next(errorHandler(400, 'All Fileds are Required'));
     }
-
     const hashedpassword = bcryptjs.hashSync(password, 10);
-
     const newuser = new User({ username, email, password: hashedpassword, name});
 
     try {
@@ -70,3 +68,32 @@ export const googleAuth = async(req, res, next) => {
         next(error);
     }
 }
+
+export const forgetPassword = async (req, res, next) => {
+    const { email, cpassword, npassword } = req.body;
+    if (!email || !cpassword || !npassword || email === ""|| cpassword === "" || npassword === "") {
+        next(errorHandler(400, 'All Fileds are Required'));
+    }
+    try {
+        const validUser = await User.findOne({ email });
+
+        if (!validUser) {
+            return next(errorHandler(404, 'User not found.'));
+        }
+
+        const validPassword = bcryptjs.compareSync(cpassword, validUser.password);
+        if (!validPassword) {
+            return next(errorHandler(400, 'Incorrect current password.'));
+        }
+
+        if (cpassword === npassword) {
+            return next(errorHandler(400, 'Choose different password'));
+        }
+        const hashedPassword = bcryptjs.hashSync(npassword, 10);
+        validUser.password = hashedPassword;
+        await validUser.save();
+        res.status(200).json({ message: 'Password updated successfully.' });
+    } catch (error) {
+        next(error);
+    }
+};

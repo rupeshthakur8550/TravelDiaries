@@ -5,15 +5,19 @@ import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserS
 import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { DatePicker } from 'antd';
+import { TextField, Typography, colors} from '@mui/material';
 
 function DashProfile() {
     const { currentUser, error } = useSelector(state => state.user);
     const [imageFile, setImageFile] = useState(null);
     const [imageFileUrl, setImageFileUrl] = useState(null);
     const [formData, setFormData] = useState({});
+    const [userEmail, setUserEmail] = useState(currentUser.email);
     const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
-    const [showModal, setShowModal] = useState(false);
+    const [showdeleteModal, setdeleteShowModal] = useState(false);
     const [updateUserError, setUpdateUserError] = useState(null);
+    const [showVerifyModal, setShowVerifyModal] = useState(false);
+    const [verifyValue, setVerifyValue] = useState('remove');
     const filePickerRefer = useRef();
     const dispatch = useDispatch();
 
@@ -25,6 +29,16 @@ function DashProfile() {
         }
     };
 
+    const handleEmailRemove = () => {
+        setVerifyValue('Verify');
+        setUserEmail(null);
+    }
+
+    const handleEmailVerify = (e) => {
+        setVerifyValue('Verified');
+        setShowVerifyModal(false);
+    }
+
     useEffect(() => {
         if (imageFile) {
             uploadImage();
@@ -33,7 +47,6 @@ function DashProfile() {
 
     const uploadImage = async () => {
         console.log('Uploading image...');
-        // Logic for uploading image to server
     }
 
     const handleChange = (e) => {
@@ -44,48 +57,49 @@ function DashProfile() {
         e.preventDefault();
         setUpdateUserError(null);
         setUpdateUserSuccess(null);
-
         const isSameData = Object.keys(formData).every(key => formData[key] === currentUser[key]);
         if (isSameData) {
             setUpdateUserError("No changes made");
             return;
         }
 
-        try {
-            dispatch(updateStart());
-            const res = await fetch(`/api/user/update/${currentUser._id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                dispatch(updateFailure(data.message));
-                setUpdateUserError(data.message);
-            } else {
-                dispatch(updateSuccess(data));
-                setUpdateUserSuccess("User's profile updated successfully");
-            }
-        } catch (error) {
-            dispatch(updateFailure(error.message));
-            setUpdateUserError(error.message);
-        }
+        // try {
+        //     dispatch(updateStart());
+        //     const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        //         method: 'PUT',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify(formData),
+        //     });
+        //     const data = await res.json();
+        //     if (!res.ok) {
+        //         dispatch(updateFailure(data.message));
+        //         setUpdateUserError(data.message);
+        //     } else {
+        //         dispatch(updateSuccess(data));
+        //         setUpdateUserSuccess("User's profile updated successfully");
+        //     }
+        // } catch (error) {
+        //     dispatch(updateFailure(error.message));
+        //     setUpdateUserError(error.message);
+        // }
     };
 
     const handleDeleteUser = async () => {
-        setShowModal(false);
+        setdeleteShowModal(false);
         try {
-            dispatch(deleteUserStart());
-            const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-                method: 'DELETE',
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                dispatch(deleteUserFailure(data.message));
-            } else {
-                dispatch(deleteUserSuccess(data));
+            if (verifyValue === 'verified') {
+                dispatch(deleteUserStart());
+                const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+                    method: 'DELETE',
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    dispatch(deleteUserFailure(data.message));
+                } else {
+                    dispatch(deleteUserSuccess(data));
+                }
             }
         } catch (error) {
             dispatch(deleteUserFailure(error.message));
@@ -103,7 +117,39 @@ function DashProfile() {
                 </div>
                 <TextInput type='text' id='name' placeholder='Name' defaultValue={currentUser.name} onChange={handleChange} className='w-[70%]' />
                 <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} className='w-[70%]' />
-                <TextInput type='email' id='email' placeholder='Email' defaultValue={currentUser.email} onChange={handleChange} className='w-[70%]' />
+                <div className='flex justify-center items-center gap-2 w-[70%]' style={{ position: 'relative' }}>
+                    <TextInput
+                        onChange={handleChange}
+                        type='text'
+                        id='email'
+                        value={userEmail === null ?'' : userEmail}
+                        className='w-[100%]'
+                        inputprops={{
+                            disableUnderline: true,
+                        }}
+                    />
+                    <Typography
+                        sx={{
+                            cursor: "pointer",
+                            userSelect: "none",
+                            position: 'absolute',
+                            top: '50%',
+                            right: '15px',
+                            transform: 'translateY(-50%)',
+                            fontSize: '16px',
+                            color: verifyValue === 'remove' ? 'blue' : (verifyValue === 'Verify' ? 'red' : 'green')
+                        }}
+                        onClick={() => {
+                            if (verifyValue === 'Verify') {
+                                setShowVerifyModal(true);
+                            } else if (verifyValue === 'remove') {
+                                handleEmailRemove();
+                            }
+                        }}
+                    >
+                        {verifyValue}
+                    </Typography>
+                </div>
                 <DatePicker
                     placeholder={currentUser.dateOfBirth ? currentUser.dateOfBirth : 'Select your Date of Birth'}
                     onChange={(date) => setFormData({ ...formData, dateOfBirth: date ? date.format('YYYY-MM-DD') : null })}
@@ -111,30 +157,36 @@ function DashProfile() {
                 />
 
                 <TextInput type='text' id='mobileNo' placeholder='Mobile No' defaultValue={currentUser.mobileNo || ''} onChange={handleChange} className='w-[70%]' />
-                <TextInput type='password' id='password' placeholder='Password' defaultValue={currentUser.password} onChange={handleChange} className='w-[70%]' />
+                <TextInput type='password' id='password' placeholder='New Password' defaultValue={currentUser.password} onChange={handleChange} className='w-[70%]' />
                 <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[70%]'>
                     Update
                 </Button>
-            </form>
+            </form >
             <div className='text-red-600 flex justify-center mt-4'>
-                <span onClick={() => setShowModal(true)} className='cursor-pointer'>Delete Account</span>
+                <span onClick={() => setdeleteShowModal(true)} className='cursor-pointer'>Delete Account</span>
             </div>
-            {updateUserSuccess && (
-                <Alert color='success' className='mt-5'>
-                    {updateUserSuccess}
-                </Alert>
-            )}
-            {updateUserError && (
-                <Alert color='failure' className='mt-5'>
-                    {updateUserError}
-                </Alert>
-            )}
-            {error && (
-                <Alert color='failure' className='mt-5'>
-                    {error}
-                </Alert>
-            )}
-            <Modal show={showModal} onClose={() => setShowModal(false)} popup size='md'>
+            {
+                updateUserSuccess && (
+                    <Alert color='success' className='mt-5'>
+                        {updateUserSuccess}
+                    </Alert>
+                )
+            }
+            {
+                updateUserError && (
+                    <Alert color='failure' className='mt-5'>
+                        {updateUserError}
+                    </Alert>
+                )
+            }
+            {
+                error && (
+                    <Alert color='failure' className='mt-5'>
+                        {error}
+                    </Alert>
+                )
+            }
+            <Modal show={showdeleteModal} onClose={() => setdeleteShowModal(false)} popup size='md'>
                 <Modal.Header />
                 <Modal.Body>
                     <div className="text-center">
@@ -142,10 +194,31 @@ function DashProfile() {
                         <h3 className='mb-5 text-lg text-gray-700'> Are you sure you want to delete your account?</h3>
                         <div className='flex justify-center gap-5'>
                             <Button color='failure' onClick={handleDeleteUser}>Yes, I'm sure</Button>
-                            <Button color='gray' onClick={() => setShowModal(false)}>No, cancel</Button>
+                            <Button color='gray' onClick={() => setdeleteShowModal(false)}>No, cancel</Button>
                         </div>
                     </div>
                 </Modal.Body>
+            </Modal>
+            <Modal show={showVerifyModal} onClose={() => setShowVerifyModal(false)} popup size='sm'>
+                <Modal.Header />
+                <div className="text-center">
+                    <h3 className='mb-5 text-lg text-gray-700'>Enter OTP below:</h3>
+                    <div className='mb-10 flex justify-center items-center gap-3'>
+                        <TextField
+                            type='text'
+                            id='otp'
+                            placeholder="OTP"
+                            size="small"
+                        />
+                        <Button
+                            onClick={handleEmailVerify}
+                            color='green'
+                            outline="false"
+                        >
+                            Verify
+                        </Button>
+                    </div>
+                </div>
             </Modal>
         </>
     );
