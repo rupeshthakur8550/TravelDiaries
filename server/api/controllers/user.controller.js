@@ -38,7 +38,7 @@ export const updateUser = async (req, res, next) => {
             if (username !== username.toLowerCase()) {
                 return next(errorHandler(400, 'Username must be lowercase'));
             }
-            if (!username.match(/^[a-zA-Z0-9]+$/)) {
+            if (!username.match(/^[a-zA-Z0-9-_@#$^*]+$/)) {
                 return next(errorHandler(400, 'Username can only contain letters and numbers'));
             }
         }
@@ -64,6 +64,7 @@ export const updateUser = async (req, res, next) => {
                 name,
                 mobileNo,
                 dateOfBirth,
+                verification: "verified"
             },
         },
             { new: true });

@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     },
     dateOfBirth : {
         type: String,
+    },
+    verification : {
+        type: String,
+        required: true,
     }
 },{timestamps: true});
 

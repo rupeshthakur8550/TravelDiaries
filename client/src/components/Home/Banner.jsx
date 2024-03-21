@@ -1,6 +1,7 @@
 import React from "react";
 import backgroundImage from '../../assets/images/BackgroundImage.png';
 import { Button } from '@mui/material'
+import { Link } from "react-router-dom";
 const Banner = () => {
     return (
         <section className="banner relative h-screen overflow-hidden bg-cover bg-center flex justify-center items-center" style={{ backgroundImage: `url(${backgroundImage})` }}>
@@ -13,18 +14,20 @@ const Banner = () => {
                 <h3 className="text-xl font-semibold mb-12 border-b border-gray-400 pb-2 ml-4 mr-4">
                     We Travel not to 'Escape Life', but for Life not to 'Escape Us'
                 </h3>
-                <Button
-                    className="self-center hover:bg-gradient-to-r from-pink-500 to-orange-500 hover:text-white md:w-[25%] w-[40%] rounded-lg"
-                    style={{ color: 'white' }}
-                    variant="outlined"
-                    sx={{
-                        borderWidth: '2px', 
-                        borderColor: 'white', 
-                        whiteSpace: 'nowrap'
-                    }}
-                >
-                    Explore More
-                </Button>
+                <Link to="/signin">
+                    <Button
+                        className="self-center hover:bg-gradient-to-r from-pink-500 to-orange-500 hover:text-white md:w-[25%] w-[40%] rounded-lg"
+                        style={{ color: 'white' }}
+                        variant="outlined"
+                        sx={{
+                            borderWidth: '2px',
+                            borderColor: 'white',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        Explore More
+                    </Button>
+                </Link>
             </div>
         </section>
     );

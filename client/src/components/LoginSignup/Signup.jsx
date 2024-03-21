@@ -16,11 +16,55 @@ const Signup = ({ onSwitchMode }) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
-  const handleEmailVerify = (e) => {
-    setVerifyValue('verified');
-    setShowModal(false);
+  const handleSendEmail = async (e, path,) => {
+    e.preventDefault();
+    setVerifyValue('Resend');
     setLoading(false);
-  }
+    setErrorMessage(null);
+    setShowModal(true);
+    try {
+      const res = await fetch(`/api/otp/${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email }), 
+      });
+      const data = await res.json();
+      if (!res.ok) { 
+        setErrorMessage(data.message);
+      }else{
+        setErrorMessage(data.message);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
+  const handleEmailVerify = async (e, isClick) => {
+    e.preventDefault();
+    setLoading(false);
+    try {
+      const otpInputValue = document.getElementById('otp').value;
+      if (otpInputValue.length === 6 && isClick) { 
+        const res = await fetch('/api/otp/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formData.email, otp: otpInputValue }), 
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setErrorMessage(data.message);
+        } else {
+          setVerifyValue('verified');
+          setShowModal(false);
+        }
+      } else {
+        setErrorMessage('OTP must be 6 characters long.');
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,9 +151,6 @@ const Signup = ({ onSwitchMode }) => {
                       id='email'
                       placeholder="Email"
                       className='w-[100%]'
-                      InputProps={{
-                        disableUnderline: true,
-                      }}
                     />
                     <Typography
                       sx={{
@@ -117,17 +158,16 @@ const Signup = ({ onSwitchMode }) => {
                         userSelect: "none",
                         position: 'absolute',
                         top: '50%',
-                        right: '10px', // Adjust this value as needed
+                        right: '10px', 
                         transform: 'translateY(-50%)',
                         fontSize: '16px',
-                        color: verifyValue === 'Verify' ? "red" : 'green'
+                        color: verifyValue === 'Verify' ? "red" : (verifyValue === 'resend' ? "blue" : "green")
                       }}
-                      onClick={() => setShowModal(true)}
+                      onClick={(e)=> verifyValue === 'Verify' ? handleSendEmail(e, 'mail') : handleSendEmail(e, 'resend')}
                     >
                       {verifyValue}
                     </Typography>
                   </div>
-
                 </Stack>
                 <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Password</Typography>
@@ -189,10 +229,11 @@ const Signup = ({ onSwitchMode }) => {
               id='otp'
               placeholder="OTP"
               size="small"
+              onChange={handleEmailVerify}
             />
             <Button
               type="submit"
-              onClick={handleEmailVerify}
+              onClick={(e) => handleEmailVerify(e, true)}
               variant='contained'
               size='small'
               sx={{
@@ -205,6 +246,11 @@ const Signup = ({ onSwitchMode }) => {
               Verify
             </Button>
           </div>
+          {errorMessage && (
+            <Alert className='mt-5 self-center' severity="error">
+              {errorMessage}
+            </Alert>)
+          }
         </div>
       </Modal>
     </div >

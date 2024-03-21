@@ -9,7 +9,7 @@ export const signup = async (req, res, next) => {
         next(errorHandler(400, 'All Fileds are Required'));
     }
     const hashedpassword = bcryptjs.hashSync(password, 10);
-    const newuser = new User({ username, email, password: hashedpassword, name});
+    const newuser = new User({ username, email, password: hashedpassword, name, verification : "verified"});
 
     try {
         await newuser.save();
@@ -58,6 +58,7 @@ export const googleAuth = async(req, res, next) => {
                 password: hashedPassword,
                 profilePicture: googlePhotoUrl,
                 name,
+                verification: 'Verified'
             });
             await newUser.save();
             const token = jwt.sign({id: newUser._id},process.env.JWT_SECRET);

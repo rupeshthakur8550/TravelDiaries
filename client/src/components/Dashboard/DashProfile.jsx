@@ -5,7 +5,7 @@ import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserS
 import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { DatePicker } from 'antd';
-import { TextField, Typography, colors} from '@mui/material';
+import { TextField, Typography} from '@mui/material';
 
 function DashProfile() {
     const { currentUser, error } = useSelector(state => state.user);
@@ -63,27 +63,27 @@ function DashProfile() {
             return;
         }
 
-        // try {
-        //     dispatch(updateStart());
-        //     const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        //         method: 'PUT',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(formData),
-        //     });
-        //     const data = await res.json();
-        //     if (!res.ok) {
-        //         dispatch(updateFailure(data.message));
-        //         setUpdateUserError(data.message);
-        //     } else {
-        //         dispatch(updateSuccess(data));
-        //         setUpdateUserSuccess("User's profile updated successfully");
-        //     }
-        // } catch (error) {
-        //     dispatch(updateFailure(error.message));
-        //     setUpdateUserError(error.message);
-        // }
+        try {
+            dispatch(updateStart());
+            const res = await fetch(`/api/user/update/${currentUser._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                dispatch(updateFailure(data.message));
+                setUpdateUserError(data.message);
+            } else {
+                dispatch(updateSuccess(data));
+                setUpdateUserSuccess("User's profile updated successfully");
+            }
+        } catch (error) {
+            dispatch(updateFailure(error.message));
+            setUpdateUserError(error.message);
+        }
     };
 
     const handleDeleteUser = async () => {
