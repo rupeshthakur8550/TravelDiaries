@@ -26,12 +26,12 @@ const Signup = ({ onSwitchMode }) => {
       const res = await fetch(`/api/otp/${path}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email }), 
+        body: JSON.stringify({ email: formData.email }),
       });
       const data = await res.json();
-      if (!res.ok) { 
+      if (!res.ok) {
         setErrorMessage(data.message);
-      }else{
+      } else {
         setErrorMessage(data.message);
       }
     } catch (error) {
@@ -44,18 +44,27 @@ const Signup = ({ onSwitchMode }) => {
     setLoading(false);
     try {
       const otpInputValue = document.getElementById('otp').value;
-      if (otpInputValue.length === 6 && isClick) { 
-        const res = await fetch('/api/otp/verify', {
+      if (otpInputValue.length === 6 && isClick) {
+        const verifyRes = await fetch('/api/otp/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: formData.email, otp: otpInputValue }), 
+          body: JSON.stringify({ email: formData.email, otp: otpInputValue }),
         });
-        const data = await res.json();
-        if (!res.ok) {
-          setErrorMessage(data.message);
+        const verifyData = await verifyRes.json();
+        if (!verifyRes.ok) {
+          setErrorMessage(verifyData.message);
         } else {
-          setVerifyValue('verified');
-          setShowModal(false);
+          const deleteRes = await fetch(`/api/otp/delete/${verifyData.id}`, {
+            method: 'DELETE',
+          });
+          const deleteData = await deleteRes.json();
+          if (!deleteRes.ok) {
+            setErrorMessage(deleteData.message);
+          } else {
+            setVerifyValue('verified');
+            setShowModal(false);
+            setErrorMessage(null);
+          }
         }
       } else {
         setErrorMessage('OTP must be 6 characters long.');
@@ -158,12 +167,12 @@ const Signup = ({ onSwitchMode }) => {
                         userSelect: "none",
                         position: 'absolute',
                         top: '50%',
-                        right: '10px', 
+                        right: '10px',
                         transform: 'translateY(-50%)',
                         fontSize: '16px',
                         color: verifyValue === 'Verify' ? "red" : (verifyValue === 'resend' ? "blue" : "green")
                       }}
-                      onClick={(e)=> verifyValue === 'Verify' ? handleSendEmail(e, 'mail') : handleSendEmail(e, 'resend')}
+                      onClick={(e) => verifyValue === 'Verify' ? handleSendEmail(e, 'mail') : handleSendEmail(e, 'resend')}
                     >
                       {verifyValue}
                     </Typography>

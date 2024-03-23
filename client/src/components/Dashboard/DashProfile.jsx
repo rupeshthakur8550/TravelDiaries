@@ -5,7 +5,9 @@ import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserS
 import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { DatePicker } from 'antd';
-import { TextField, Typography} from '@mui/material';
+import { TextField, Typography } from '@mui/material';
+import { getDownloadURL, getStorage, uploadBytesResumable, ref } from 'firebase/storage';
+import { app } from '../../firebase.js'
 
 function DashProfile() {
     const { currentUser, error } = useSelector(state => state.user);
@@ -15,6 +17,7 @@ function DashProfile() {
     const [userEmail, setUserEmail] = useState(currentUser.email);
     const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
     const [showdeleteModal, setdeleteShowModal] = useState(false);
+    const [imageUploadError, setImageUploadError] = useState(null);
     const [updateUserError, setUpdateUserError] = useState(null);
     const [showVerifyModal, setShowVerifyModal] = useState(false);
     const [verifyValue, setVerifyValue] = useState('remove');
@@ -46,8 +49,31 @@ function DashProfile() {
     }, [imageFile]);
 
     const uploadImage = async () => {
-        console.log('Uploading image...');
-    }
+        setImageUploadError(null);
+        const storage = getStorage(app);
+        const fileName = new Date().getTime() + imageFile.name;
+        const storageRef = ref(storage, fileName);
+        const uploadTask = uploadBytesResumable(storageRef, imageFile);
+        uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            (error) => {
+                setImageUploadError('Could not upload image (File must be less than 2MB)');
+                setImageFile(null);
+                setImageFileUrl(null);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    setImageFileUrl(downloadURL);
+                    setFormData({ ...formData, profilePicture: downloadURL });
+                    setImageUploadError('Profile Picture Uploaded');
+                });
+            }
+        );
+    };
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -89,7 +115,7 @@ function DashProfile() {
     const handleDeleteUser = async () => {
         setdeleteShowModal(false);
         try {
-            if (verifyValue === 'verified') {
+            if (currentUser.verification === 'verified') {
                 dispatch(deleteUserStart());
                 const res = await fetch(`/api/user/delete/${currentUser._id}`, {
                     method: 'DELETE',
@@ -115,14 +141,22 @@ function DashProfile() {
                 <div className="w-32 h-32 self-center  cursor-pointer shadow-md overflow-hidden rounded-full" onClick={() => filePickerRefer.current.click()}>
                     <img src={imageFileUrl || currentUser.profilePicture} alt='user' className='rounded-full w-full h-full object-cover border-8 border-[lightgray]' />
                 </div>
-                <TextInput type='text' id='name' placeholder='Name' defaultValue={currentUser.name} onChange={handleChange} className='w-[70%]' />
-                <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} className='w-[70%]' />
-                <div className='flex justify-center items-center gap-2 w-[70%]' style={{ position: 'relative' }}>
+                {
+                    imageUploadError && (
+                        <Alert color={imageUploadError === 'Profile Picture Uploaded' ? 'success' : 'failure'}>
+                            {imageUploadError}
+                        </Alert>
+                    )
+                }
+
+                <TextInput type='text' id='name' placeholder='Name' defaultValue={currentUser.name} onChange={handleChange} className='w-[90%]' />
+                <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} className='w-[90%]' />
+                <div className='flex justify-center items-center gap-2 w-[90%]' style={{ position: 'relative' }}>
                     <TextInput
                         onChange={handleChange}
                         type='text'
                         id='email'
-                        value={userEmail === null ?'' : userEmail}
+                        value={userEmail === null ? '' : userEmail}
                         className='w-[100%]'
                         inputprops={{
                             disableUnderline: true,
@@ -153,16 +187,16 @@ function DashProfile() {
                 <DatePicker
                     placeholder={currentUser.dateOfBirth ? currentUser.dateOfBirth : 'Select your Date of Birth'}
                     onChange={(date) => setFormData({ ...formData, dateOfBirth: date ? date.format('YYYY-MM-DD') : null })}
-                    className='w-[70%] h-11'
+                    className='w-[90%] h-11'
                 />
 
-                <TextInput type='text' id='mobileNo' placeholder='Mobile No' defaultValue={currentUser.mobileNo || ''} onChange={handleChange} className='w-[70%]' />
-                <TextInput type='password' id='password' placeholder='New Password' defaultValue={currentUser.password} onChange={handleChange} className='w-[70%]' />
-                <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[70%]'>
+                <TextInput type='text' id='mobileNo' placeholder='Mobile No' defaultValue={currentUser.mobileNo || ''} onChange={handleChange} className='w-[90%]' />
+                <TextInput type='password' id='password' placeholder='New Password' defaultValue={currentUser.password} onChange={handleChange} className='w-[90%]' />
+                <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[90%]'>
                     Update
                 </Button>
             </form >
-            <div className='text-red-600 flex justify-center mt-4'>
+            <div className='text-red-600 flex justify-center mt-4 mb-11'>
                 <span onClick={() => setdeleteShowModal(true)} className='cursor-pointer'>Delete Account</span>
             </div>
             {

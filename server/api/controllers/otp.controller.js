@@ -62,7 +62,7 @@ export const sendMail = async (req, res, next) => {
                 <p>The TravelDiaries Team</p>
             `
         };
-        
+
         await transport.sendMail(message);
 
         // Create OTP document
@@ -81,15 +81,14 @@ export const verifyOTP = async (req, res, next) => {
         const existingOTP = await OTP.findOne({ email });
 
         if (!existingOTP) {
-            res.status(404).json({ success: false, message: 'No OTP found for the provided email.' });
-            return;
+            return res.status(404).json({ success: false, message: 'No OTP found for the provided email.' });
         }
 
         const isMatch = await bcryptjs.compare(otp, existingOTP.otp);
         if (existingOTP.expiry > new Date() && isMatch) {
-            res.status(200).json({ success: true, message: 'OTP verified successfully.' });
+            return res.status(200).json({ success: true, message: 'OTP verified successfully.', id: existingOTP._id });
         } else {
-            res.status(400).json({ success: false, message: 'Invalid OTP or OTP expired.' });
+            return res.status(400).json({ success: false, message: 'Invalid OTP or OTP expired.'});
         }
     } catch (error) {
         next(error);
@@ -97,7 +96,7 @@ export const verifyOTP = async (req, res, next) => {
 };
 
 export const resetOTP = async (req, res, next) => {
-    try {  
+    try {
         const { email } = req.body;
 
         const existingOTP = await OTP.findOne({ email });
@@ -146,7 +145,7 @@ export const resetOTP = async (req, res, next) => {
                     <p>The TravelDiaries Team</p>
                 `
             };
-            
+
             await transport.sendMail(message);
 
             res.status(200).json({ success: true, message: 'OTP has been reset and sent again.' });
@@ -158,4 +157,12 @@ export const resetOTP = async (req, res, next) => {
     }
 };
 
+export const deleteEntry = async(req, res, next) => {
+    try {
+        await OTP.findByIdAndDelete(req.params.id);
+        res.status(200).json({ success: true, message: 'deletion complete'});
+    } catch (error) {
+        next(error);
+    }
+}
 

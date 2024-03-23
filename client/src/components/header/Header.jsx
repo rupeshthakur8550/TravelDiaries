@@ -1,13 +1,13 @@
 import React from 'react'
 import { Avatar, Button, Dropdown, Navbar } from 'flowbite-react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { FaMoon } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 import DashSidebar from '../Dashboard/DashSidebar'
 
 function Header() {
   const { currentUser } = useSelector(state => state.user);
   const path = useLocation().pathname;
+
   return (
     <Navbar className='border-b-2'>
       <Link to='/' className='self-center whitespace-nowrap text-sm sm:text-xl font-extrabold bg-gradient-to-r from-white from-30% via-orange-300 to-rose-500 rounded-lg text-white' style={{ fontVariant: 'unicase' }}>
