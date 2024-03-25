@@ -95,3 +95,17 @@ export const signout = async (req, res, next) => {
         next(error);
     }
 };
+
+export const verify =async (req, res, next)=>{
+    try{
+        const {email} = req.body;
+        if (!await User.findOne({ email })) {
+            return next(errorHandler(400, 'User not exists'));
+        }else{
+            res.status(200).json('User found');
+        }
+
+    }catch(error){
+        next(error);
+    }
+}

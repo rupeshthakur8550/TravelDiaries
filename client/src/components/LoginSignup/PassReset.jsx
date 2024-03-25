@@ -27,10 +27,71 @@ const Reset = ({ onSwitchMode }) => {
         setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
     };
 
-    const handleEmailVerify = () => {
-        setVerifyValue('Verified');
-        setShowModal(false);
-    }
+    const handleSendEmail = async (e, path,) => {
+        e.preventDefault();
+        setVerifyValue('Resend');
+        setLoading(false);
+        setErrorMessage(null);
+        setShowModal(true);
+        try {
+            const check = await fetch('/api/user/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email }),
+            });
+        
+            if (check.ok) {
+                const res = await fetch(`/api/otp/${path}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: formData.email }),
+                });
+                const data = await res.json();
+                setErrorMessage(data.message);
+            } else {
+                setErrorMessage(check.message); 
+            }
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
+        
+      };
+
+    const handleEmailVerify = async (e, isClick) => {
+        e.preventDefault();
+        setLoading(false);
+        try {
+            const otpInputValue = document.getElementById('otp').value;
+            if (otpInputValue.length === 6 && isClick) {
+                const verifyRes = await fetch('/api/otp/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: formData.email, otp: otpInputValue }),
+                });
+                const verifyData = await verifyRes.json();
+                if (!verifyRes.ok) {
+                    setErrorMessage(verifyData.message);
+                } else {
+                    const deleteRes = await fetch(`/api/otp/delete/${verifyData.id}`, {
+                        method: 'DELETE',
+                    });
+                    const deleteData = await deleteRes.json();
+                    if (!deleteRes.ok) {
+                        setErrorMessage(deleteData.message);
+                    } else {
+                        setVerifyValue('verified');
+                        setShowModal(false);
+                        setErrorMessage(null);
+                    }
+                }
+            } else {
+                setErrorMessage('OTP must be 6 characters long.');
+            }
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -100,14 +161,13 @@ const Reset = ({ onSwitchMode }) => {
                                             right: '10px',
                                             transform: 'translateY(-50%)',
                                             fontSize: '16px',
-                                            color: verifyValue === 'Verify' ? "red" : 'green'
+                                            color: verifyValue === 'Verify' ? "red" : (verifyValue === 'resend' ? "blue" : "green")
                                         }}
-                                        onClick={() => setShowModal(true)}
+                                        onClick={(e) => verifyValue === 'Verify' ? handleSendEmail(e, 'mail') : handleSendEmail(e, 'resend')}
                                     >
                                         {verifyValue}
                                     </Typography>
                                 </div>
-
                             </Stack>
                             <Stack spacing={1}>
                                 <Typography color={colors.grey[800]}>Current Password</Typography>
@@ -174,9 +234,11 @@ const Reset = ({ onSwitchMode }) => {
                             id='otp'
                             placeholder="OTP"
                             size="small"
+                            onChange={handleEmailVerify}
                         />
                         <Button
-                            onClick={handleEmailVerify}
+                            type="submit"
+                            onClick={(e) => handleEmailVerify(e, true)}
                             variant='contained'
                             size='small'
                             sx={{
@@ -189,6 +251,11 @@ const Reset = ({ onSwitchMode }) => {
                             Verify
                         </Button>
                     </div>
+                    {errorMessage && (
+                        <Alert className='mt-5 self-center' severity="error">
+                            {errorMessage}
+                        </Alert>)
+                    }
                 </div>
             </Modal>
         </div>

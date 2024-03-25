@@ -74,7 +74,6 @@ const Signup = ({ onSwitchMode }) => {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.username || !formData.email || !formData.password || !formData.name) {

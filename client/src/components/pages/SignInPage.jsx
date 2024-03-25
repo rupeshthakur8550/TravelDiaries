@@ -45,7 +45,7 @@ const SignInPage = () => {
   };
   return (
     <Grid container className='p-[2vh] md:p-[6vh] flex justify-center items-center'>
-      <Grid item xs={12} md={6} lg={4} className='relative pr-[1vw] px-5 py-5'>
+      <Grid item xs={12} md={6} lg={4} className='relative pr-[1vw] pl-[1vw] px-5 py-5'>
         {currMode === ScreenMode.SIGN_IN ? (
           <SigninForm onSwitchMode={onSwitchMode} />
         ) : (currMode === ScreenMode.SIGN_UP ? (
