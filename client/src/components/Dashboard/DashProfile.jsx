@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { DatePicker } from 'antd';
 import { TextField, Typography } from '@mui/material';
-import { getDownloadURL, getStorage, uploadBytesResumable, ref } from 'firebase/storage';
+import { getDownloadURL, getStorage, uploadBytesResumable, ref, deleteObject } from 'firebase/storage';
 import { app } from '../../firebase.js'
 
 function DashProfile() {
@@ -35,45 +35,45 @@ function DashProfile() {
     const handleEmailRemove = () => {
         setVerifyValue('Verify');
         setUserEmail(null);
-    }
+    };
 
     const handleEmailVerify = (e) => {
         setVerifyValue('Verified');
         setShowVerifyModal(false);
-    }
-
-    useEffect(() => {
-        if (imageFile) {
-            uploadImage();
-        }
-    }, [imageFile]);
-
-    const uploadImage = async () => {
-        setImageUploadError(null);
-        const storage = getStorage(app);
-        const fileName = new Date().getTime() + imageFile.name;
-        const storageRef = ref(storage, fileName);
-        const uploadTask = uploadBytesResumable(storageRef, imageFile);
-        uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            (error) => {
-                setImageUploadError('Could not upload image (File must be less than 2MB)');
-                setImageFile(null);
-                setImageFileUrl(null);
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    setImageFileUrl(downloadURL);
-                    setFormData({ ...formData, profilePicture: downloadURL });
-                    setImageUploadError('Profile Picture Uploaded');
-                });
-            }
-        );
     };
 
+    const uploadImage = () => {
+        return new Promise((resolve, reject) => {
+            const storage = getStorage(app);
+            const fileName = new Date().getTime() + imageFile.name;
+            const storageRef = ref(storage, fileName);
+            const uploadTask = uploadBytesResumable(storageRef, imageFile);
+            setImageUploadError('Profile is Uploading...');
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {},
+                (error) => {
+                    setImageUploadError('Could not upload image (File must be less than 2MB)');
+                    setImageFile(null);
+                    setImageFileUrl(null);
+                    reject(error);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref)
+                        .then((downloadURL) => {
+                            setImageFileUrl(downloadURL);
+                            setFormData({ ...formData, profilePicture: downloadURL });
+                            setImageUploadError(null);
+                            resolve(downloadURL);
+                        })
+                        .catch((error) => {
+                            reject(error);
+                        });
+                }
+            );
+        });
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -83,13 +83,20 @@ function DashProfile() {
         e.preventDefault();
         setUpdateUserError(null);
         setUpdateUserSuccess(null);
-        const isSameData = Object.keys(formData).every(key => formData[key] === currentUser[key]);
-        if (isSameData) {
-            setUpdateUserError("No changes made");
-            return;
-        }
-
+        
         try {
+            if (imageFile) {
+                const imageUrl = await uploadImage();
+                formData.profilePicture = imageUrl;
+            }
+            // console.log(formData.profilePicture);
+            const isSameData = Object.keys(formData).every(key => formData[key] === currentUser[key]);
+
+            if (isSameData && !imageFile) {
+                setUpdateUserError("No changes made");
+                return;
+            }
+
             dispatch(updateStart());
             const res = await fetch(`/api/user/update/${currentUser._id}`, {
                 method: 'PUT',
@@ -98,12 +105,15 @@ function DashProfile() {
                 },
                 body: JSON.stringify(formData),
             });
+
             const data = await res.json();
+
             if (!res.ok) {
                 dispatch(updateFailure(data.message));
                 setUpdateUserError(data.message);
             } else {
                 dispatch(updateSuccess(data));
+                setImageUploadError(null);
                 setUpdateUserSuccess("User's profile updated successfully");
             }
         } catch (error) {
