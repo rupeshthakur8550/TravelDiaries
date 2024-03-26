@@ -100,7 +100,7 @@ export const verify =async (req, res, next)=>{
     try{
         const {email} = req.body;
         if (!await User.findOne({ email })) {
-            return next(errorHandler(400, 'User not exists'));
+            return res.status(400).json({ error: 'User not exists' });
         }else{
             res.status(200).json('User found');
         }

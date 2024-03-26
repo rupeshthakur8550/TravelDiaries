@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     },
     mobileNo : {
         type: String,
-        unique: true
+        default: "+91-0000000000"
     },
     dateOfBirth : {
         type: String,

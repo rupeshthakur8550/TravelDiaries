@@ -32,7 +32,6 @@ const Reset = ({ onSwitchMode }) => {
         setVerifyValue('Resend');
         setLoading(false);
         setErrorMessage(null);
-        setShowModal(true);
         try {
             const check = await fetch('/api/user/verify', {
                 method: 'POST',
@@ -41,6 +40,7 @@ const Reset = ({ onSwitchMode }) => {
             });
         
             if (check.ok) {
+                setShowModal(true);
                 const res = await fetch(`/api/otp/${path}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -49,7 +49,8 @@ const Reset = ({ onSwitchMode }) => {
                 const data = await res.json();
                 setErrorMessage(data.message);
             } else {
-                setErrorMessage(check.message); 
+                setVerifyValue('Verify');
+                setErrorMessage('User not exists'); 
             }
         } catch (error) {
             setErrorMessage(error.message);
