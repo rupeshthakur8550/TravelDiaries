@@ -52,7 +52,7 @@ function DashProfile() {
 
             uploadTask.on(
                 'state_changed',
-                (snapshot) => {},
+                (snapshot) => { },
                 (error) => {
                     setImageUploadError('Could not upload image (File must be less than 2MB)');
                     setImageFile(null);
@@ -83,13 +83,12 @@ function DashProfile() {
         e.preventDefault();
         setUpdateUserError(null);
         setUpdateUserSuccess(null);
-        
+
         try {
             if (imageFile) {
                 const imageUrl = await uploadImage();
                 formData.profilePicture = imageUrl;
             }
-            // console.log(formData.profilePicture);
             const isSameData = Object.keys(formData).every(key => formData[key] === currentUser[key]);
 
             if (isSameData && !imageFile) {
@@ -208,28 +207,29 @@ function DashProfile() {
             </form >
             <div className='text-red-600 flex justify-center mt-4 mb-11'>
                 <span onClick={() => setdeleteShowModal(true)} className='cursor-pointer'>Delete Account</span>
+                {
+                    updateUserSuccess && (
+                        <Alert color='success' className='mt-5'>
+                            {updateUserSuccess}
+                        </Alert>
+                    )
+                }
+                {
+                    updateUserError && (
+                        <Alert color='failure' className='mt-5'>
+                            {updateUserError}
+                        </Alert>
+                    )
+                }
+                {
+                    error && (
+                        <Alert color='failure' className='mt-5'>
+                            {error}
+                        </Alert>
+                    )
+                }
             </div>
-            {
-                updateUserSuccess && (
-                    <Alert color='success' className='mt-5'>
-                        {updateUserSuccess}
-                    </Alert>
-                )
-            }
-            {
-                updateUserError && (
-                    <Alert color='failure' className='mt-5'>
-                        {updateUserError}
-                    </Alert>
-                )
-            }
-            {
-                error && (
-                    <Alert color='failure' className='mt-5'>
-                        {error}
-                    </Alert>
-                )
-            }
+
             <Modal show={showdeleteModal} onClose={() => setdeleteShowModal(false)} popup size='md'>
                 <Modal.Header />
                 <Modal.Body>

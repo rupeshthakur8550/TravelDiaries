@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
     },
     mobileNo : {
         type: String,
-        default: "+91-0000000000"
     },
     dateOfBirth : {
         type: String,
@@ -33,6 +32,10 @@ const userSchema = new mongoose.Schema({
     verification : {
         type: String,
         required: true,
+    },
+    profile_complete_status : {
+        type: Boolean,
+        default: false
     }
 },{timestamps: true});
 

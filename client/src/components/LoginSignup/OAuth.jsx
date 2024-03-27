@@ -30,7 +30,7 @@ function OAuth() {
       }
       if (res.ok) {
         dispath(signInSuccess(data));
-        navigate('/dashboard?tab=profile');
+        data.profile_complete_status ? navigate('/allposts') : navigate('/dashboard?tab=profile');
       }
     } catch (error) {
       console.log(error);

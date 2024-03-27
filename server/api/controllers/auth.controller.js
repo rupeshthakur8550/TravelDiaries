@@ -71,12 +71,12 @@ export const googleAuth = async(req, res, next) => {
 }
 
 export const forgetPassword = async (req, res, next) => {
-    const { email, cpassword, npassword } = req.body;
-    if (!email || !cpassword || !npassword || email === ""|| cpassword === "" || npassword === "") {
+    const { username, cpassword, npassword } = req.body;
+    if (!username || !cpassword || !npassword || username === ""|| cpassword === "" || npassword === "") {
         next(errorHandler(400, 'All Fileds are Required'));
     }
     try {
-        const validUser = await User.findOne({ email });
+        const validUser = await User.findOne({ username });
 
         if (!validUser) {
             return next(errorHandler(404, 'User not found.'));

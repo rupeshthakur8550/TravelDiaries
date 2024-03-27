@@ -36,7 +36,7 @@ const Login = ({ onSwitchMode }) => {
             }
             if (res.ok) {
                 dispath(signInSuccess(data));
-                navigate('/allposts');
+                data.profile_complete_status ? navigate('/allposts') : navigate('/dashboard?tab=profile');
             }
         } catch (error) {
            dispath(signInFailure(error.message));

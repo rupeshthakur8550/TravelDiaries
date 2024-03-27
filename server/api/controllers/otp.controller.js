@@ -12,6 +12,32 @@ function generateOTP(length) {
     return OTP;
 }
 
+export const sendEmail = async (subject, email, htmlContent) => {
+    try {
+        let transport = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.USER,
+                pass: process.env.PASS
+            }
+        });
+
+        let message = {
+            from: process.env.USER,
+            to: email,
+            subject: subject,
+            html: htmlContent
+        };
+
+        await transport.sendMail(message);
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 export const sendMail = async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -32,22 +58,8 @@ export const sendMail = async (req, res, next) => {
         const expiryTime = new Date();
         expiryTime.setMinutes(expiryTime.getMinutes() + 10);
 
-        let transport = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.USER,
-                pass: process.env.PASS
-            }
-        });
-
-        // Email message
-        let message = {
-            from: process.env.USER,
-            to: email,
-            subject: 'TravelDiaries - Account Verification OTP',
-            html: `
+        const subject = 'TravelDiaries - Account Verification OTP';
+        const htmlContent = `
                 <p>Dear Traveler,</p>
                 <p>Welcome aboard TravelDiaries, your ultimate companion for documenting and sharing your breathtaking travel escapades!</p>
                 <p>Your One-Time Password (OTP) for account verification:</p>
@@ -60,16 +72,12 @@ export const sendMail = async (req, res, next) => {
                 <p>Happy exploring!</p>
                 <p>Warm regards,</p>
                 <p>The TravelDiaries Team</p>
-            `
-        };
-
-        await transport.sendMail(message);
-
-        // Create OTP document
+            `;
         await OTP.create({ email, otp: hashedOTP, expiry: expiryTime });
 
-        res.status(200).json({ success: true, message: 'OTP sent successfully' });
-
+        if (await sendEmail(subject, email, htmlContent)) {
+            res.status(200).json({ success: true, message: 'OTP sent successfully' });
+        }
     } catch (error) {
         next(error);
     }
@@ -88,7 +96,7 @@ export const verifyOTP = async (req, res, next) => {
         if (existingOTP.expiry > new Date() && isMatch) {
             return res.status(200).json({ success: true, message: 'OTP verified successfully.', id: existingOTP._id });
         } else {
-            return res.status(400).json({ success: false, message: 'Invalid OTP or OTP expired.'});
+            return res.status(400).json({ success: false, message: 'Invalid OTP or OTP expired.' });
         }
     } catch (error) {
         next(error);
@@ -116,21 +124,8 @@ export const resetOTP = async (req, res, next) => {
             existingOTP.expiry.setMinutes(existingOTP.expiry.getMinutes() + 10);
             await existingOTP.save();
 
-            let transport = nodemailer.createTransport({
-                host: "smtp.gmail.com",
-                port: 465,
-                secure: true,
-                auth: {
-                    user: process.env.USER,
-                    pass: process.env.PASS
-                }
-            });
-
-            let message = {
-                from: process.env.USER,
-                to: email,
-                subject: 'TravelDiaries - Account Verification OTP',
-                html: `
+            const subject = 'TravelDiaries - Account Verification OTP';
+            const htmlContent = `
                     <p>Dear Traveler,</p>
                     <p>Welcome aboard TravelDiaries, your ultimate companion for documenting and sharing your breathtaking travel escapades!</p>
                     <p>Your One-Time Password (OTP) for account verification:</p>
@@ -143,24 +138,22 @@ export const resetOTP = async (req, res, next) => {
                     <p>Happy exploring!</p>
                     <p>Warm regards,</p>
                     <p>The TravelDiaries Team</p>
-                `
-            };
-
-            await transport.sendMail(message);
-
-            res.status(200).json({ success: true, message: 'OTP has been reset and sent again.' });
-        } else {
-            return next(errorHandler(400, 'Cannot reset OTP as the previous OTP is not expired.'));
+                `;
+            if (await sendEmail(subject, email, htmlContent)) {
+                res.status(200).json({ success: true, message: 'OTP has been reset and sent again.' });
+            } else {
+                return next(errorHandler(400, 'Cannot reset OTP as the previous OTP is not expired.'));
+            }
         }
     } catch (error) {
         next(error);
     }
 };
 
-export const deleteEntry = async(req, res, next) => {
+export const deleteEntry = async (req, res, next) => {
     try {
         await OTP.findByIdAndDelete(req.params.id);
-        res.status(200).json({ success: true, message: 'deletion complete'});
+        res.status(200).json({ success: true, message: 'deletion complete' });
     } catch (error) {
         next(error);
     }

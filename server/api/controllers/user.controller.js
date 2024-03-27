@@ -1,6 +1,7 @@
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 import User from '../models/user.model.js';
+import { sendEmail } from './otp.controller.js'
 
 export const test = (req, res) => {
     res.json({ message: 'API is working' });
@@ -49,7 +50,7 @@ export const updateUser = async (req, res, next) => {
             }
         }
 
-        if(dateOfBirth){
+        if (dateOfBirth) {
             if (dateOfBirth === null || dateOfBirth === undefined) {
                 return next(errorHandler(400, 'Enter Valid Date of Birth'));
             }
@@ -64,10 +65,10 @@ export const updateUser = async (req, res, next) => {
                 name,
                 mobileNo,
                 dateOfBirth,
-                verification: "verified"
+                verification: "verified",
+                profile_complete_status: mobileNo && mobileNo ? true : false
             },
-        },
-            { new: true });
+        }, { new: true });
 
         const { password: removedPassword, ...rest } = updatedUser._doc;
         res.status(200).json(rest);
@@ -96,16 +97,48 @@ export const signout = async (req, res, next) => {
     }
 };
 
-export const verify =async (req, res, next)=>{
-    try{
-        const {email} = req.body;
-        if (!await User.findOne({ email })) {
+export const verify = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        if (!await User.findOne({ username })) {
             return res.status(400).json({ error: 'User not exists' });
-        }else{
+        } else {
             res.status(200).json('User found');
         }
 
-    }catch(error){
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getUsername = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        } else {
+            const subject = 'TravelDiaries - Your Username';
+            const htmlContent = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; text-align: center;">TravelDiaries</h2>
+                <p style="font-size: 16px; line-height: 1.5; color: #666;">Dear Traveler,</p>
+                <p style="font-size: 16px; line-height: 1.5; color: #666;">It seems you've forgotten your username. No worries, we've got you covered!</p>
+                <div style="background-color: #f4f4f4; padding: 20px; border-radius: 5px; text-align: center; margin: 20px 0;">
+                <h2 style="margin: 0; padding: 0; font-weight: bold; color: #333;">${user.username}</h2>
+                </div>
+                <p style="font-size: 16px; line-height: 1.5; color: #666;">You can now continue exploring with TravelDiaries. If you have any other issues, feel free to reach out to us.</p>
+                <p style="font-size: 16px; line-height: 1.5; color: #666;">Warm regards,</p>
+                <p style="font-size: 16px; line-height: 1.5; color: #666;"><strong>The TravelDiaries Team</strong></p>
+                </div>
+            `;
+
+            if (await sendEmail(subject, email, htmlContent)) {
+                res.status(200).json({ success: true, message: 'Username has been sent to your email.' });
+            }
+        }
+    } catch (error) {
         next(error);
     }
 }
