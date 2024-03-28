@@ -4,6 +4,7 @@ import assets from '../../assets/assets';
 import SigninForm from '../LoginSignup/Login';
 import SignupForm from '../LoginSignup/Signup';
 import ResetpassForm from '../LoginSignup/PassReset';
+import Footer from '../footer/Footer';
 
 export const ScreenMode = {
   SIGN_IN: 'SIGN_IN',
@@ -44,6 +45,7 @@ const SignInPage = () => {
     };
   };
   return (
+    <div>
     <Grid container className='p-[2vh] md:p-[6vh] flex justify-center items-center'>
       <Grid item xs={12} md={6} lg={4} className='relative pr-[1vw] pl-[1vw] px-5 py-5'>
         {currMode === ScreenMode.SIGN_IN ? (
@@ -94,6 +96,8 @@ const SignInPage = () => {
         />
       </Grid>
     </Grid>
+    <footer><Footer/></footer>
+    </div>
   );
 };
 

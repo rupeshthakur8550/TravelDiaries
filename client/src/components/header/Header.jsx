@@ -26,10 +26,10 @@ function Header() {
                 All Posts
               </NavLink>
               <NavLink
-                to="/myposts"
+                to="/search"
                 className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
               >
-                My Posts
+                Search
               </NavLink>
               <NavLink
                 to="/addPosts"
@@ -37,31 +37,22 @@ function Header() {
               >
                 Add Posts
               </NavLink>
+              <NavLink
+                to="/#"
+                className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
+              >
+                Messages
+              </NavLink>
+              <NavLink
+                to="/myposts"
+                className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
+              >
+                My Posts
+              </NavLink>
+              
             </div>
           </div>
           <div className='flex gap-2'>
-            <Dropdown arrowIcon={false} inline label={<Navbar.Toggle />}>
-              <Navbar.Collapse>
-                <NavLink
-                  to="/allposts"
-                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-teal-600 lg:p-0`}
-                >
-                  All Posts
-                </NavLink>
-                <NavLink
-                  to="/myposts"
-                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-teal-600 lg:p-0`}
-                >
-                  My Posts
-                </NavLink>
-                <NavLink
-                  to="/addPosts"
-                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-teal-600 lg:p-0`}
-                >
-                  Add Posts
-                </NavLink>
-              </Navbar.Collapse>
-            </Dropdown>
             <h1 className={`text-sm font-medium truncate lg:block py-2 pr-4 pl-3 hidden md:hidden`} style={{fontVariant: "petite-caps"}}>
               Welcome, {<span className='text-green-600'>{currentUser.name}</span>}
             </h1>

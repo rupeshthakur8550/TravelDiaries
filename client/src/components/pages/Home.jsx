@@ -12,6 +12,7 @@ function Home() {
       <Benefit/>
       <Services/>
       </div>
+      <footer><Footer/></footer>
     </>
 
   )

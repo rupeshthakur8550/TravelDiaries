@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { DatePicker } from 'antd';
 import { TextField, Typography } from '@mui/material';
-import { getDownloadURL, getStorage, uploadBytesResumable, ref, deleteObject } from 'firebase/storage';
+import { getDownloadURL, getStorage, uploadBytesResumable, ref} from 'firebase/storage';
 import { app } from '../../firebase.js'
 
 function DashProfile() {
