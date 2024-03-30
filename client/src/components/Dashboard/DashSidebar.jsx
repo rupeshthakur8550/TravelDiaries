@@ -33,10 +33,10 @@ function DashSidebar() {
         }
     }
     return (
-        <Sidebar className='w-full md:w-56'>
+        <Sidebar className='w-full md:w-56 md:mt-16'>
             <Sidebar.Items>
                 <Sidebar.ItemGroup>
-                    <Link to='/dashboard?tab=profile'>
+                    <Link to='/myposts'>
                         <Sidebar.Item active={tab === 'profile'} icon={HiUser} label="User" labelColor="dark" as='div' >
                             Profile
                         </Sidebar.Item>

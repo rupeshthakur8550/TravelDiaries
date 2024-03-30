@@ -9,7 +9,7 @@ export const test = (req, res) => {
 
 export const updateUser = async (req, res, next) => {
     try {
-        let { password, username, name, mobileNo, dateOfBirth } = req.body;
+        let { password, username, name, mobileNo, dateOfBirth, bio } = req.body;
 
         if (req.user.id != req.params.userId) {
             return next(errorHandler(400, 'You are not allowed to update this user'));
@@ -55,7 +55,7 @@ export const updateUser = async (req, res, next) => {
                 return next(errorHandler(400, 'Enter Valid Date of Birth'));
             }
         }
-
+        
         const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
             $set: {
                 username,
@@ -63,6 +63,7 @@ export const updateUser = async (req, res, next) => {
                 profilePicture: req.body.profilePicture,
                 password,
                 name,
+                bio,
                 mobileNo,
                 dateOfBirth,
                 verification: "verified",

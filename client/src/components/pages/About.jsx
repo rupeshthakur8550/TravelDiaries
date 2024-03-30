@@ -4,7 +4,7 @@ import Footer from '../footer/Footer';
 function About() {
   return (
     <>
-      <div className='min-h-screen'>About</div>
+      <div className='min-h-screen mt-16'>About</div>
       <footer><Footer /></footer>
     </>
   )

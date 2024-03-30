@@ -9,6 +9,7 @@ function Header() {
   const path = useLocation().pathname;
 
   return (
+    <div className='fixed top-0 left-0 right-0 bg-white shadow-lg z-50'>
     <Navbar className='border-b-2'>
       <Link to='/' className='self-center whitespace-nowrap text-sm sm:text-xl font-extrabold bg-gradient-to-r from-white from-30% via-orange-300 to-rose-500 rounded-lg text-white' style={{ fontVariant: 'unicase' }}>
         <span className='px-2 py-1 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg inline-block text-transparent bg-clip-text'>Travel</span>
@@ -17,7 +18,7 @@ function Header() {
 
       {currentUser ? (
         <>
-          <div className='flex justify-center items-center lg:pl-[30vh] md:pr-[8vh]'>
+          <div className='flex justify-center items-center lg:pl-[30vh] md:pr-[11vh]'>
             <div className='hidden md:flex justify-center items-center lg:gap-5 md:gap-0'>
               <NavLink
                 to="/allposts"
@@ -43,12 +44,6 @@ function Header() {
               >
                 Messages
               </NavLink>
-              <NavLink
-                to="/myposts"
-                className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
-              >
-                My Posts
-              </NavLink>
               
             </div>
           </div>
@@ -70,7 +65,6 @@ function Header() {
                 <span className='block text-sm font-medium truncate'>{currentUser.name}</span>
               </Dropdown.Header>
               <DashSidebar />
-
             </Dropdown>
           </div>
         </>
@@ -97,6 +91,7 @@ function Header() {
       )}
 
     </Navbar >
+    </div>
   )
 }
 

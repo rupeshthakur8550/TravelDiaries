@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema({
         type : String,
         required: true,
     },
+    bio : {
+        type: String,
+    },
     mobileNo : {
         type: String,
     },

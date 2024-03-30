@@ -4,7 +4,7 @@ import { AiOutlineSearch } from 'react-icons/ai'
 
 function Search() {
   return (
-    <div className='min-h-screen'>
+    <div className='min-h-screen mt-16'>
       <form className="px-5 md:px-52 py-2">
         <TextInput
           type="text"

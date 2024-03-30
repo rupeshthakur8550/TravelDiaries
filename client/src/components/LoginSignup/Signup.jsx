@@ -16,17 +16,17 @@ const Signup = ({ onSwitchMode }) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
-  const handleSendEmail = async (e, path,) => {
+  const handleSendEmail = async (e, path) => {
     e.preventDefault();
     setVerifyValue('Resend');
     setLoading(false);
     setErrorMessage(null);
     setShowModal(true);
     try {
-      const res = await fetch(`/api/otp/${path}`, {
+      const res = await fetch(`/api/otp/mail`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ email: formData.email, type : path }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -91,6 +91,7 @@ const Signup = ({ onSwitchMode }) => {
         });
         const data = await res.json();
         if (data.success === false) {
+          setLoading(false);
           return setErrorMessage(data.message);
         }
         setLoading(false)
@@ -171,7 +172,7 @@ const Signup = ({ onSwitchMode }) => {
                         fontSize: '16px',
                         color: verifyValue === 'Verify' ? "red" : (verifyValue === 'resend' ? "blue" : "green")
                       }}
-                      onClick={(e) => verifyValue === 'Verify' ? handleSendEmail(e, 'mail') : handleSendEmail(e, 'resend')}
+                      onClick={(e) => verifyValue === 'Verify' ? handleSendEmail(e, 'send') : handleSendEmail(e, 'resend')}
                     >
                       {verifyValue}
                     </Typography>

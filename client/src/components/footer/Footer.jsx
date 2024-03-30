@@ -4,9 +4,9 @@ import Logo from '../../assets/images/Logo.svg'
 
 export default function Footer() {
     return (
-        <footer className="bg-white border-y">
-            <div className="w-full mx-auto max-w-8xl p-8 py-3 lg:py-6">
-                <div className="md:flex md:justify-between">
+        <footer className="bg-white border-y shadow-lg z-50 py-4">
+            <div className="w-full max-w-8xl mx-auto">
+                <div className="md:flex md:justify-between pl-4 pr-4">
                     <div className="mb-2">
                         <Link to="/" className="flex items-center">
                             <img
@@ -69,8 +69,8 @@ export default function Footer() {
                         </div>
                     </div>
                 </div>
-                <hr className="my-6 border-gray-200 sm:mx-auto lg:my-8" />
-                <div className="md:flex sm:block md:justify-between">
+                <hr className="my-2 border-gray-200 sm:mx-auto lg:my-4" />
+                <div className="md:flex sm:block md:justify-between pl-4 pr-4">
                     <div className="flex mt-4 space-x-5 sm:mt-0 justify-center">
                         <span className="text-sm font-semibold text-gray-900">
                             © 2023-24

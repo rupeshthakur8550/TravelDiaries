@@ -7,12 +7,72 @@ const Reset = ({ onSwitchMode }) => {
     const [formData, setFormData] = useState({});
     const [errorMessage, setErrorMessage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [verifyValue, setVerifyValue] = useState('Verify');
     const [showModal, setShowModal] = useState(false);
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@]{8,}$/;
 
+    const handleSendEmail = async (e, path) => {
+        e.preventDefault();
+        setVerifyValue('Resend');
+        setLoading(false);
+        setErrorMessage(null);
+        setShowModal(true);
+        try {
+            const res = await fetch(`/api/otp/mail`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email, type : path }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setErrorMessage(data.message);
+            } else {
+                setErrorMessage(data.message);
+            }
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
+    };
+
+    const handleEmailVerify = async (e, isClick) => {
+        e.preventDefault();
+        setLoading(false);
+        try {
+            const otpInputValue = document.getElementById('otp').value;
+            if (otpInputValue.length === 6 && isClick) {
+                const verifyRes = await fetch('/api/otp/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: formData.email, otp: otpInputValue }),
+                });
+                const verifyData = await verifyRes.json();
+                if (!verifyRes.ok) {
+                    setErrorMessage(verifyData.message);
+                } else {
+                    const deleteRes = await fetch(`/api/otp/delete/${verifyData.id}`, {
+                        method: 'DELETE',
+                    });
+                    const deleteData = await deleteRes.json();
+                    if (!deleteRes.ok) {
+                        setErrorMessage(deleteData.message);
+                    } else {
+                        setVerifyValue('verified');
+                        setShowModal(false);
+                        setErrorMessage(null);
+                    }
+                }
+            } else {
+                setErrorMessage('OTP must be 6 characters long.');
+            }
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
+    };
+
+
     const handleChange = (e) => {
         if (e.target.id === 'cpassword' || e.target.id === 'npassword') {
-            if (!passwordRegex.test(e.target.value)) {
+            if (!e.target.value || !passwordRegex.test(e.target.value)) {
                 return setErrorMessage('Password must contain at least 8 characters, including one uppercase letter and one digit.');
             }
         }
@@ -20,31 +80,9 @@ const Reset = ({ onSwitchMode }) => {
         setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
     };
 
-    const handleEmailVerify = async (e) => {
-        e.preventDefault();
-        setLoading(false);
-        try {
-            const res = await fetch('/api/user/getusername', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: formData.email }),
-            });
-            const data = await res.json();
-            if (!res.ok || data.success === false) {
-                setShowModal(false);
-                setErrorMessage('User not found');
-            } else {
-                setShowModal(false);
-                setErrorMessage('Username has been sent to your email');
-            }
-        } catch (error) {
-            setErrorMessage(error.message);
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.username || !formData.cpassword || !formData.npassword) {
+        if (!formData.email || !formData.cpassword || !formData.npassword) {
             return setErrorMessage('Please fill out all fields.');
         }
         try {
@@ -57,12 +95,15 @@ const Reset = ({ onSwitchMode }) => {
                     body: JSON.stringify(formData),
                 });
                 const data = await res.json();
-                if (!res.ok || data.success === false) {
+                if (data.success === false) {
                     setLoading(false);
                     return setErrorMessage(data.message || 'An error occurred. Please try again.');
+                }if (res.ok) {
+                    onSwitchMode(ScreenMode.SIGN_IN);
                 }
-                onSwitchMode(ScreenMode.SIGN_IN);
-            }
+            }else {
+                return setErrorMessage('Please verify email..')
+              }
         } catch (error) {
             setErrorMessage(error.message || 'An error occurred. Please try again.');
         }
@@ -94,24 +135,26 @@ const Reset = ({ onSwitchMode }) => {
                                     <TextField
                                         onChange={handleChange}
                                         type='text'
-                                        id='username'
-                                        placeholder="Username"
+                                        id='email'
+                                        placeholder="Email"
                                         className='w-[100%]'
-                                        InputProps={{
-                                            disableUnderline: true,
-                                        }}
                                     />
+                                    <Typography
+                                        sx={{
+                                            cursor: "pointer",
+                                            userSelect: "none",
+                                            position: 'absolute',
+                                            top: '50%',
+                                            right: '10px',
+                                            transform: 'translateY(-50%)',
+                                            fontSize: '16px',
+                                            color: verifyValue === 'Verify' ? "red" : (verifyValue === 'resend' ? "blue" : "green")
+                                        }}
+                                        onClick={(e) => verifyValue === 'Verify' ? handleSendEmail(e, 'send') : handleSendEmail(e, 'resend')}
+                                    >
+                                        {verifyValue}
+                                    </Typography>
                                 </div>
-                            </Stack>
-                            <Stack spacing={1}>
-                                <Typography color={colors.grey[800]}>Current Password</Typography>
-                                <TextField
-                                    name="cpassword"
-                                    onChange={handleChange}
-                                    type="password"
-                                    id='cpassword'
-                                    placeholder="********"
-                                />
                             </Stack>
                             <Stack spacing={1}>
                                 <Typography color={colors.grey[800]}>New Password</Typography>
@@ -120,6 +163,16 @@ const Reset = ({ onSwitchMode }) => {
                                     onChange={handleChange}
                                     type="password"
                                     id='npassword'
+                                    placeholder="********"
+                                />
+                            </Stack>
+                            <Stack spacing={1}>
+                                <Typography color={colors.grey[800]}>Confirm Password</Typography>
+                                <TextField
+                                    name="cpassword"
+                                    onChange={handleChange}
+                                    type="password"
+                                    id='cpassword'
                                     placeholder="********"
                                 />
                             </Stack>
@@ -139,16 +192,6 @@ const Reset = ({ onSwitchMode }) => {
                             {loading ? <Spinner size="sm" /> : 'Reset Password'}
                         </Button>
                         <Stack direction="row" spacing={2} justifyContent="center">
-                            <Typography
-                                onClick={() => setShowModal(true)}
-                                fontWeight={600}
-                                className='hover:underline'
-                                sx={{
-                                    cursor: "pointer",
-                                    userSelect: "none"
-                                }}>
-                                Forget Username?
-                            </Typography>
                         </Stack>
                         <Stack direction="row" spacing={2} justifyContent="center">
                             <Typography>Remember..?</Typography>
@@ -173,18 +216,18 @@ const Reset = ({ onSwitchMode }) => {
             <Modal show={showModal} onClose={() => setShowModal(false)} popup size='sm'>
                 <Modal.Header />
                 <div className="text-center">
-                    <h3 className='mb-5 text-lg text-gray-700'>Find Username</h3>
+                    <h3 className='mb-5 text-lg text-gray-700'>Enter OTP below:</h3>
                     <div className='mb-10 flex justify-center items-center gap-3'>
                         <TextField
-                            type='email'
-                            id='email'
-                            placeholder="Email"
+                            type='text'
+                            id='otp'
+                            placeholder="OTP"
                             size="small"
-                            onChange={handleChange}
+                            onChange={handleEmailVerify}
                         />
                         <Button
                             type="submit"
-                            onClick={handleEmailVerify}
+                            onClick={(e) => handleEmailVerify(e, true)}
                             variant='contained'
                             size='small'
                             sx={{
@@ -194,13 +237,13 @@ const Reset = ({ onSwitchMode }) => {
                                 }
                             }}
                         >
-                            Find
+                            Verify
                         </Button>
                     </div>
                     {errorMessage && (
-                        <Alert className='mt-5 self-center' severity={errorMessage.includes('Username') ? 'success' : 'error'}>
-                        {errorMessage}
-                    </Alert>)
+                        <Alert className='mt-5 self-center' severity="error">
+                            {errorMessage}
+                        </Alert>)
                     }
                 </div>
             </Modal>

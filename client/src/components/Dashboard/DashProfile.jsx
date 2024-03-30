@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Alert, Button, Modal, TextInput } from 'flowbite-react';
+import { Alert, Button, Modal, TextInput, Textarea } from 'flowbite-react';
 import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '../../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
@@ -142,7 +142,7 @@ function DashProfile() {
     };
 
     return (
-        <>
+        <div className='mt-24'>
             <h1 className='my-7 text-center font-semibold text-3xl'>{`Welcome, ${currentUser.username}`}</h1>
             <h1 className='my-7 text-center text-xl'>Profile</h1>
             <form className='flex flex-col items-center gap-4' onSubmit={handleSubmit}>
@@ -160,6 +160,7 @@ function DashProfile() {
 
                 <TextInput type='text' id='name' placeholder='Name' defaultValue={currentUser.name} onChange={handleChange} className='w-[90%]' />
                 <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} className='w-[90%]' />
+                <Textarea type='text' id='bio' placeholder='Bio' defaultValue={currentUser.bio || ''} onChange={handleChange} className='w-[90%]' />
                 <div className='flex justify-center items-center gap-2 w-[90%]' style={{ position: 'relative' }}>
                     <TextInput
                         onChange={handleChange}
@@ -198,18 +199,19 @@ function DashProfile() {
                     onChange={(date) => setFormData({ ...formData, dateOfBirth: date ? date.format('YYYY-MM-DD') : null })}
                     className='w-[90%] h-11'
                 />
-
                 <TextInput type='text' id='mobileNo' placeholder='Mobile No' defaultValue={currentUser.mobileNo || ''} onChange={handleChange} className='w-[90%]' />
                 <TextInput type='password' id='password' placeholder='New Password' defaultValue={currentUser.password} onChange={handleChange} className='w-[90%]' />
                 <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[90%]'>
                     Update
                 </Button>
             </form >
-            <div className='text-red-600 flex justify-center mt-4 mb-11'>
+            <div className='mb-20'>
+            <div className='text-red-600 flex justify-center mt-4'>
                 <span onClick={() => setdeleteShowModal(true)} className='cursor-pointer'>Delete Account</span>
-                {
+            </div>
+            {
                     updateUserSuccess && (
-                        <Alert color='success' className='mt-5'>
+                        <Alert color='success' className='mt-5 '>
                             {updateUserSuccess}
                         </Alert>
                     )
@@ -229,7 +231,7 @@ function DashProfile() {
                     )
                 }
             </div>
-
+            
             <Modal show={showdeleteModal} onClose={() => setdeleteShowModal(false)} popup size='md'>
                 <Modal.Header />
                 <Modal.Body>
@@ -264,7 +266,7 @@ function DashProfile() {
                     </div>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 }
 

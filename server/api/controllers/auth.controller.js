@@ -71,29 +71,24 @@ export const googleAuth = async(req, res, next) => {
 }
 
 export const forgetPassword = async (req, res, next) => {
-    const { username, cpassword, npassword } = req.body;
-    if (!username || !cpassword || !npassword || username === ""|| cpassword === "" || npassword === "") {
-        next(errorHandler(400, 'All Fileds are Required'));
-    }
+    const { email, cpassword, npassword } = req.body;
     try {
-        const validUser = await User.findOne({ username });
+        const validUser = await User.findOne({ email });
 
         if (!validUser) {
             return next(errorHandler(404, 'User not found.'));
         }
 
-        const validPassword = bcryptjs.compareSync(cpassword, validUser.password);
+        const validPassword = cpassword === npassword;
         if (!validPassword) {
-            return next(errorHandler(400, 'Incorrect current password.'));
+            return next(errorHandler(400, 'Both Passwords need to be same'));
         }
 
-        if (cpassword === npassword) {
-            return next(errorHandler(400, 'Choose different password'));
-        }
         const hashedPassword = bcryptjs.hashSync(npassword, 10);
         validUser.password = hashedPassword;
         await validUser.save();
-        res.status(200).json({ message: 'Password updated successfully.' });
+        res.json('Password reset successfully.');
+        // res.status(200).json({ message: 'Password reset successfully.' });
     } catch (error) {
         next(error);
     }
