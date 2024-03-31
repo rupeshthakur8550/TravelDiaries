@@ -10,7 +10,7 @@ import OAuth from './OAuth';
 const Login = ({ onSwitchMode }) => {
 
     const [formData, setFormData] = useState({});
-    const { loading, errorMessage } = useSelector(state => state.user);
+    const { loading, error: errorMessage } = useSelector(state => state.user);
     const [showModal, setShowModal] = useState(false);
     const dispath = useDispatch();
     const navigate = useNavigate();

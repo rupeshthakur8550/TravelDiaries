@@ -45,16 +45,14 @@ export const verifyOTP = async (req, res, next) => {
 
         if (!existingOTP) {
             return next(errorHandler(404, 'No OTP found for the provided email.'));
-            // return res.status(404).json({ success: false, message: 'No OTP found for the provided email.' });
         }
 
         const isMatch = await bcryptjs.compare(otp, existingOTP.otp);
         if (existingOTP.expiry > new Date() && isMatch) {
-            // return next(errorHandler(200, 'OTP verified successfully.'));
-            return res.status(200).json({ success: true, message: 'OTP verified successfully.', id: existingOTP._id });
+            await OTP.findByIdAndDelete(existingOTP._id);
+            return next(errorHandler(200, 'OTP verified successfully.'));
         } else {
             return next(errorHandler(400, 'Invalid OTP or OTP expired.'));
-            // return res.status(400).json({ success: false, message: 'Invalid OTP or OTP expired.' });
         }
     } catch (error) {
         next(error);
@@ -105,13 +103,11 @@ export const sendMail = async (req, res, next) => {
             const hashedOTP = await bcryptjs.hash(otp, 10);
             if (await format(otp, email)) {
                 next(errorHandler(200, 'OTP sent successfully'));
-                // res.status(200).json({ success: true, message: 'OTP sent successfully' });
             } else {
                 next(errorHandler(400, 'Something went wrong'));
-                // res.status(400).json({ success: false, message: 'Something went wrong' });
             }
             const expiryTime = new Date();
-            expiryTime.setMinutes(expiryTime.getMinutes() + 1);
+            expiryTime.setMinutes(expiryTime.getMinutes() + 10);
             await OTP.create({ email, otp: hashedOTP, expiry: expiryTime });
         } catch (error) {
             next(errorHandler(404,'Something went wrong'));
@@ -135,7 +131,6 @@ export const sendMail = async (req, res, next) => {
                 await existingOTP.save();
                 if (await format(otp, email)) {
                     return next(errorHandler(200, 'OTP has been reset and sent again.'));
-                    // return res.status(200).json({ success: true, message: 'OTP has been reset and sent again.' });
                 }
             }
             return next(errorHandler(404,'No OTP found or OTP is not expired.'));
@@ -144,14 +139,4 @@ export const sendMail = async (req, res, next) => {
         }
     }
 };
-
-export const deleteEntry = async (req, res, next) => {
-    try {
-        await OTP.findByIdAndDelete(req.params.id);
-        return next(errorHandler(200, 'deletion complete'));
-        // res.status(200).json({ success: true, message: 'deletion complete' });
-    } catch (error) {
-        next(error);
-    }
-}
 

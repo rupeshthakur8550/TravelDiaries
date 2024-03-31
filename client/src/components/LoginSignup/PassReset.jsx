@@ -21,7 +21,7 @@ const Reset = ({ onSwitchMode }) => {
             const res = await fetch(`/api/otp/mail`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: formData.email, type : path }),
+                body: JSON.stringify({ email: formData.email, type: path }),
             });
             const data = await res.json();
             if (!res.ok) {
@@ -40,6 +40,7 @@ const Reset = ({ onSwitchMode }) => {
         try {
             const otpInputValue = document.getElementById('otp').value;
             if (otpInputValue.length === 6 && isClick) {
+                setErrorMessage(null);
                 const verifyRes = await fetch('/api/otp/verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -49,17 +50,9 @@ const Reset = ({ onSwitchMode }) => {
                 if (!verifyRes.ok) {
                     setErrorMessage(verifyData.message);
                 } else {
-                    const deleteRes = await fetch(`/api/otp/delete/${verifyData.id}`, {
-                        method: 'DELETE',
-                    });
-                    const deleteData = await deleteRes.json();
-                    if (!deleteRes.ok) {
-                        setErrorMessage(deleteData.message);
-                    } else {
-                        setVerifyValue('verified');
-                        setShowModal(false);
-                        setErrorMessage(null);
-                    }
+                    setVerifyValue('verified');
+                    setShowModal(false);
+                    setErrorMessage(null);
                 }
             } else {
                 setErrorMessage('OTP must be 6 characters long.');
@@ -68,7 +61,6 @@ const Reset = ({ onSwitchMode }) => {
             setErrorMessage(error.message);
         }
     };
-
 
     const handleChange = (e) => {
         if (e.target.id === 'cpassword' || e.target.id === 'npassword') {
@@ -98,12 +90,12 @@ const Reset = ({ onSwitchMode }) => {
                 if (data.success === false) {
                     setLoading(false);
                     return setErrorMessage(data.message || 'An error occurred. Please try again.');
-                }if (res.ok) {
+                } if (res.ok) {
                     onSwitchMode(ScreenMode.SIGN_IN);
                 }
-            }else {
+            } else {
                 return setErrorMessage('Please verify email..')
-              }
+            }
         } catch (error) {
             setErrorMessage(error.message || 'An error occurred. Please try again.');
         }

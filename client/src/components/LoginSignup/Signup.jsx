@@ -26,7 +26,7 @@ const Signup = ({ onSwitchMode }) => {
       const res = await fetch(`/api/otp/mail`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, type : path }),
+        body: JSON.stringify({ email: formData.email, type: path }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -45,6 +45,7 @@ const Signup = ({ onSwitchMode }) => {
     try {
       const otpInputValue = document.getElementById('otp').value;
       if (otpInputValue.length === 6 && isClick) {
+        setErrorMessage(null);
         const verifyRes = await fetch('/api/otp/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -54,17 +55,9 @@ const Signup = ({ onSwitchMode }) => {
         if (!verifyRes.ok) {
           setErrorMessage(verifyData.message);
         } else {
-          const deleteRes = await fetch(`/api/otp/delete/${verifyData.id}`, {
-            method: 'DELETE',
-          });
-          const deleteData = await deleteRes.json();
-          if (!deleteRes.ok) {
-            setErrorMessage(deleteData.message);
-          } else {
-            setVerifyValue('verified');
-            setShowModal(false);
-            setErrorMessage(null);
-          }
+          setVerifyValue('verified');
+          setShowModal(false);
+          setErrorMessage(null);
         }
       } else {
         setErrorMessage('OTP must be 6 characters long.');
