@@ -12,12 +12,12 @@ const Login = ({ onSwitchMode }) => {
     const [formData, setFormData] = useState({});
     const { loading, error: errorMessage } = useSelector(state => state.user);
     const [showModal, setShowModal] = useState(false);
-    const dispath = useDispatch();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-    };
+        setFormData(prevData => ({ ...prevData, [e.target.id]: e.target.value.trim() }));
+    };    
 
     const handleEmailVerify = async (e) => {
         e.preventDefault();
@@ -31,23 +31,23 @@ const Login = ({ onSwitchMode }) => {
             console.log(data);
             if (!res.ok || data.success === false) {
                 setShowModal(false);
-                dispath(signInFailure('User not found'));
+                dispatch(signInFailure('User not found'));
             } else {
                 setShowModal(false);
-                dispath(signInSuccess('Username has been sent to your email'));
+                dispatch(signInSuccess('Username has been sent to your email'));
             }
         } catch (error) {
-            dispath(signInFailure(error.message));
+            dispatch(signInFailure(error.message));
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.username || !formData.password) {
-            return dispath(signInFailure('Please fill out all fields..'));
+            return dispatch(signInFailure('Please fill out all fields..'));
         }
         try {
-            dispath(signInStart());
+            dispatch(signInStart());
             const res = await fetch('/api/auth/signin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -55,14 +55,14 @@ const Login = ({ onSwitchMode }) => {
             });
             const data = await res.json();
             if (data.success === false) {
-                dispath(signInFailure(date.message));
+                dispatch(signInFailure(data.message));
             }
             if (res.ok) {
-                dispath(signInSuccess(data));
+                dispatch(signInSuccess(data));
                 data.profile_complete_status ? navigate('/allposts') : navigate('/dashboard?tab=profile');
             }
         } catch (error) {
-            dispath(signInFailure(error.message));
+            dispatch(signInFailure(error.message));
         }
     };
 

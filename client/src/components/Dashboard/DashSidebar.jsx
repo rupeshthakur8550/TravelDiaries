@@ -33,7 +33,7 @@ function DashSidebar() {
         }
     }
     return (
-        <Sidebar className='w-full md:w-56 md:mt-16'>
+        <Sidebar className='w-full md:w-56 md:mt-16' style={{boxShadow: '0px 10px 10px 0px #aaaaaa'}}>
             <Sidebar.Items>
                 <Sidebar.ItemGroup>
                     <Link to='/myposts'>

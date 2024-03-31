@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Modal, TextInput, Textarea } from 'flowbite-react';
 import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '../../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
@@ -23,6 +24,7 @@ function DashProfile() {
     const [verifyValue, setVerifyValue] = useState('remove');
     const filePickerRefer = useRef();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -114,6 +116,7 @@ function DashProfile() {
                 dispatch(updateSuccess(data));
                 setImageUploadError(null);
                 setUpdateUserSuccess("User's profile updated successfully");
+                setInterval(()=>navigate('/myposts'),1000);
             }
         } catch (error) {
             dispatch(updateFailure(error.message));
