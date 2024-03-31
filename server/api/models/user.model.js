@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema({
     profile_complete_status : {
         type: Boolean,
         default: false
+    },
+    isAdmin : {
+        type: Boolean,
+        default: false
     }
 },{timestamps: true});
 

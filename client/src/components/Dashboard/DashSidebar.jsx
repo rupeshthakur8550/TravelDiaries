@@ -3,9 +3,10 @@ import { Link, useLocation } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { HiUser, HiArrowRight } from 'react-icons/hi';
 import {signoutSuccess} from '../../redux/user/userSlice'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 function DashSidebar() {
+    const { currentUser } = useSelector(state => state.user);
     const location = useLocation();
     const [tab, setTab] = useState('');
     const dispatch = useDispatch();
@@ -37,7 +38,7 @@ function DashSidebar() {
             <Sidebar.Items>
                 <Sidebar.ItemGroup>
                     <Link to='/myposts'>
-                        <Sidebar.Item active={tab === 'profile'} icon={HiUser} label="User" labelColor="dark" as='div' >
+                        <Sidebar.Item active={tab === 'profile'} icon={HiUser} label={currentUser.isAdmin ? "Admin" : "User"} labelColor="dark" as='div' >
                             Profile
                         </Sidebar.Item>
                     </Link>
