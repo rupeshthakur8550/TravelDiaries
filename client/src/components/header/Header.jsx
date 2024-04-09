@@ -27,7 +27,7 @@ function Header() {
   };
 
   return (
-    <div className='fixed top-0 left-0 right-0 bg-white shadow-lg z-50'>
+    <div className='fixed top-0 left-0 right-0 bg-white shadow-lg z-50 m-2'>
       <Navbar className='border-b-2'>
         <Link to='/' className='self-center whitespace-nowrap text-sm sm:text-xl font-extrabold bg-gradient-to-r from-white from-30% via-orange-300 to-rose-500 rounded-lg text-white' style={{ fontVariant: 'unicase' }}>
           <span className='px-2 py-1 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg inline-block text-transparent bg-clip-text'>Travel</span>
@@ -42,25 +42,25 @@ function Header() {
                   to="/allposts"
                   className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
                 >
-                  All Posts
+                  Feed
                 </NavLink>
                 <NavLink
                   to="/search"
                   className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
                 >
-                  Search
+                  Find
                 </NavLink>
                 <NavLink
                   to="/addPosts"
                   className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
                 >
-                  Add Posts
+                  Upload
                 </NavLink>
                 <NavLink
                   to="/#"
                   className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
                 >
-                  Messages
+                  Chats
                 </NavLink>
 
               </div>
@@ -99,7 +99,7 @@ function Header() {
               Home
             </NavLink>
             <NavLink
-              to="/about"
+              to="#"
               className={({ isActive }) => `block py-2 pr-[1vw] pl-[1vw] duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold`}
             >
               About
@@ -111,7 +111,6 @@ function Header() {
             </Link>
           </div>
         )}
-
       </Navbar >
     </div>
   )

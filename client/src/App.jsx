@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Home, Posts, MyPosts, AddPosts, SignInPage, Header, About, Search } from '../src/components/PageRoutes'
+import { Home, Posts, MyPosts, AddPosts, SignInPage, Header, Search } from '../src/components/PageRoutes'
 import './App.css'
 import Dashboard from './components/pages/Dashboard'
 import PrivateRoute from './components/pages/PrivateRoute'
@@ -19,7 +19,6 @@ function App() {
           <Route path="/addposts" element={<AddPosts />} />
           <Route path='/search' element= {<Search/>} />
           </Route>
-          <Route path="/about" element={<About />} />
           <Route path="/signin" element={<SignInPage />} />
         </Routes>
       </BrowserRouter>

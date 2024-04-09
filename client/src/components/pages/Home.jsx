@@ -1,21 +1,20 @@
-import React from 'react'
-import Footer from '../footer/Footer'
-import Banner from '../Home/Banner'
-import Benefit from '../Home/Benefits'
-import Services from '../Home/Services'
+import React from 'react';
+import Banner from '../Home/Banner';
+import Commitments from '../Home/Commitments';
+import About from '../Home/About'
+import Season from '../Home/Season';
+import Footer from '../footer/Footer';
 
 function Home() {
   return (
     <>
-      <div className='min-h-screen mt-16'>
       <Banner/>
-      <Benefit/>
-      <Services/>
-      </div>
-      <footer><Footer/></footer>
+      <Commitments/>
+      <About/>
+      <Season/>
+      <Footer/>
     </>
-
-  )
+  );
 }
 
-export default Home
+export default Home;

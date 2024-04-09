@@ -1,18 +1,20 @@
 import React from "react";
 import { MdAccessibilityNew, MdHail, MdLiquor, MdPrivateConnectivity } from 'react-icons/md';
-import benefit1 from '../../assets/images/SideBG.png';
+import benefit1 from '../../assets/images/set1.png';
+import benefit2 from '../../assets/images/set2.png';
 
-const Benefit = () => {
+const Commitments = () => {
     return (
         <div className="container mx-auto px-4 mt-10 mb-10" >
-            <div className="flex flex-col md:flex-row items-center justify-center gap-12">
-                <div className="md:w-1/3 mb-8 md:mr-2">
-                    <img src={benefit1} alt="tour" className="w-full rounded-lg shadow-lg" />
+            <div className="mb-8">
+                <h1 className="text-2xl md:text-4xl font-mono tracking-wider mb-12 text-center"> - Our Commitments - </h1>
+            </div>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                <div className="flex justify-center items-center gap-2 md:w-2/4 mb-4 md:mr-2">
+                    <img src={benefit1} alt="tour" className="w-[40%] rounded-bl-[120px] rounded-tr-[20px] h-[70%]" />
+                    <img src={benefit2} alt="tour" className="w-[40%] rounded-tr-[120px] rounded-bl-[20px]" />
                 </div>
-                <div className="md:w-1/2 text-center md:text-left gap-4">
-                    <div className="mb-8">
-                        <h2 className="text-3xl lg:text-4xl font-bold">Our Commitments</h2>
-                    </div>
+                <div className="md:w-1/2 text-center md:text-left gap-3">
                     <p className="text-lg lg:text-xl mb-12 text-justify">
                         Travel Diaries is dedicated to providing an enriching platform where users can preserve their travel memories and facilitate future adventures.
                     </p>
@@ -62,4 +64,4 @@ const Benefit = () => {
     );
 };
 
-export default Benefit;
+export default Commitments;
