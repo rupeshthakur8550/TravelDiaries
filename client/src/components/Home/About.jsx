@@ -5,7 +5,7 @@ const About = () => {
 
   return (
     <>
-      <section className="banner relative h-screen overflow-hidden bg-cover bg-center flex justify-center items-center m-2" style={{ backgroundImage: `url(${backgroundImage})`, height: '100vh' }}>
+      <section id='about' className="banner relative h-screen overflow-hidden bg-cover bg-center flex justify-center items-center m-2" style={{ backgroundImage: `url(${backgroundImage})`, height: '100vh' }}>
         <div className="container mx-auto">
           <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black to-transparent opacity-50"></div>
           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>

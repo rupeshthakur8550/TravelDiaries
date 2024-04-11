@@ -10,8 +10,8 @@ function Home() {
     <>
       <Banner/>
       <Commitments/>
-      <About/>
       <Season/>
+      <About/>
       <Footer/>
     </>
   );

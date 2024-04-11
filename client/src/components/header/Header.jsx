@@ -26,6 +26,15 @@ function Header() {
     }
   };
 
+  const scrollToAbout = () => {
+    const aboutSection = document.getElementById('about');
+    const offsetTop = aboutSection.offsetTop;
+    window.scrollTo({
+      top: offsetTop,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className='fixed top-0 left-0 right-0 bg-white shadow-lg z-50 m-2'>
       <Navbar className='border-b-2'>
@@ -101,6 +110,7 @@ function Header() {
             <NavLink
               to="#"
               className={({ isActive }) => `block py-2 pr-[1vw] pl-[1vw] duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold`}
+              onClick={scrollToAbout}
             >
               About
             </NavLink>
