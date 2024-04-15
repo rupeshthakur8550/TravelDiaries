@@ -10,19 +10,19 @@ const About = () => {
           <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black to-transparent opacity-50"></div>
           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>
           <div className="text-black text-justify md:text-center">
-            <h1 className="text-2xl md:text-4xl font-mono tracking-wider text-center mb-12"> - About Us - </h1>
+            <h1 className="text-2xl md:text-4xl font-mono tracking-wider text-center mb-8 mt-20"> - About Us - </h1>
             <p className="text-lg lg:text-xl mx-8 mb-4 ">
               Welcome to Travel Diaries, your ultimate destination for discovering the world through the eyes of fellow travelers.
             </p>
             <p className="text-lg lg:text-xl mx-8 mb-4">
               At Travel Diaries, we aim to inspire, connect, and empower travelers globally. Our platform fosters a vibrant community where adventurers of all levels can share experiences, insights, and adventures. Whether you're a seasoned explorer or a first-time adventurer, Travel Diaries is your guide to exploring the world with confidence and curiosity.
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-4 text-center m-8">
+            <div className="flex flex-wrap justify-center items-center gap-8 text-center m-8">
               <div className="review-item py-4 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto">
-                <p className="text-white mb-2">Authentic travel information.</p>
+                <p className="text-white mb-2">Authentic and Verified travel information.</p>
               </div>
               <div className="review-item py-4 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto">
-                <p className="text-white mb-2">Supportive community of travelers.</p>
+                <p className="text-white mb-2">Supportive and Engaging community of travelers.</p>
               </div>
               <div className="review-item py-4 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto">
                 <p className="text-white mb-2">Encouraging sustainable travel practices.</p>

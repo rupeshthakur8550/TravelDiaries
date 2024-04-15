@@ -156,6 +156,7 @@ const Reset = ({ onSwitchMode }) => {
                                     type="password"
                                     id='npassword'
                                     placeholder="********"
+                                    disabled={verifyValue === 'Verify' ? true : false}
                                 />
                             </Stack>
                             <Stack spacing={1}>
@@ -166,6 +167,7 @@ const Reset = ({ onSwitchMode }) => {
                                     type="password"
                                     id='cpassword'
                                     placeholder="********"
+                                    disabled={verifyValue === 'Verify' ? true : false}
                                 />
                             </Stack>
                         </Stack>
@@ -186,7 +188,7 @@ const Reset = ({ onSwitchMode }) => {
                         <Stack direction="row" spacing={2} justifyContent="center">
                         </Stack>
                         <Stack direction="row" spacing={2} justifyContent="center">
-                            <Typography>Remember..?</Typography>
+                            <Typography>Remember Credentials ..?</Typography>
                             <Typography
                                 onClick={() => onSwitchMode(ScreenMode.SIGN_IN)}
                                 fontWeight={600}

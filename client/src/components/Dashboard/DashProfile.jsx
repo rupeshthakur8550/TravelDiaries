@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Modal, TextInput, Textarea } from 'flowbite-react';
@@ -15,7 +15,7 @@ function DashProfile() {
     const [imageFile, setImageFile] = useState(null);
     const [imageFileUrl, setImageFileUrl] = useState(null);
     const [formData, setFormData] = useState({});
-    const [userEmail, setUserEmail] = useState(currentUser.email);
+    // const [userEmail, setUserEmail] = useState(currentUser.email);
     const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
     const [showdeleteModal, setdeleteShowModal] = useState(false);
     const [imageUploadError, setImageUploadError] = useState(null);
@@ -23,6 +23,7 @@ function DashProfile() {
     const [showVerifyModal, setShowVerifyModal] = useState(false);
     const [verifyValue, setVerifyValue] = useState('remove');
     const filePickerRefer = useRef();
+    const emailInputRef = useRef(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -35,8 +36,8 @@ function DashProfile() {
     };
 
     const handleEmailRemove = () => {
+        emailInputRef.current.value = ''; 
         setVerifyValue('Verify');
-        setUserEmail(null);
     };
 
     const handleEmailVerify = (e) => {
@@ -166,14 +167,13 @@ function DashProfile() {
                 <Textarea type='text' id='bio' placeholder='Bio' defaultValue={currentUser.bio || ''} onChange={handleChange} className='w-[90%]' />
                 <div className='flex justify-center items-center gap-2 w-[90%]' style={{ position: 'relative' }}>
                     <TextInput
+                        ref={emailInputRef}
                         onChange={handleChange}
-                        type='text'
+                        type='email'
                         id='email'
-                        value={userEmail === null ? '' : userEmail}
+                        placeholder='Email'
+                        defaultValue={currentUser.email || ''}
                         className='w-[100%]'
-                        inputprops={{
-                            disableUnderline: true,
-                        }}
                     />
                     <Typography
                         sx={{

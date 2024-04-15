@@ -28,7 +28,6 @@ const Login = ({ onSwitchMode }) => {
                 body: JSON.stringify({ email: formData.email }),
             });
             const data = await res.json();
-            console.log(data);
             if (!res.ok || data.success === false) {
                 setShowModal(false);
                 dispatch(signInFailure('User not found'));

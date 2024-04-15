@@ -4,14 +4,16 @@ import Commitments from '../Home/Commitments';
 import About from '../Home/About'
 import Season from '../Home/Season';
 import Footer from '../footer/Footer';
+import Contact from '../Home/Contact';
 
 function Home() {
   return (
     <>
       <Banner/>
       <Commitments/>
-      <Season/>
       <About/>
+      <Season/>
+      <Contact/>
       <Footer/>
     </>
   );

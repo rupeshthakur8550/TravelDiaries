@@ -126,25 +126,7 @@ const Signup = ({ onSwitchMode }) => {
 
             <Stack spacing={4}>
               <Stack spacing={2}>
-                <Stack spacing={1}>
-                  <Typography color={colors.grey[800]}>Full Name</Typography>
-                  <TextField
-                    onChange={handleChange}
-                    placeholder="fullname"
-                    id='name'
-                    type='text'
-                  />
-                </Stack>
-                <Stack spacing={1}>
-                  <Typography color={colors.grey[800]}>Username</Typography>
-                  <TextField
-                    onChange={handleChange}
-                    placeholder="username"
-                    id='username'
-                    type='text'
-                  />
-                </Stack>
-                <Stack spacing={1}>
+              <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Email</Typography>
                   <div className='flex justify-center items-center gap-2' style={{ position: 'relative' }}>
                     <TextField
@@ -172,12 +154,33 @@ const Signup = ({ onSwitchMode }) => {
                   </div>
                 </Stack>
                 <Stack spacing={1}>
+                  <Typography color={colors.grey[800]}>Full Name</Typography>
+                  <TextField
+                    onChange={handleChange}
+                    placeholder="fullname"
+                    id='name'
+                    type='text'
+                    disabled={verifyValue === 'Verify' ? true : false}
+                  />
+                </Stack>
+                <Stack spacing={1}>
+                  <Typography color={colors.grey[800]}>Username</Typography>
+                  <TextField
+                    onChange={handleChange}
+                    placeholder="username"
+                    id='username'
+                    type='text'
+                    disabled={verifyValue === 'Verify' ? true : false}
+                  />
+                </Stack>
+                <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Password</Typography>
                   <TextField
                     onChange={handleChange}
                     type='password'
                     id='password'
                     placeholder="********"
+                    disabled={verifyValue === 'Verify' ? true : false}
                   />
                 </Stack>
               </Stack>

@@ -88,8 +88,8 @@ export const forgetPassword = async (req, res, next) => {
         validUser.password = hashedPassword;
         await validUser.save();
         res.json('Password reset successfully.');
-        // res.status(200).json({ message: 'Password reset successfully.' });
     } catch (error) {
         next(error);
     }
 };
+

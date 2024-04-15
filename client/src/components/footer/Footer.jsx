@@ -3,6 +3,16 @@ import { Link } from 'react-router-dom'
 import Logo from '../../assets/images/Logo.svg'
 
 export default function Footer() {
+
+    const scrollToAbout = () => {
+        const aboutSection = document.getElementById('about');
+        const offsetTop = aboutSection.offsetTop;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+      };
+
     return (
         <footer className="bg-white border-y shadow-lg z-50 py-4">
             <div className="w-full max-w-8xl mx-auto">
@@ -26,7 +36,7 @@ export default function Footer() {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="#" className="hover:underline  hover:text-orange-700">
+                                    <Link to="#" className="hover:underline  hover:text-orange-700" onClick={scrollToAbout}>
                                         About
                                     </Link>
                                 </li>

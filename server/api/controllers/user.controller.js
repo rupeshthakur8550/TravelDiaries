@@ -2,6 +2,7 @@ import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 import User from '../models/user.model.js';
 import { sendEmail } from './otp.controller.js'
+import Query from '../models/queries.model.js';
 
 export const test = (req, res) => {
     res.json({ message: 'API is working' });
@@ -143,3 +144,17 @@ export const getUsername = async (req, res, next) => {
         next(error);
     }
 }
+
+export const queries = async (req, res, next) => {
+    const { name, email, message } = req.body;
+    if (!email || !message || !name || email === "" || message === "" || name === "") {
+        next(errorHandler(400, 'All Fileds are Required'));
+    }
+    const newquery = new Query({ name, email, message});
+    try {
+        await newquery.save();
+        res.status(200).json({ success: true, message: 'Message Added' });
+    } catch (error) {
+        next(error);
+    }
+};
