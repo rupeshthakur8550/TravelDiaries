@@ -56,7 +56,7 @@ export const updateUser = async (req, res, next) => {
                 return next(errorHandler(400, 'Enter Valid Date of Birth'));
             }
         }
-        
+
         const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
             $set: {
                 username,
@@ -68,7 +68,7 @@ export const updateUser = async (req, res, next) => {
                 mobileNo,
                 dateOfBirth,
                 verification: "verified",
-                profile_complete_status: mobileNo && mobileNo ? true : false
+                profile_complete_status: dateOfBirth && mobileNo && bio ? true : false
             },
         }, { new: true });
 
@@ -150,7 +150,7 @@ export const queries = async (req, res, next) => {
     if (!email || !message || !name || email === "" || message === "" || name === "") {
         next(errorHandler(400, 'All Fileds are Required'));
     }
-    const newquery = new Query({ name, email, message});
+    const newquery = new Query({ name, email, message });
     try {
         await newquery.save();
         res.status(200).json({ success: true, message: 'Message Added' });
@@ -158,3 +158,16 @@ export const queries = async (req, res, next) => {
         next(error);
     }
 };
+
+export const allUsers = async (req, res, next) => {
+    const searchQuery = req.query.search; // Extract search query from query parameters
+    const keyword = searchQuery ? {
+        $or: [
+            { name: { $regex: searchQuery, $options: "i" } },
+            { email: { $regex: searchQuery, $options: "i" } },
+        ],
+    } : {};
+    const users = await User.find(keyword).find({ _id: { $ne: req.user.id } });
+    res.send(users);
+}
+

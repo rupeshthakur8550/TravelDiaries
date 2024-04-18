@@ -7,15 +7,14 @@ import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { DatePicker } from 'antd';
 import { TextField, Typography } from '@mui/material';
-import { getDownloadURL, getStorage, uploadBytesResumable, ref} from 'firebase/storage';
-import { app } from '../../firebase.js'
+import { getDownloadURL, getStorage, uploadBytesResumable, ref } from 'firebase/storage';
+import { app } from '../../firebase.js';
 
 function DashProfile() {
     const { currentUser, error } = useSelector(state => state.user);
     const [imageFile, setImageFile] = useState(null);
     const [imageFileUrl, setImageFileUrl] = useState(null);
     const [formData, setFormData] = useState({});
-    // const [userEmail, setUserEmail] = useState(currentUser.email);
     const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
     const [showdeleteModal, setdeleteShowModal] = useState(false);
     const [imageUploadError, setImageUploadError] = useState(null);
@@ -36,7 +35,7 @@ function DashProfile() {
     };
 
     const handleEmailRemove = () => {
-        emailInputRef.current.value = ''; 
+        emailInputRef.current.value = '';
         setVerifyValue('Verify');
     };
 
@@ -117,7 +116,8 @@ function DashProfile() {
                 dispatch(updateSuccess(data));
                 setImageUploadError(null);
                 setUpdateUserSuccess("User's profile updated successfully");
-                setInterval(()=>navigate('/myposts'),1000);
+                setFormData({}); // Reset form data
+                setTimeout(() => navigate('/myposts'), 1000); // Navigate after a delay
             }
         } catch (error) {
             dispatch(updateFailure(error.message));
@@ -209,10 +209,10 @@ function DashProfile() {
                 </Button>
             </form >
             <div className='mb-20'>
-            <div className='text-red-600 flex justify-center mt-4'>
-                <span onClick={() => setdeleteShowModal(true)} className='cursor-pointer'>Delete Account</span>
-            </div>
-            {
+                <div className='text-red-600 flex justify-center mt-4'>
+                    <span onClick={() => setdeleteShowModal(true)} className='cursor-pointer'>Delete Account</span>
+                </div>
+                {
                     updateUserSuccess && (
                         <Alert color='success' className='mt-5 '>
                             {updateUserSuccess}
@@ -234,7 +234,7 @@ function DashProfile() {
                     )
                 }
             </div>
-            
+
             <Modal show={showdeleteModal} onClose={() => setdeleteShowModal(false)} popup size='md'>
                 <Modal.Header />
                 <Modal.Body>

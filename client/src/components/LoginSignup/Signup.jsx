@@ -70,7 +70,7 @@ const Signup = ({ onSwitchMode }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.username || !formData.email || !formData.password || !formData.name) {
-      console.log(formData.name);
+      // console.log(formData.name);
       return setErrorMessage('Please fill out all fields..');
     }
     try {
@@ -126,7 +126,7 @@ const Signup = ({ onSwitchMode }) => {
 
             <Stack spacing={4}>
               <Stack spacing={2}>
-              <Stack spacing={1}>
+                <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Email</Typography>
                   <div className='flex justify-center items-center gap-2' style={{ position: 'relative' }}>
                     <TextField

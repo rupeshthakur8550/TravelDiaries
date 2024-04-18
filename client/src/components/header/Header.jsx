@@ -2,10 +2,10 @@ import React from 'react'
 import { Avatar, Button, Dropdown, Navbar } from 'flowbite-react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import {signoutSuccess} from '../../redux/user/userSlice';
+import { signoutSuccess } from '../../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 
-function Header() {
+const Header = () => {
   const { currentUser } = useSelector(state => state.user);
   const path = useLocation().pathname;
   const dispatch = useDispatch();
@@ -57,7 +57,7 @@ function Header() {
                   to="/search"
                   className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
                 >
-                  Find
+                  Search
                 </NavLink>
                 <NavLink
                   to="/addPosts"
@@ -66,7 +66,7 @@ function Header() {
                   Upload
                 </NavLink>
                 <NavLink
-                  to="/#"
+                  to="/messages"
                   className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
                 >
                   Chats

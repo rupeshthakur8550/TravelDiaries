@@ -112,7 +112,7 @@ const Contact = () => {
                         {/* <TextInput type='text' id='username' placeholder='Username' onChange={handleChange} className='w-[90%]' /> */}
                         <TextInput type='email' id='email' placeholder='Email' onChange={handleChange} className='w-[90%]' />
                         {/* <TextInput type='text' id='subject' placeholder='Subject' onChange={handleChange} className='w-[90%]' /> */}
-                        <Textarea type='text' id='message' placeholder='Message' onChange={handleChange} className='w-[90%]' />
+                        <Textarea type='text' id='message' placeholder='Message' onChange={handleChange} className='w-[90%]' rows={2} />
                         <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[90%] font-mono'>
                             SUBMIT MESSAGE
                         </Button>

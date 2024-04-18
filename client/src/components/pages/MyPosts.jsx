@@ -8,7 +8,7 @@ function MyPosts() {
   const { currentUser, error } = useSelector(state => state.user);
   return (
     <>
-      <div className='md:w-[50%] lg:w-[25%] mx-auto pt-2 md:pt-14 mt-16'>
+      <div className='md:w-[50%] lg:w-[25%] mx-auto pt-2 md:pt-14 mt-20'>
         <div className='flex px-4 md:justify-center py-3 gap-6 md:gap-8 mb-1'>
           <img className="w-16 h-16 rounded-full" src={currentUser.profilePicture} alt="User Profile" />
           <div>
