@@ -1,12 +1,12 @@
 import { Avatar, Button, TextInput } from 'flowbite-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdSearch, MdCancel } from "react-icons/md";
 import { useChatState } from './Context/ChatProvider';
 import { Stack } from '@mui/material'
 import { BsPlusCircleDotted } from "react-icons/bs";
 import { useSelector } from 'react-redux';
 
-const MyChats = () => {
+const MyChats = ({ fetchAgain }) => {
     const { currentUser } = useSelector(state => state.user);
     const [searchValue, setSearchValue] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -66,6 +66,10 @@ const MyChats = () => {
             }
 
             const data = await res.json();
+
+            // Update the state of chats to include the newly selected user
+            setChats(prevChats => [data, ...prevChats]);
+
             setSelectedChat(data);
             setLoadingChat(false);
             setShowResults(false);
@@ -77,11 +81,12 @@ const MyChats = () => {
         }
     }
 
+
     const getSender = (loggedUser, users) => {
         if (users && users.length > 0) {
             const sender = users[0]._id === loggedUser?._id ? users[1] : users[0];
             return (
-                <div className="flex items-center h-10 p-3">
+                <div className="flex items-center h-10 pb-3 px-3">
                     <Avatar
                         alt={sender.username}
                         img={sender.profilePicture}
@@ -96,6 +101,26 @@ const MyChats = () => {
         }
     };
 
+    const fetchChats = async () => {
+        try {
+            const res = await fetch(`/api/chat/fetch`, {
+                method: 'GET',
+            });
+
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await res.json();
+            setChats(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchChats();
+    }, [fetchAgain]);
 
     const handleCancel = () => {
         setShowResults(false);
@@ -173,7 +198,7 @@ const MyChats = () => {
             <hr className="border-t-2 border-gray-300" />
             <div className="relative z-0" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
                 {chats ? (
-                    <Stack className='m-3 gap-2'>
+                    <div className='mt-4'>
                         {chats.map((chat) => (
                             <div
                                 onClick={() => setSelectedChat(chat)}
@@ -181,14 +206,14 @@ const MyChats = () => {
                                     }`}
                                 key={chat._id}
                             >
-                                <div className='m-1'>
+                                <div className='m-2'>
                                     {!chat.isGroupChat
                                         ? getSender(currentUser, chat.users)
                                         : chat.chatName}
                                 </div>
                             </div>
                         ))}
-                    </Stack>
+                    </div>
                 ) : (
                     <ChatLoading />
                 )}
