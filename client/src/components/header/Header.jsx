@@ -46,7 +46,7 @@ const Header = () => {
         {currentUser ? (
           <>
             <div className='flex justify-center items-center lg:pl-[30vh] md:pr-[11vh]'>
-              <div className='hidden md:flex justify-center items-center lg:gap-5 md:gap-0'>
+              <div className='hidden sm:flex justify-center items-center lg:gap-5 md:gap-0'>
                 <NavLink
                   to="/allposts"
                   className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
