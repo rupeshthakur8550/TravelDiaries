@@ -1,86 +1,58 @@
-import { Avatar, Button, TextInput } from 'flowbite-react';
 import React, { useEffect, useState } from 'react';
-import { MdSearch, MdCancel } from "react-icons/md";
-import { useChatState } from './Context/ChatProvider';
-import { Stack } from '@mui/material'
+import { MdSearch } from "react-icons/md";
+import { Avatar, Button, Modal, TextInput } from 'flowbite-react';
 import { BsPlusCircleDotted } from "react-icons/bs";
 import { useSelector } from 'react-redux';
+import SearchResults from './SearchResults';
+import { useChatState } from './Context/ChatProvider';
+import useUserSearchAndSelect from './useUserSearchAndSelect'; // Import the custom hook
 
 const MyChats = ({ fetchAgain }) => {
     const { currentUser } = useSelector(state => state.user);
-    const [searchValue, setSearchValue] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [showResults, setShowResults] = useState(false);
-    const [loadingChat, setLoadingChat] = useState(false);
+    const { searchValue, setSearchValue, searchResults, loading, handleSearch, handleSelectUser, showResults, setShowResults, handleCancel } = useUserSearchAndSelect();
     const { setSelectedChat, selectedChat, chats, setChats } = useChatState();
+    const [groupSearchValue, setGroupSearchValue] = useState('');
+    const [groupSearchResults, setGroupSearchResults] = useState([]);
+    const [groupLoading, setGroupLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [showGroupChatResults, setShowGroupChatResults] = useState(false);
 
-    const handleSearch = async () => {
-        if (!searchValue) {
-            console.log("Please enter something in the search");
+    const handleGroupChange = (e) => setGroupSearchValue(e.target.value);
+
+    const handleGroupSearch = async () => {
+        if (!groupSearchValue) {
+            console.log("Please enter something in the group search");
             return;
         }
 
         try {
-            setLoading(true);
-            const res = await fetch(`/api/user/search_user?search=${searchValue}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            });
-
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-
+            setGroupLoading(true);
+            const res = await fetch(`/api/user/search_user?search=${groupSearchValue}`);
+            if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
-            if (chats && !chats.find((c) => c._id === data._id)) {
-                setChats([data, ...chats]);
-            }
-            setSearchResults(data);
-            setShowResults(true);
+            setGroupSearchResults(data);
+            setShowGroupChatResults(true);
         } catch (error) {
-            console.error('Error fetching data:', error);
-            // Provide user feedback
-            // Possibly set an error state
+            console.error('Error fetching group data:', error);
         } finally {
-            setLoading(false);
+            setGroupLoading(false);
         }
     };
 
-    const handleChange = (e) => {
-        setSearchValue(e.target.value);
-    };
-
-    const handleSelectUser = async (userId) => {
-        try {
-            setLoadingChat(true);
-
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: userId }),
-            });
-
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
+    useEffect(() => {
+        const fetchChats = async () => {
+            try {
+                const res = await fetch(`/api/chat/fetch`);
+                if (!res.ok) throw new Error('Network response was not ok');
+                const data = await res.json();
+                setChats(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
+        };
 
-            const data = await res.json();
-
-            // Update the state of chats to include the newly selected user
-            setChats(prevChats => [data, ...prevChats]);
-
-            setSelectedChat(data);
-            setLoadingChat(false);
-            setShowResults(false);
-
-        } catch (error) {
-            console.log(error.message);
-            // Provide user feedback
-            // Possibly set an error state
-        }
-    }
-
+        fetchChats();
+    }, [fetchAgain]);
 
     const getSender = (loggedUser, users) => {
         if (users && users.length > 0) {
@@ -101,127 +73,130 @@ const MyChats = ({ fetchAgain }) => {
         }
     };
 
-    const fetchChats = async () => {
-        try {
-            const res = await fetch(`/api/chat/fetch`, {
-                method: 'GET',
-            });
-
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await res.json();
-            setChats(data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchChats();
-    }, [fetchAgain]);
-
-    const handleCancel = () => {
-        setShowResults(false);
-        setSearchResults([]);
-    };
-
     return (
-        <div className='md:w-[30%] w-[90%] border-4 border-green-300 rounded-lg relative'>
-            <div className='flex justify-around items-baseline'>
-                <h1 className='text-center mt-2 font-semibold font-mono text-xl'>My Chats</h1>
-                <Button color='green' className='m-2 h-9'>
-                    New Group Chat
-                    <BsPlusCircleDotted className="ml-2 h-5 w-5" />
-                </Button>
-            </div>
-            <hr className="border-t-2 border-gray-300" />
-            <div className='flex items-baseline gap-2'>
-                <div className='flex-col ml-4 w-[70%] relative'>
-
-                    <TextInput
-                        type="text"
-                        placeholder="Search Users.."
-                        icon={MdSearch}
-                        value={searchValue}
-                        onChange={handleChange}
-                        onFocus={() => setShowResults(true)}
-                        className="border-b w-[100%] my-2"
-                        style={{ height: "5vh", outline: "none" }}
-                    />
-                    {showResults && (
-                        <div className='my-1 absolute w-[100%] bg-white shadow-md rounded px-4 py-2 max-h-96 overflow-y-auto z-10'>
-                            <div className='flex justify-between items-center'>
-                                <h1 className={`text-sm font-medium truncate lg:block py-1 pr-4 pl-3`} style={{ fontVariant: "petite-caps" }}>
-                                    Search Results :
-                                </h1>
-                                <button onClick={handleCancel}><MdCancel className='w-5 h-5' /></button>
-                            </div>
-                            <hr className="my-2 border-t-2 border-gray-300" />
-                            {searchResults.length > 0 ? (
-                                <ul className="flex flex-col gap-1 my-2">
-                                    {searchResults.map((result) => (
-                                        <li key={result._id} className="flex items-center cursor-pointer bg-gray-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg" onClick={() => handleSelectUser(result._id)}>
-                                            <Avatar
-                                                alt='user'
-                                                img={result.profilePicture}
-                                                rounded
-                                                className="w-10 h-6 mr-2"
-                                            />
-                                            <span>{result.username}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <ul className="flex flex-col gap-4">
-                                    <li className="flex items-center">
-                                        <span> No User Found </span>
-                                    </li>
-                                </ul>
-                            )}
-                        </div>
-                    )}
-
+        <>
+            <div className='md:w-[30%] w-[90%] border-4 border-green-300 rounded-lg relative'>
+                <div className='flex justify-around items-baseline'>
+                    <h1 className='text-center mt-2 font-semibold font-mono text-xl'>My Chats</h1>
+                    <Button color='green' className='m-2 h-9' onClick={() => setShowModal(true)}>
+                        New Group Chat
+                        <BsPlusCircleDotted className="ml-2 h-5 w-5" />
+                    </Button>
                 </div>
-
-                <Button
-                    type="button"
-                    className="mr-4 h-[5vh]"
-                    gradientDuoTone="greenToBlue"
-                    onClick={handleSearch}
-                    disabled={loading}
-                >
-                    {loading ? 'Searching...' : 'Search'}
-                </Button>
-            </div>
-            <hr className="border-t-2 border-gray-300" />
-            <div className="relative z-0" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
-                {chats ? (
-                    <div className='mt-4'>
-                        {chats.map((chat) => (
-                            <div
-                                onClick={() => setSelectedChat(chat)}
-                                className={`cursor-pointer ${selectedChat === chat ? 'bg-lime-400 bg-opacity-40 rounded-md backdrop-filter backdrop-blur-lg' : ''
-                                    }`}
-                                key={chat._id}
-                            >
-                                <div className='m-2'>
-                                    {!chat.isGroupChat
-                                        ? getSender(currentUser, chat.users)
-                                        : chat.chatName}
-                                </div>
-                            </div>
-                        ))}
+                <hr className="border-t-2 border-gray-300" />
+                <div className='flex items-baseline gap-2'>
+                    <div className='flex-col ml-4 w-[70%] relative'>
+                        <TextInput
+                            type="text"
+                            placeholder="Search Users.."
+                            icon={MdSearch}
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            onFocus={() => setShowResults(true)}
+                            className="border-b w-[100%] my-2"
+                            style={{ height: "5vh", outline: "none" }}
+                        />
+                        {showResults && (
+                            <SearchResults
+                                results={searchResults}
+                                handleSelectUser={handleSelectUser}
+                                handleCancel={handleCancel}
+                            />
+                        )}
                     </div>
-                ) : (
-                    <ChatLoading />
-                )}
+                    <Button
+                        type="button"
+                        className="mr-4 h-[5vh]"
+                        gradientDuoTone="greenToBlue"
+                        onClick={handleSearch}
+                        disabled={loading}
+                    >
+                        {loading ? 'Searching...' : 'Search'}
+                    </Button>
+                </div>
+                <hr className="border-t-2 border-gray-300" />
+                <div className="relative z-0" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
+                    {chats ? (
+                        <div className='mt-4'>
+                            {chats.map((chat) => (
+                                <div
+                                    onClick={() => setSelectedChat(chat)}
+                                    className={`cursor-pointer ${selectedChat === chat ? 'bg-lime-400 bg-opacity-40 rounded-md backdrop-filter backdrop-blur-lg' : ''
+                                        }`}
+                                    key={chat._id}
+                                >
+                                    <div className='m-2'>
+                                        {!chat.isGroupChat
+                                            ? getSender(currentUser, chat.users)
+                                            : chat.chatName}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <ChatLoading />
+                    )}
+                </div>
             </div>
-
-        </div>
+            <Modal show={showModal} onClose={() => setShowModal(false)} popup size='md'>
+                <Modal.Header />
+                <Modal.Body>
+                    <div className="text-center">
+                        <h3 className='mb-5 text-lg text-gray-900 font-semibold'>- Create Group Chat -</h3>
+                        <div className='mb-5 flex-col flex justify-center items-center gap-1'>
+                            <TextInput
+                                type='text'
+                                id='groupname'
+                                placeholder="Enter Group-Chat-Name"
+                                size="small"
+                                className='w-[80%]'
+                            />
+                            <div className='flex items-baseline gap-2'>
+                                <div className='flex-col ml-4 w-[70%] relative'>
+                                    <TextInput
+                                        type="text"
+                                        placeholder="Search Users.."
+                                        icon={MdSearch}
+                                        value={groupSearchValue}
+                                        onChange={handleGroupChange}
+                                        onFocus={() => setShowGroupChatResults(true)}
+                                        className="border-b w-[100%] my-2"
+                                        style={{ height: "5vh", outline: "none" }}
+                                    />
+                                    {showGroupChatResults && (
+                                        <SearchResults
+                                            results={groupSearchResults}
+                                            handleSelectUser={handleSelectUser}
+                                            handleCancel={() => setShowGroupChatResults(false)}
+                                        />
+                                    )}
+                                </div>
+                                <Button
+                                    type="button"
+                                    className="mr-4 h-[5vh]"
+                                    gradientDuoTone="greenToBlue"
+                                    onClick={handleGroupSearch}
+                                    disabled={groupLoading}
+                                >
+                                    {groupLoading ? 'Searching...' : 'Search'}
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="flex justify-center">
+                            <Button
+                                color='green'
+                                gradientDuoTone="purpleToPink"
+                                onClick={() => { setShowModal(false); }}
+                            >
+                                Create
+                            </Button>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
+        </>
 
     );
-}
+};
 
 export default MyChats;
