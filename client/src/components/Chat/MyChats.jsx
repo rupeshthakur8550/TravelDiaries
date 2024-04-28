@@ -42,7 +42,9 @@ const MyChats = ({ fetchAgain }) => {
     useEffect(() => {
         const fetchChats = async () => {
             try {
-                const res = await fetch(`/api/chat/fetch`);
+                const res = await fetch(`/api/chat/fetch`, {
+                    method: 'GET',
+                });
                 if (!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
                 setChats(data);
@@ -58,7 +60,7 @@ const MyChats = ({ fetchAgain }) => {
         if (users && users.length > 0) {
             const sender = users[0]._id === loggedUser?._id ? users[1] : users[0];
             return (
-                <div className="flex items-center h-10 pb-3 px-3">
+                <div className="flex items-center h-10 px-3">
                     <Avatar
                         alt={sender.username}
                         img={sender.profilePicture}
@@ -117,7 +119,7 @@ const MyChats = ({ fetchAgain }) => {
                 <hr className="border-t-2 border-gray-300" />
                 <div className="relative z-0" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
                     {chats ? (
-                        <div className='mt-4'>
+                        <div >
                             {chats.map((chat) => (
                                 <div
                                     onClick={() => setSelectedChat(chat)}

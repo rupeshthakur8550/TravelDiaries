@@ -7,7 +7,7 @@ const useUserSearchAndSelect = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const { setSelectedChat, setChats } = useChatState(); // Assuming you have this state management hook
+    const { setSelectedChat, setChats } = useChatState();
 
     const handleSearch = async () => {
         if (!searchValue) {
@@ -17,7 +17,10 @@ const useUserSearchAndSelect = () => {
 
         try {
             setLoading(true);
-            const res = await fetch(`/api/user/search_user?search=${searchValue}`);
+            const res = await fetch(`/api/user/search_user?search=${searchValue}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
             if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
             setSearchResults(data);

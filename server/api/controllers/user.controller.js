@@ -10,7 +10,7 @@ export const test = (req, res) => {
 
 export const updateUser = async (req, res, next) => {
     try {
-        let { password, username, name, mobileNo, dateOfBirth, bio } = req.body;
+        const { password, username, name, mobileNo, dateOfBirth, bio } = req.body;
 
         if (req.user.id != req.params.userId) {
             return next(errorHandler(400, 'You are not allowed to update this user'));
