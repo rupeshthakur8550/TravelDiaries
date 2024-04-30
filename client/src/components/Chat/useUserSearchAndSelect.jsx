@@ -11,7 +11,6 @@ const useUserSearchAndSelect = () => {
 
     const handleSearch = async () => {
         if (!searchValue) {
-            console.log("Please enter something in the search");
             return;
         }
 

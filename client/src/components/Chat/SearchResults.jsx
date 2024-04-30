@@ -1,12 +1,10 @@
-// SearchResults.jsx
-
 import React from 'react';
 import { MdCancel } from "react-icons/md";
 import { Avatar } from 'flowbite-react';
 
 const SearchResults = ({ results, handleSelectUser, handleCancel }) => {
     return (
-        <div className='my-1 absolute w-[100%] bg-white shadow-md rounded px-4 py-2 max-h-96 overflow-y-auto z-10'>
+        <div className='my-1 absolute w-[100%] bg-white shadow-md rounded px-4  py-2 max-h-96 overflow-y-auto z-10'>
             <div className='flex justify-between items-center'>
                 <h1 className={`text-sm font-medium truncate lg:block py-1 pr-4 pl-3`} style={{ fontVariant: "petite-caps" }}>
                     Search Results :
