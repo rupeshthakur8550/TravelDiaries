@@ -83,7 +83,6 @@ const About = () => {
             ></path>
           </svg>
         </div>
-
       </section>
     </>
   );

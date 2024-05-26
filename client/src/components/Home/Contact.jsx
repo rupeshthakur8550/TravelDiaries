@@ -1,133 +1,113 @@
-import React, { useState } from 'react'
-import { TextInput, Button, Textarea, Dropdown } from 'flowbite-react'
-import backgroundImage from '../../assets/images/Bkg2.png';
-import { MdEmail, MdPhone } from 'react-icons/md';
+import { Button, Label, TextInput, Textarea } from 'flowbite-react';
+import React, { useState } from 'react';
 
 const Contact = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        username: '',
-        email: '',
-        subject: '',
-        query: ''
-    });
+    const [formData, setFormData] = useState({});
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value });
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('/api/user/contact', {
+            const res = await fetch('/api/contact/addcontact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
             const data = await res.json();
-            if (!res.ok || data.success === false) {
-                console.log(data.message);
-            } else {
-                console.log(data.message);
+            if (!res.ok) {
+                return console.log(data.message);
             }
+            console.log("contact details are added")
         } catch (error) {
-            console.log(error);
+            console.log("Internal Server Error")
         }
     }
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-    };
-
     return (
-        <section id='contact' className="banner relative h-screen overflow-hidden bg-cover bg-center m-2 z-50" style={{ backgroundImage: `url(${backgroundImage})`, height: '100vh', display: 'flow', alignContent: 'center' }}>
-            <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black to-transparent opacity-50"></div>
-            <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-
-            <div className="absolute top-0 left-0 w-full overflow-hidden line-height-0 transform rotate-0" style={{ bottom: 0, left: 0 }}>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 1200 120"
-                    preserveAspectRatio="none"
-                    className="relative block w-[calc(121% + 1.3px)] md:h-14 md:w-[100%] h-[72px]"
-                >
-                    <path
-                        d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-                        opacity=".25"
-                        className="shape-fill"
-                        fill="#FFFFFF"
-                    ></path>
-                    <path
-                        d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-                        opacity=".5"
-                        className="shape-fill"
-                        fill="#FFFFFF"
-                    ></path>
-                    <path
-                        d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-                        className="shape-fill"
-                        fill="#FFFFFF"
-                    ></path>
-                </svg>
-            </div>
-
-            <div className="absolute bottom-0 left-0 w-full overflow-hidden line-height-0 transform rotate-180" style={{ bottom: 0, left: 0 }}>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 1200 120"
-                    preserveAspectRatio="none"
-                    className="relative block w-[calc(121% + 1.3px)] md:h-14 md:w-[100%] h-[72px]"
-                >
-                    <path
-                        d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-                        opacity=".25"
-                        className="shape-fill"
-                        fill="#FFFFFF"
-                    ></path>
-                    <path
-                        d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-                        opacity=".5"
-                        className="shape-fill"
-                        fill="#FFFFFF"
-                    ></path>
-                    <path
-                        d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-                        className="shape-fill"
-                        fill="#FFFFFF"
-                    ></path>
-                </svg>
-            </div>
-
-            <h1 className="text-2xl md:text-4xl font-mono tracking-wider text-center my-10"> - Reach Us Out - </h1>
-
-            <div className="text-white text-justify md:text-center">
-                <p className="mx-5 text-xl font-mono">
-                    Our platform offers a space for travelers to share experiences and memories, fostering a community where all can contribute.
-                </p>
-                <p className='mx-5 text-lg font-mono'>
-                    Feel free to reach out to us with any inquiries, feedback, or collaboration opportunities. We're excited to hear from you!
-                </p>
-            </div>
-
-            <div className='md:flex flex-row justify-evenly items-center m-5 mt-10 gap-5'>
-                <div className='md:w-[40%] backdrop-filter backdrop-blur-0 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto'>
-                    <form className='flex flex-col items-center gap-4 mt-10 mb-10' onSubmit={handleSubmit}>
-                        <TextInput type='text' id='name' placeholder='Full Name' onChange={handleChange} className='w-[90%]' />
-                        {/* <TextInput type='text' id='username' placeholder='Username' onChange={handleChange} className='w-[90%]' /> */}
-                        <TextInput type='email' id='email' placeholder='Email' onChange={handleChange} className='w-[90%]' />
-                        {/* <TextInput type='text' id='subject' placeholder='Subject' onChange={handleChange} className='w-[90%]' /> */}
-                        <Textarea type='text' id='message' placeholder='Message' onChange={handleChange} className='w-[90%]' rows={2} />
-                        <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[90%] font-mono'>
-                            SUBMIT MESSAGE
-                        </Button>
-                    </form>
+        <>
+            <section id='contact' className="banner relative overflow-hidden bg-cover bg-center flex justify-center items-center m-2">
+                <div className="container mx-auto mt-10">
+                    <div className="text-gray-800 text-justify md:text-center">
+                        <h1 className="text-2xl md:text-4xl font-mono tracking-wider text-center mb-8"> - Contact Us - </h1>
+                        <p className="text-lg lg:text-xl mx-8 mb-6 text-justify">
+                            We're dedicated to providing exceptional customer service and support. If you have any questions, feedback, or inquiries, don't hesitate to reach out – we're here to help! You can get in touch with us through the contact details below or by filling out the form. Whether you're looking for assistance, have a suggestion, or simply want to say hello, we value your input and strive to address all inquiries promptly and efficiently. Your satisfaction is our top priority, and we're committed to ensuring your experience with us is nothing short of excellent.
+                        </p>
+                        <div className="flex flex-wrap justify-center items-center text-center m-8 mx-auto md:text-right">
+                            <div className="md:w-1/2 w-full mt-5 mx-auto text-center">
+                                <form className="w-[90%] md:w-[60%] py-4 px-3 mx-auto flex flex-col text-left gap-3">
+                                    <div>
+                                        <Label value='Your Name' />
+                                        <TextInput
+                                            type='text'
+                                            placeholder='Full Name'
+                                            id='name'
+                                            onChange={handleChange}
+                                            className='mt-2'
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label value='Your Email' />
+                                        <TextInput
+                                            type='email'
+                                            placeholder='Email'
+                                            id='email'
+                                            onChange={handleChange}
+                                            className='mt-2'
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label value='Your Contact No' />
+                                        <TextInput
+                                            type='Number'
+                                            placeholder='Phone No.'
+                                            id='phone'
+                                            onChange={handleChange}
+                                            className='mt-2'
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label value='Your Message' />
+                                        <Textarea
+                                            type='text'
+                                            placeholder='Message'
+                                            id='message'
+                                            onChange={handleChange}
+                                            className='mt-2'
+                                            rows={3}
+                                        />
+                                    </div>
+                                    <Button gradientDuoTone="purpleToPink" outline onClick={handleSubmit}>
+                                        Submit
+                                    </Button>
+                                </form>
+                            </div>
+                            <div className="md:w-1/2 w-full mt-5 mx-auto text-center">
+                                <div className="w-[90%] py-4 px-3 mx-auto text-center font-semibold">
+                                    <p className="text-black mb-4 text-justify font-semibold mx-auto">
+                                        Have a question or need assistance? Feel free to reach out to us!
+                                    </p>
+                                    <p className="text-black mb-4 text-justify mx-auto">
+                                        You can contact us via email at <a href="mailto:info@foodspace.com" className="text-blue-600 hover:underline">info@traveldiaries.com</a>. Our team is dedicated to responding promptly to all inquiries and feedback.
+                                    </p>
+                                    <p className="text-black mb-4 text-justify mx-auto">
+                                        Prefer speaking with us directly? Give us a call at <a href="tel:+1234567890" className="text-blue-600 hover:underline">+91-0000000000</a>. Our friendly staff are ready to assist you with any questions or concerns you may have.
+                                    </p>
+                                    <p className="text-black mb-4 text-justify mx-auto">
+                                        If you're in the area, we welcome you to visit our office located at 123 Main Street, City, Country. Our doors are always open, and we'd love to meet you in person!
+                                    </p>
+                                    <p className="text-black mb-4 text-justify mx-auto">
+                                        Whether it's a query about our services, feedback on your experience, or simply to say hello, we're here to listen and assist in any way we can. We value your input and strive to make your experience with Food Space as enjoyable and seamless as possible.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="review-item py-4 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto">
-                    <p className="text-white mb-2">You can contact using below details:</p>
-                    <p className="text-white mb-2 flex"><MdEmail className='w-6 h-6' /> traveldiaries@gmail.com</p>
-                    <p className="text-white mb-2 flex"><MdPhone className='w-6 h-6' /> +91-0000000000</p>
-                    <p className="text-white mb-2">Address: xyz building, abc, Maharashtra</p>
-                </div>
-            </div>
+            </section>
+        </>
+    );
+};
 
-        </section>
-    )
-}
-
-export default Contact
+export default Contact;
