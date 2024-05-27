@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Avatar, Button, Dropdown, Navbar } from 'flowbite-react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { signoutSuccess } from '../../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 
 const Header = () => {
   const { currentUser } = useSelector(state => state.user);
+  const [headerValue, setHeaderValue] = useState(currentUser ? '' : 'Home');
+  const [linkValue, setLinkValue] = useState(currentUser ? '/allposts' : '/');
   const path = useLocation().pathname;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSignout = async () => {
     try {
@@ -26,13 +29,20 @@ const Header = () => {
     }
   };
 
-  const scrollToAbout = () => {
-    const aboutSection = document.getElementById('about');
-    const offsetTop = aboutSection.offsetTop;
-    window.scrollTo({
-      top: offsetTop,
-      behavior: 'smooth'
-    });
+  const handleDropdownItemClick = (value, link) => {
+    setHeaderValue(value);
+    setLinkValue(link);
+    navigate(link);
+  };
+
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      window.scrollTo({
+        top: section.offsetTop,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
@@ -100,22 +110,58 @@ const Header = () => {
             </div>
           </>
         ) : (
-          <div className='flex gap-3'>
+          <div className='flex flex-wrap sm:gap-3 items-center'>
             <NavLink
               to="/"
-              className={({ isActive }) => `block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold`}
+              className={({ isActive }) => `block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold hidden sm:block`}
+              onClick={() => scrollToSection('home')}
             >
               Home
             </NavLink>
             <NavLink
               to="#"
-              className={({ isActive }) => `block py-2 pr-[1vw] pl-[1vw] duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold`}
-              onClick={scrollToAbout}
+              className={({ isActive }) => `block py-2 pr-[1vw] pl-[1vw] duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold hidden sm:block`}
+              onClick={() => scrollToSection('about')}
             >
               About
             </NavLink>
+            <NavLink
+              to="#"
+              className={({ isActive }) => `block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold mr-2 md:mr-3 hidden sm:block`}
+              onClick={() => scrollToSection('contact')}
+            >
+              Contact Us
+            </NavLink>
+            <NavLink
+              to={linkValue}
+              className={({ isActive }) => `block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold mr-2 md:mr-3 block sm:hidden`}
+            >
+              {headerValue}
+            </NavLink>
+            <div className='block sm:hidden mr-4'>
+              <Dropdown inline>
+                <Dropdown.Item className='text-md' onClick={() => {
+                  scrollToSection('home');
+                  handleDropdownItemClick('Home', '/');
+                }}>
+                  Home
+                </Dropdown.Item>
+                <Dropdown.Item className='text-md' onClick={() => {
+                  scrollToSection('about');
+                  handleDropdownItemClick('About', '#');
+                }}>
+                  About
+                </Dropdown.Item>
+                <Dropdown.Item className='text-md' onClick={() => {
+                  scrollToSection('contact');
+                  handleDropdownItemClick('Contact Us', '#');
+                }}>
+                  Contact Us
+                </Dropdown.Item>
+              </Dropdown>
+            </div>
             <Link to="/signin">
-              <Button gradientDuoTone="pinkToOrange" outline>
+              <Button gradientDuoTone="purpleToPink" outline>
                 Sign In
               </Button>
             </Link>

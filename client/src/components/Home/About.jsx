@@ -1,11 +1,12 @@
 import React from 'react';
 import backgroundImage from '../../assets/images/Bkg1.png';
+import { FaMapMarkerAlt, FaUsers, FaLeaf } from 'react-icons/fa';
 
 const About = () => {
 
   return (
     <>
-      <section id='about' className="banner relative h-screen overflow-hidden bg-cover bg-center flex justify-center items-center m-2" style={{ backgroundImage: `url(${backgroundImage})`, height: '100vh' }}>
+      <section id='about' className="banner relative overflow-hidden bg-cover bg-center flex justify-center items-center m-2  h-[205vh] md:h-[130vh] " style={{ backgroundImage: `url(${backgroundImage})` }}>
         <div className="container mx-auto">
           <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black to-transparent opacity-50"></div>
           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>
@@ -14,18 +15,30 @@ const About = () => {
             <p className="text-lg lg:text-xl mx-8 mb-4 ">
               Welcome to Travel Diaries, your ultimate destination for discovering the world through the eyes of fellow travelers.
             </p>
-            <p className="text-lg lg:text-xl mx-8 mb-4">
+            <p className="text-lg lg:text-xl mx-8 mb-2 text-justify">
               At Travel Diaries, we aim to inspire, connect, and empower travelers globally. Our platform fosters a vibrant community where adventurers of all levels can share experiences, insights, and adventures. Whether you're a seasoned explorer or a first-time adventurer, Travel Diaries is your guide to exploring the world with confidence and curiosity.
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-8 text-center m-8">
-              <div className="review-item py-4 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto">
-                <p className="text-white mb-2">Authentic and Verified travel information.</p>
+            <div className="container mx-auto px-4 py-16 flex flex-col gap-8 md:flex-row md:gap-12">
+              <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
+                <FaMapMarkerAlt className="text-4xl text-primary" /> {/* Replace with your desired color class */}
+                <h3 className="text-xl font-medium mb-2">Authentic & Trustworthy Travel Content</h3>
+                <p className="text-gray-700">
+                  TravelDiaries empowers travelers to share unfiltered experiences, honest reviews, and practical tips. Our verification process ensures reliable information, helping you avoid tourist traps and make informed decisions.
+                </p>
               </div>
-              <div className="review-item py-4 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto">
-                <p className="text-white mb-2">Supportive and Engaging community of travelers.</p>
+              <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
+                <FaUsers className="text-4xl text-primary" /> {/* Replace with your desired color class */}
+                <h3 className="text-xl font-medium mb-2">Vibrant Community of Travel Enthusiasts</h3>
+                <p className="text-gray-700">
+                  Connect with fellow globetrotters, share travel tips, ask questions, and discover hidden gems. Build lasting travel connections and collaborate on itineraries for unforgettable trips.
+                </p>
               </div>
-              <div className="review-item py-4 bg-black bg-opacity-20 rounded-lg shadow-md px-6 w-full sm:w-auto">
-                <p className="text-white mb-2">Encouraging sustainable travel practices.</p>
+              <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
+                <FaLeaf className="text-4xl text-primary" /> {/* Replace with your desired color class */}
+                <h3 className="text-xl font-medium mb-2">Championing Sustainable Travel</h3>
+                <p className="text-gray-700">
+                  TravelDiaries promotes eco-friendly practices and responsible exploration. Discover eco-conscious destinations, activities, and tips on minimizing waste, respecting local cultures, and supporting responsible businesses.
+                </p>
               </div>
             </div>
           </div>

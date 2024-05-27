@@ -46,57 +46,57 @@ const SignInPage = () => {
   };
   return (
     <div className='mt-16'>
-    <Grid container className='p-[2vh] md:p-[6vh] flex justify-center items-center'>
-      <Grid item xs={12} md={6} lg={4} className='relative pr-[1vw] pl-[1vw] px-5 py-5'>
-        {currMode === ScreenMode.SIGN_IN ? (
-          <SigninForm onSwitchMode={onSwitchMode} />
-        ) : (currMode === ScreenMode.SIGN_UP ? (
-          <SignupForm onSwitchMode={onSwitchMode} />
-        ) : <ResetpassForm onSwitchMode={onSwitchMode} />)}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: left,
-            right: right,
-            width: `${width}%`,
+      <Grid container className='p-[2vh] md:p-[6vh] flex justify-center items-center'>
+        <Grid item xs={12} md={6} lg={4} className='relative pr-[1vw] pl-[1vw] px-5 py-5'>
+          {currMode === ScreenMode.SIGN_IN ? (
+            <SigninForm onSwitchMode={onSwitchMode} />
+          ) : (currMode === ScreenMode.SIGN_UP ? (
+            <SignupForm onSwitchMode={onSwitchMode} />
+          ) : <ResetpassForm onSwitchMode={onSwitchMode} />)}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: left,
+              right: right,
+              width: `${width}%`,
+              height: '100%',
+              bgcolor: colors.grey[800],
+              transition: 'all 1s ease-in-out',
+              zIndex: 0,
+            }}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={8}
+          className='relative hidden lg:block'
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            flex: '1 0 100%',
             height: '100%',
-            bgcolor: colors.grey[800],
-            transition: 'all 1s ease-in-out',
-            zIndex: 0,
+            paddingBottom: '32.25%'
           }}
-        />
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: left,
+              right: right,
+              width: `${width}%`,
+              height: '100%',
+              bgcolor: colors.grey[800],
+              transition: 'all 1s ease-in-out',
+              zIndex: 0,
+            }}
+          />
+        </Grid>
       </Grid>
-      <Grid
-        item
-        xs={8}
-        className='relative hidden lg:block'
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          flex: '1 0 100%',
-          height: '100%',
-          paddingBottom: '32.25%'
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: left,
-            right: right,
-            width: `${width}%`,
-            height: '100%',
-            bgcolor: colors.grey[800],
-            transition: 'all 1s ease-in-out',
-            zIndex: 0,
-          }}
-        />
-      </Grid>
-    </Grid>
-    <footer><Footer/></footer>
+      <footer><Footer /></footer>
     </div>
   );
 };

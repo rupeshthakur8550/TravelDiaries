@@ -7,7 +7,7 @@ import Logo from '../../assets/images/Logo.svg'
 const FooterS = () => {
 
     return (
-        <Footer container className='border border-t-8 border-yellow-300 bg-gray-900'>
+        <Footer container className='border border-t-8 border-orange-300 bg-gray-900'>
             <div className='w-full mx-auto text-white'>
                 <div className='grid w-full justify-between items-center sm:flex md:grid-cols-1'>
                     <div className='my-5'>

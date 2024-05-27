@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 function Banner() {
   return (
     <>
-      <section className="banner relative h-screen overflow-hidden bg-cover bg-center flex justify-center items-center m-2" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <section id='home' className="banner relative h-screen overflow-hidden bg-cover bg-center flex justify-center items-center m-2" style={{ backgroundImage: `url(${backgroundImage})` }}>
         <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black to-transparent opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>
         <div className="banner-content text-center text-white flex flex-col justify-center">
@@ -29,7 +29,7 @@ function Banner() {
             </Button>
           </Link>
         </div>
-        <div className="custom-shape-divider-bottom-1712569784 absolute bottom-0 left-0 w-full overflow-hidden line-height-0 transform rotate-180" style={{bottom: 0, left: 0}}>
+        <div className="custom-shape-divider-bottom-1712569784 absolute bottom-0 left-0 w-full overflow-hidden line-height-0 transform rotate-180" style={{ bottom: 0, left: 0 }}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1200 120"
