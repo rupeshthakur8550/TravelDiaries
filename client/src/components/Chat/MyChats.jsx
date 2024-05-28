@@ -7,7 +7,7 @@ import SearchResults from './SearchResults';
 import { useChatState } from './Context/ChatProvider';
 import useUserSearchAndSelect from './useUserSearchAndSelect';
 
-const MyChats = ({ fetchAgain }) => {
+const MyChats = ({ fetchAgain, setFetchAgain }) => {
     const { currentUser } = useSelector(state => state.user);
     const { searchValue, setSearchValue, searchResults, loading, handleSearch, handleSelectUser, showResults, setShowResults, handleCancel } = useUserSearchAndSelect();
     const { setSelectedChat, selectedChat, chats, setChats } = useChatState();
@@ -27,6 +27,7 @@ const MyChats = ({ fetchAgain }) => {
                 });
                 if (!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
+                // console.log(data);
                 setChats(data);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -286,6 +287,7 @@ const MyChats = ({ fetchAgain }) => {
                                 onClick={(e) => {
                                     handleSubmit(e)
                                 }}
+                                outline
                             >
                                 Create
                             </Button>

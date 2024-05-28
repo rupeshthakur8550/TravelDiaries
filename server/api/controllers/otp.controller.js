@@ -95,7 +95,7 @@ export const sendMail = async (req, res, next) => {
                 const currentTime = new Date();
                 if (existingOTP.expiry < currentTime) {
                     return next(errorHandler(400, 'OTP is expired, please resend OTP.'));
-                }else{
+                } else {
                     return next(errorHandler(400, 'OTP is not expired, you can use the sent OTP.'));
                 }
             }
@@ -104,13 +104,13 @@ export const sendMail = async (req, res, next) => {
             if (await format(otp, email)) {
                 next(errorHandler(200, 'OTP sent successfully'));
             } else {
-                next(errorHandler(400, 'Something went wrong'));
+                return next(errorHandler(400, 'Something went wrong'));
             }
             const expiryTime = new Date();
             expiryTime.setMinutes(expiryTime.getMinutes() + 10);
             await OTP.create({ email, otp: hashedOTP, expiry: expiryTime });
         } catch (error) {
-            next(errorHandler(404,'Something went wrong'));
+            next(errorHandler(404, 'Something went wrong'));
         }
     } else {
         try {
@@ -133,7 +133,7 @@ export const sendMail = async (req, res, next) => {
                     return next(errorHandler(200, 'OTP has been reset and sent again.'));
                 }
             }
-            return next(errorHandler(404,'No OTP found or OTP is not expired.'));
+            return next(errorHandler(404, 'No OTP found or OTP is not expired.'));
         } catch (error) {
             next(error);
         }

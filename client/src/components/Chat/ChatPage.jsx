@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ChatBox from './ChatBox';
 import MyChats from './MyChats';
 import ChatProvider from './Context/ChatProvider'
 
 const ChatPage = () => {
+    const [fetchAgain, setFetchAgain] = useState(false);
     return (
         <div className='my-20 md:px-10 flex justify-center object-center w-full h-[77vh] gap-5'>
             <ChatProvider>
-                <MyChats />
-                <ChatBox />
+                <MyChats fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+                <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
             </ChatProvider>
         </div>
     );

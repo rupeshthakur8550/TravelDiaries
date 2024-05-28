@@ -22,21 +22,21 @@ const About = () => {
               <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
                 <FaMapMarkerAlt className="text-4xl text-primary" /> {/* Replace with your desired color class */}
                 <h3 className="text-xl font-medium mb-2">Authentic & Trustworthy Travel Content</h3>
-                <p className="text-gray-700">
+                <p className="text-gray-700 text-justify">
                   TravelDiaries empowers travelers to share unfiltered experiences, honest reviews, and practical tips. Our verification process ensures reliable information, helping you avoid tourist traps and make informed decisions.
                 </p>
               </div>
               <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
                 <FaUsers className="text-4xl text-primary" /> {/* Replace with your desired color class */}
                 <h3 className="text-xl font-medium mb-2">Vibrant Community of Travel Enthusiasts</h3>
-                <p className="text-gray-700">
+                <p className="text-gray-700 text-justify">
                   Connect with fellow globetrotters, share travel tips, ask questions, and discover hidden gems. Build lasting travel connections and collaborate on itineraries for unforgettable trips.
                 </p>
               </div>
               <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
                 <FaLeaf className="text-4xl text-primary" /> {/* Replace with your desired color class */}
                 <h3 className="text-xl font-medium mb-2">Championing Sustainable Travel</h3>
-                <p className="text-gray-700">
+                <p className="text-gray-700 text-justify">
                   TravelDiaries promotes eco-friendly practices and responsible exploration. Discover eco-conscious destinations, activities, and tips on minimizing waste, respecting local cultures, and supporting responsible businesses.
                 </p>
               </div>

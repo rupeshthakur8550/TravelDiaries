@@ -52,7 +52,7 @@ export const fetchChat = async (req, res, next) => {
         const chats = await Chat.find({ users: req.user.id })
             .populate({
                 path: "users",
-                select: "name profilePicture username",
+                select: "name profilePicture username bio",
             })
             .populate("groupAdmin", "-password")
             .populate("latestMessage")
@@ -60,7 +60,7 @@ export const fetchChat = async (req, res, next) => {
 
         await User.populate(chats, {
             path: "latestMessage.sender",
-            select: "name profilePicture username",
+            select: "name profilePicture username bio",
         });
 
         res.status(200).json(chats);
@@ -97,74 +97,52 @@ export const createGroupChat = async (req, res, next) => {
 
         res.status(200).json(fullGroupChat);
     } catch (error) {
-        if (error.name === 'ValidationError') {
-            return next(errorHandler(400, error.message));
-        }
-        next(errorHandler(500, "Internal Server Error"));
+        next(errorHandler(500, error.message));
     }
 }
 
-export const renameGroup = async (req, res, next) => {
-    const { chatId, chatName } = req.body;
+export const updateGroupChat = async (req, res, next) => {
+    const { chatId, chatName, addUsers, removeUsers } = req.body;
 
     try {
-        const updatedChat = await Chat.findByIdAndUpdate(
-            chatId,
-            { chatName: chatName },
-            { new: true }
-        )
-            .populate("users", "-password")
-            .populate("groupAdmin", "-password");
+        let updatedChat;
+
+        // Update chat name if provided
+        if (chatName) {
+            updatedChat = await Chat.findByIdAndUpdate(
+                chatId,
+                { chatName: chatName },
+                { new: true }
+            );
+        }
+
+        // Add users if provided
+        if (addUsers && addUsers.length > 0) {
+            updatedChat = await Chat.findByIdAndUpdate(
+                chatId,
+                { $addToSet: { users: { $each: addUsers } } }, // Use $addToSet to avoid duplicates
+                { new: true }
+            );
+        }
+
+        // Remove users if provided
+        if (removeUsers && removeUsers.length > 0) {
+            updatedChat = await Chat.findByIdAndUpdate(
+                chatId,
+                { $pullAll: { users: removeUsers } }, // Use $pullAll to remove multiple users at once
+                { new: true }
+            );
+        }
 
         if (!updatedChat) {
+            console.log("Populated chat not found");
             return next(errorHandler(404, "Chat Not Found"));
         }
+
+        // Send the updated chat as response
         res.json(updatedChat);
     } catch (error) {
-        next(errorHandler(500, "Internal Server Error"));
+        next(errorHandler(500, error.message));
     }
 };
 
-export const addToGroup = async (req, res, next) => {
-    const { chatId, userId } = req.body;
-
-    try {
-        const added = await Chat.findByIdAndUpdate(
-            chatId,
-            { $push: { users: userId } },
-            { new: true }
-        )
-            .populate("users", "-password")
-            .populate("groupAdmin", "-password");
-
-        if (!added) {
-            return next(errorHandler(404, "Chat Not Found"));
-        }
-
-        res.json(added);
-    } catch (error) {
-        next(errorHandler(500, "Internal Server Error"));
-    }
-};
-
-export const removeFromGroup = async (req, res, next) => {
-    const { chatId, userId } = req.body;
-
-    try {
-        const removed = await Chat.findByIdAndUpdate(
-            chatId,
-            { $pull: { users: userId } },
-            { new: true }
-        )
-            .populate("users", "-password")
-            .populate("groupAdmin", "-password");
-
-        if (!removed) {
-            return next(errorHandler(404, "Chat Not Found"));
-        }
-
-        res.json(removed);
-    } catch (error) {
-        next(errorHandler(500, "Internal Server Error"));
-    }
-};
