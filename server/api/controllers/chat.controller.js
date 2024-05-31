@@ -146,3 +146,44 @@ export const updateGroupChat = async (req, res, next) => {
     }
 };
 
+export const deleteGroupChat = async (req, res, next) => {
+    try {
+        const chat = await Chat.findByIdAndDelete(req.params.chatId);
+        res.status(200).json('Group chat has been deleted');
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const leaveGroupChat = async (req, res, next) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        return next(errorHandler(400, 'UserId and GroupId params not sent with request'));
+    }
+
+    try {
+        // Find the group by ID
+        const group = await Chat.findById(req.params.chatId);
+
+        if (!group) {
+            return next(errorHandler(404, 'Group not found'));
+        }
+
+        // Check if the user is part of the group
+        const isMember = group.users.includes(userId);
+
+        if (!isMember) {
+            return next(errorHandler(400, 'User is not a member of this group'));
+        }
+
+        // Remove the user from the group members array
+        group.users = group.users.filter(memberId => memberId.toString() !== userId);
+        await group.save();
+        res.status(200).json({ message: 'User has been removed from the group' });
+    } catch (error) {
+        next(errorHandler(500, error.message));
+    }
+};
+
+

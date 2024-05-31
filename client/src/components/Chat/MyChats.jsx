@@ -94,7 +94,11 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             if (selectedUsers.includes(userToAdd)) {
                 return;
             }
-            setSelectedUsers([...selectedUsers, userToAdd]);
+            setSelectedUsers((prevSelectedUsers) => {
+                setGroupSearchResults([]);
+                setGroupSearchValue('');
+                return [...prevSelectedUsers, userToAdd];
+            });
         };
     }, [selectedUsers]);
 
@@ -200,6 +204,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                 setShowGroupChatResults(false)
                 setShowModal(false)
                 setGroupSearchResults([]);
+                setGroupSearchValue('');
             }} popup size='md'>
                 <Modal.Header />
                 <Modal.Body>
@@ -231,7 +236,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                                     {selectedUsers.length > 0 && (
                                         <ul className="flex flex-col gap-1 my-2 w-[100%]">
                                             {selectedUsers.slice(0, 4).map((result) => (
-                                                <li key={result._id} className="flex items-center justify-between cursor-pointer bg-purple-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg" onClick={() => handleGroup(result)}>
+                                                <li key={result._id} className="flex items-center justify-between cursor-pointer bg-purple-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg" onClick={() => { handleGroup(result) }}>
                                                     <div className="flex items-center">
                                                         <Avatar
                                                             alt='user'

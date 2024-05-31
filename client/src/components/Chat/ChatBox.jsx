@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useChatState } from './Context/ChatProvider';
 import { IoMdArrowBack } from "react-icons/io";
 import { MdPersonRemove, MdSearch } from "react-icons/md";
@@ -6,6 +7,7 @@ import { Avatar, Button, Modal, TextInput } from 'flowbite-react';
 import useUserSearchAndSelect from './useUserSearchAndSelect';
 
 const ChatBox = ({ fetchAgain, setFetchAgain }) => {
+    const { currentUser } = useSelector(state => state.user);
     const { selectedChat, setSelectedChat } = useChatState();
     const [showProfileModel, setShowProfileModel] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState([]);
@@ -14,6 +16,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
     const {
         searchValue,
         setSearchValue,
+        setSearchResults,
         searchResults,
         handleSearch,
         showResults,
@@ -64,6 +67,9 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
         }
         const updatedUsers = [...selectedUsers, userToAdd];
         setSelectedUsers(updatedUsers);
+        setSearchValue('');
+        setShowResults(false);
+        setSearchResults([]);
     };
 
     const handleChange = (e) => {
@@ -72,6 +78,43 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
             ...prevFormData,
             [id]: value
         }));
+    };
+
+    const handleDelete = async (chatId) => {
+        try {
+            console.log(chatId);
+            const res = await fetch(`/api/chat/deletegroupchat/${chatId}`, {
+                method: "DELETE"
+            });
+            if (res.ok) {
+                setSelectedChat(null);
+                setFetchAgain(prev => !prev);
+            } else {
+                console.error('Error deleting group:', res.statusText);
+            }
+        } catch (error) {
+            console.error('Error deleting group:', error);
+        }
+    };
+
+    const handleLeaveGroup = async (chatId) => {
+        try {
+            const res = await fetch(`/api/chat/leavegroupchat/${chatId}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: currentUser._id })
+            });
+            if (res.ok) {
+                setSelectedChat(null);
+                setFetchAgain(prev => !prev);
+            } else {
+                console.error('Error leaving group:', res.statusText);
+            }
+        } catch (error) {
+            console.error('Error leaving group:', error);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -119,7 +162,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 <>
                     <div className='flex flex-row justify-between md:justify-center mx-3'>
                         <IoMdArrowBack className='mt-4 w-10 h-5 block md:hidden' onClick={handleBack} />
-                        <h1 className='mt-1 text-lg mr-16 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
+                        <h1 className='mt-1 text-lg mr-16 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
                             <div className="flex gap-3 mt-2">
                                 <Avatar
                                     alt={selectedChat.isGroupChat ? selectedChat.chatName : selectedChat.users[1].username}
@@ -181,48 +224,46 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                                 placeholder='Group Name'
                                 value={formData.groupname}
                             />
-                            <div className='flex flex-col items-baseline w-[100%] h-auto'>
-                                <div className='flex flex-row items-center relative w-[100%] gap-3'>
-                                    <TextInput
-                                        type="text"
-                                        placeholder="Search Users.."
-                                        icon={MdSearch}
-                                        value={searchValue}
-                                        onChange={(e) => setSearchValue(e.target.value)}
-                                        onFocus={() => setShowResults(true)}
-                                        className="border-b my-2 w-[100%]"
-                                        style={{ height: "5vh", outline: "none" }}
-                                    />
-                                </div>
-                                <div className='relative w-[100%] my-2'>
-                                    {showResults && (
-                                        <div className='flex flex-col items-center w-[100%]'>
-                                            {searchResults.length > 0 ? (
-                                                <ul className="flex flex-col gap-1 my-2 w-[90%]">
-                                                    {searchResults.slice(0, 4).map((result) => (
-                                                        <li key={result._id} className="flex items-center cursor-pointer bg-gray-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg" onClick={() => handleAddUser(result)}>
-                                                            <Avatar
-                                                                alt='user'
-                                                                img={result.profilePicture}
-                                                                rounded
-                                                                className="w-10 h-6 mr-2"
-                                                            />
-                                                            <span>{result.username}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            ) : (
-                                                <ul className="flex flex-col gap-4">
-                                                    <li className="flex items-center">
-                                                        <span>No User Found</span>
-                                                    </li>
-                                                </ul>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
+                            <div className='relative flex items-center w-[100%]'>
+                                <MdSearch className="absolute ml-2 h-5 w-5 cursor-pointer" onClick={handleSearch} />
+                                <TextInput
+                                    type="text"
+                                    placeholder="Search Users.."
+                                    icon={MdSearch}
+                                    value={searchValue}
+                                    onChange={(e) => setSearchValue(e.target.value)}
+                                    onFocus={() => setShowResults(true)}
+                                    className="border-b my-2 w-[100%]"
+                                    style={{ height: "6vh", outline: "none" }}
+                                />
+                                {showResults && searchResults.length > 0 && (
+                                    <div className="absolute top-12 left-0 w-full bg-white border border-gray-300 rounded-md shadow-md z-10">
+                                        <ul className="max-h-40 overflow-y-auto">
+                                            {searchResults.map((result) => (
+                                                <li key={result._id} className="flex items-center cursor-pointer bg-gray-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg" onClick={() => handleAddUser(result)}>
+                                                    <Avatar
+                                                        alt='user'
+                                                        img={result.profilePicture}
+                                                        rounded
+                                                        className="w-10 h-6 mr-2"
+                                                    />
+                                                    <span>{result.username}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
-                            <Button outline gradientDuoTone="purpleToPink" onClick={handleSubmit}>Update Group Info</Button>
+                            <div className='flex justify-center flex-col gap-2'>
+                                <Button color='green' className='border-b w-[100%]' onClick={handleSubmit}>Update Group</Button>
+                                {
+                                    (selectedChat.groupAdmin._id === currentUser._id) ? (
+                                        <Button color='red' className='border-b w-[100%]' onClick={() => handleDelete(selectedChat._id)}>Delete Group</Button>
+                                    ) : (
+                                        <Button color='red' className='border-b w-[100%]' onClick={() => handleLeaveGroup(selectedChat._id)}>Leave Group</Button>
+                                    )
+                                }
+                            </div>
                         </div>
                     )}
                 </Modal.Body>

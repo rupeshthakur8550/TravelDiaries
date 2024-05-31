@@ -45,7 +45,8 @@ const useUserSearchAndSelect = () => {
             setChats(prevChats => [data, ...prevChats]);
             setSelectedChat(data);
             setShowResults(false);
-
+            setSearchValue('');
+            setSearchResults([]);
         } catch (error) {
             console.log(error.message);
         }
@@ -56,7 +57,7 @@ const useUserSearchAndSelect = () => {
         setSearchResults([]);
     };
 
-    return { searchValue, setSearchValue, searchResults, loading, handleSearch, handleSelectUser, showResults, setShowResults, handleCancel };
+    return { searchValue, setSearchValue, searchResults, loading, setSearchResults, handleSearch, handleSelectUser, showResults, setShowResults, handleCancel };
 };
 
 export default useUserSearchAndSelect;
