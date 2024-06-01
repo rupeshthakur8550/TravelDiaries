@@ -10,7 +10,7 @@ import all2 from '../../assets/images/all2.png';
 
 const Season = () => {
     return (
-        <div className=' bg-gray-900 text-white m-2 min-h-screen'>
+        <div className=' bg-gray-900 text-white mx-2 min-h-screen'>
             <div className='flex flex-col justify-center items-center'>
                 <h1 className="text-2xl md:text-4xl font-mono tracking-wider text-center mt-10"> - Seasonal Beauty - </h1>
                 <p className="text-lg lg:text-xl m-8 text-justify">
