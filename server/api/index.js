@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import otpRoutes from './routes/otp.route.js'
+import messageRoutes from './routes/message.route.js'
 import cookieParser from 'cookie-parser';
 import chatRoutes from './routes/chat.route.js';
 
@@ -30,6 +31,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/message', messageRoutes);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

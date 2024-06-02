@@ -139,8 +139,15 @@ export const updateGroupChat = async (req, res, next) => {
             return next(errorHandler(404, "Chat Not Found"));
         }
 
-        // Send the updated chat as response
-        res.json(updatedChat);
+        const users = await User.find({ _id: { $in: updatedChat.users } }).select('username name profilePicture');
+        const groupAdmin = await User.findById(updatedChat.groupAdmin).select('username name profilePicture');
+
+        // Send the updated chat as response with detailed user and admin info
+        res.json({
+            ...updatedChat.toObject(),
+            users,
+            groupAdmin
+        });
     } catch (error) {
         next(errorHandler(500, error.message));
     }

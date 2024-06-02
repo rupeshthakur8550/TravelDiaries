@@ -11,8 +11,8 @@ const Commitments = () => {
             </div>
             <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                 <div className="flex justify-center items-center gap-2 md:w-2/4 mb-4 md:mr-2">
-                    <img src={benefit1} alt="tour" className="w-[40%] rounded-bl-[120px] rounded-tr-[20px] h-[70%]" />
-                    <img src={benefit2} alt="tour" className="w-[40%] rounded-tr-[120px] rounded-bl-[20px]" />
+                    <img src={benefit1} alt="tour" className="w-[40%] rounded-bl-[120px] rounded-tr-[20px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" />
+                    <img src={benefit2} alt="tour" className="w-[40%] rounded-tr-[120px] rounded-bl-[20px] transition duration-300 transform hover:scale-105 hover:rounded-none" />
                 </div>
                 <div className="md:w-1/2 text-center md:text-left gap-3">
                     <p className="text-lg lg:text-xl mb-12 text-justify">

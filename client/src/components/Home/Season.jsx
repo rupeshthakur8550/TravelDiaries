@@ -18,25 +18,25 @@ const Season = () => {
                 </p>
                 <div className="flex flex-col md:flex-row justify-center items-center m-4">
                     <div className='flex flex-col  justify-center items-center gap-4'>
-                        <div className='flex gap-2 justify-center'><img src={sum1} alt="tour" className="w-[40%] rounded-bl-[50px]  rounded-tr-[50px] h-[70%]" />
-                            <img src={sum2} alt="tour" className="w-[40%] rounded-tl-[50px] rounded-br-[50px] h-[70%]" /></div>
+                        <div className='flex gap-2 justify-center'><img src={sum1} alt="tour" className="w-[40%] rounded-bl-[50px]  rounded-tr-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" />
+                            <img src={sum2} alt="tour" className="w-[40%] rounded-tl-[50px] rounded-br-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" /></div>
                         <h1 className="text-lg md:text-2xl font-mono tracking-wider mb-8"> - Summer - </h1>
                     </div>
 
                     <div className='flex flex-col  justify-center items-center gap-4'>
-                        <div className='flex gap-2 justify-center'><img src={monsoon1} alt="tour" className="w-[40%] rounded-br-[50px]  rounded-tl-[50px] h-[70%]" />
-                            <img src={monsoon2} alt="tour" className="w-[40%] rounded-tr-[50px] rounded-bl-[50px] h-[70%]" /></div>
+                        <div className='flex gap-2 justify-center'><img src={monsoon1} alt="tour" className="w-[40%] rounded-br-[50px] rounded-tl-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" />
+                            <img src={monsoon2} alt="tour" className="w-[40%] rounded-tr-[50px] rounded-bl-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" /></div>
                         <h1 className="text-lg md:text-2xl font-mono tracking-wider mb-8"> - Monsoon - </h1>
                     </div>
 
                     <div className='flex flex-col  justify-center items-center gap-4'>
-                        <div className='flex gap-2 justify-center'><img src={win1} alt="tour" className="w-[40%] rounded-bl-[50px]  rounded-tr-[50px] h-[70%]" />
-                            <img src={win2} alt="tour" className="w-[40%] rounded-tl-[50px] rounded-br-[50px] h-[70%]" /></div>
+                        <div className='flex gap-2 justify-center'><img src={win1} alt="tour" className="w-[40%] rounded-bl-[50px]  rounded-tr-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" />
+                            <img src={win2} alt="tour" className="w-[40%] rounded-tl-[50px] rounded-br-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" /></div>
                         <h1 className="text-lg md:text-2xl font-mono tracking-wider mb-8"> - Winter - </h1>
                     </div>
                     <div className='flex flex-col  justify-center items-center gap-4'>
-                        <div className='flex gap-2 justify-center'><img src={all1} alt="tour" className="w-[40%] rounded-br-[50px]  rounded-tl-[50px] h-[70%]" />
-                            <img src={all2} alt="tour" className="w-[40%] rounded-tr-[50px] rounded-bl-[50px] h-[70%]" /></div>
+                        <div className='flex gap-2 justify-center'><img src={all1} alt="tour" className="w-[40%] rounded-br-[50px]  rounded-tl-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" />
+                            <img src={all2} alt="tour" className="w-[40%] rounded-tr-[50px] rounded-bl-[50px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" /></div>
                         <h1 className="text-lg md:text-2xl font-mono tracking-wider mb-8"> - All Season - </h1>
                     </div>
                 </div>
