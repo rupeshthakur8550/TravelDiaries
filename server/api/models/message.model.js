@@ -9,6 +9,10 @@ const messageSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    iv: {
+        type: String,
+        required: true
+    },
     chat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat"

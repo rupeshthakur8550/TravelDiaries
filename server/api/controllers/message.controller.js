@@ -3,8 +3,12 @@ import Message from '../models/message.model.js';
 import User from '../models/user.model.js';
 import Chat from '../models/chat.model.js';
 
-const algorithm = process.env.ENCRYPTION_KEY;
-const encryptionKey = crypto.randomBytes(16); // 128-bit encryption key
+const algorithm = 'aes-256-cbc';
+const encryptionKey = crypto.scryptSync(`${process.env.ENCRYPTION_KEY}`, 'salt', 32); // 256-bit key
+
+if (!encryptionKey) {
+    throw new Error('ENCRYPTION_KEY environment variable is not set.');
+}
 
 // Function to encrypt the message content
 const encryptMessage = (content) => {
@@ -20,10 +24,20 @@ const encryptMessage = (content) => {
 
 // Function to decrypt the message content
 const decryptMessage = (message) => {
-    const decipher = crypto.createDecipheriv(algorithm, encryptionKey, Buffer.from(message.iv, 'hex'));
-    let decrypted = decipher.update(message.content, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
+    if (!message || typeof message.content !== 'string' || typeof message.iv !== 'string') {
+        throw new Error('Invalid message format. Expected properties: content, iv.');
+    }
+
+    try {
+        const iv = Buffer.from(message.iv, 'hex');
+        const decipher = crypto.createDecipheriv(algorithm, encryptionKey, iv);
+        let decrypted = decipher.update(message.content, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
+    } catch (error) {
+        console.error(`Decryption failed for message with id ${message._id}:`, error);
+        throw new Error('Decryption failed.');
+    }
 };
 
 export const sendMessage = async (req, res, next) => {
@@ -38,7 +52,7 @@ export const sendMessage = async (req, res, next) => {
         // Encrypt the message content
         const encryptedMessage = encryptMessage(content);
 
-        var message = await Message.create({
+        let message = await Message.create({
             sender: req.user.id,
             content: encryptedMessage.content,
             iv: encryptedMessage.iv,
@@ -61,15 +75,21 @@ export const sendMessage = async (req, res, next) => {
 
 export const allMessages = async (req, res, next) => {
     try {
-        const messages = await Message.find({ chat: req.params.chatId }).populate("sender",
-            "name username profilePicture email").populate("chat");
+        const messages = await Message.find({ chat: req.params.chatId })
+            .populate("sender", "name username profilePicture email")
+            .populate("chat");
 
         // Decrypt each message content
         const decryptedMessages = messages.map(message => {
-            return {
-                ...message.toObject(),
-                content: decryptMessage(message)
-            };
+            try {
+                return {
+                    ...message.toObject(),
+                    content: decryptMessage(message)
+                };
+            } catch (error) {
+                console.error(`Failed to decrypt message with id ${message._id}:`, error);
+                return message; // Return the message as is if decryption fails
+            }
         });
 
         res.json(decryptedMessages);

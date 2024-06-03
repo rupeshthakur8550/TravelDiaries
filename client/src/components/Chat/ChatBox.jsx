@@ -5,6 +5,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import { MdPersonRemove, MdSearch } from "react-icons/md";
 import { Avatar, Button, Modal, TextInput } from 'flowbite-react';
 import useUserSearchAndSelect from './useUserSearchAndSelect';
+import Chats from './Chats';
 
 const ChatBox = ({ fetchAgain, setFetchAgain }) => {
     const { currentUser } = useSelector(state => state.user);
@@ -158,7 +159,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 <>
                     <div className='flex flex-row justify-between md:justify-center mx-3'>
                         <IoMdArrowBack className='mt-4 w-10 h-5 block md:hidden' onClick={handleBack} />
-                        <h1 className='mt-1 text-lg mr-16 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
+                        <h1 className='mt-1 text-lg mr-[5rem] sm:mr-44 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
                             <div className="flex gap-3 mt-2">
                                 <Avatar
                                     alt={selectedChat.isGroupChat ? selectedChat.chatName : selectedChat.users[1].username}
@@ -171,9 +172,10 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                         </h1>
                     </div>
                     <hr className="mt-2 border-t-2 border-gray-300" />
-                    <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] md:h-[67.7vh] h-[69vh] overflow-y-hidden'>
-                        {/* Chat content */}
-                    </div>
+                    {/* <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] md:h-[67.7vh] h-[69vh] overflow-y-hidden'>
+                        Chat content
+                    </div> */}
+                    <Chats fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} selectedChatId={selectedChat._id} />
                 </>
             )}
             <Modal show={showProfileModel} onClose={() => {
