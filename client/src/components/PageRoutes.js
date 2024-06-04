@@ -5,6 +5,6 @@ import AddPosts from './pages/AddPosts'
 import Header from './header/Header'
 import Search from './search/Search'
 import SignInPage from './pages/SignInPage'
-import ChatPage from './Chat/chatPage'
+import ChatPage from './Chat/ChatPage'
 
 export { Home, Posts, MyPosts, AddPosts, Header, Search, SignInPage, ChatPage }

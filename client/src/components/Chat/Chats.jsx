@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IoSend } from "react-icons/io5";
 import { TextInput } from 'flowbite-react';
 import { useSelector } from 'react-redux';
+import { formatDistanceToNow } from 'date-fns';
 
 const Chats = ({ fetchAgain, setFetchAgain, selectedChatId }) => {
     const { currentUser } = useSelector(state => state.user);
+    const historyRef = useRef(null);
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState('');
@@ -66,25 +68,43 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId }) => {
         setNewMessage(e.target.value);
     };
 
+    useEffect(() => {
+        if (historyRef.current) {
+            historyRef.current.scrollTop = historyRef.current.scrollHeight;
+        }
+    }, [messages]); // Changed from 'history' to 'messages'
+
     return (
-        <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] sm:h-[67.7vh] h-[69vh] overflow-y-hidden'>
+        <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] sm:h-[75.7vh] h-[78vh] overflow-y-hidden'>
             {loading ? (
                 <div className='flex justify-center items-center h-full'>
                     <h1 className='text-center text-3xl animate-pulse'>Loading .....</h1>
                 </div>
             ) : (
-                <div className='flex flex-col overflow-y-auto p-2'>
+                <div ref={historyRef} className='flex flex-col overflow-y-auto p-2 scrollbar-hide' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {messages.map((message) => (
-                        <div key={message._id} className={`flex items-center my-2 ${message.sender._id === currentUser._id ? 'justify-end' : 'justify-start'}`}>
-                            {message.sender._id !== currentUser._id && (
-                                <img
-                                    src={message.sender.profilePicture}
-                                    alt={message.sender.name}
-                                    className='w-8 h-8 rounded-full mr-2'
-                                />
-                            )}
-                            <div className={`p-2 rounded-md ${message.sender._id === currentUser._id ? 'bg-blue-600 text-white' : 'bg-orange-200 text-gray-950'}`}>
-                                {message.content}
+                        <div key={message._id} className={`flex flex-col items-${message.sender._id === currentUser._id ? 'end' : 'start'} my-1`}>
+                            <div className="flex items-center">
+                                {message.sender._id !== currentUser._id && (
+                                    <img
+                                        src={message.sender.profilePicture}
+                                        alt={message.sender.name}
+                                        className='w-8 h-8 rounded-full mr-2 mt-1'
+                                    />
+                                )}
+                                <div>
+                                    {message.sender._id !== currentUser._id && (
+                                        <span className='text-xs font-bold text-left ml-1'>
+                                            {message.sender.name}
+                                        </span>
+                                    )}
+                                    <div className={`p-[0.42rem] rounded-md text-sm ${message.sender._id === currentUser._id ? 'bg-blue-600 text-white' : 'bg-orange-200 text-gray-950'}`}>
+                                        {message.content}
+                                    </div>
+                                    <div className={`text-xs text-gray-500 mt-1 ${message.sender._id === currentUser._id ? 'text-right mr-1' : 'text-left ml-1'}`}>
+                                        {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ))}

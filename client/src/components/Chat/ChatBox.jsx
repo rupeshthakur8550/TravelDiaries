@@ -146,10 +146,8 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 <>
                     <h1 className='text-center mt-3 font-semibold font-mono text-xl'>ChatBox</h1>
                     <hr className="mt-3 border-t-2 border-gray-300" />
-                    <div className='flex justify-center items-center h-full'>
-                        <div
-                            className="text-gray-500 text-center"
-                        >
+                    <div className='flex justify-center items-center h-[95%]'>
+                        <div className="text-gray-500 text-center">
                             <p className="mb-4 font-semibold text-base">Select a user to start chatting!</p>
                             <img src="https://cdn-icons-png.flaticon.com/512/4470/4470335.png" alt="Select User Illustration" className="mx-auto w-1/2" />
                         </div>
