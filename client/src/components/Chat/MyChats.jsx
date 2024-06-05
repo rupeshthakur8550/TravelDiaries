@@ -166,7 +166,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                     />
                 )}
                 <hr className="border-t-2 border-gray-300" />
-                <div className="relative z-0" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
+                <div className='relative z-0 flex flex-col overflow-y-auto p-2' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {chats ? (
                         <div >
                             {chats.map((chat) => (
@@ -191,7 +191,6 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                                             </div>
                                         )}
                                     </div>
-
                                 </div>
                             ))}
                         </div>

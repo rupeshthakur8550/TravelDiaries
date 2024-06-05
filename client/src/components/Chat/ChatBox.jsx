@@ -140,6 +140,12 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
         }
     };
 
+    const getOtherUser = (chat) => {
+        return chat.users.find(user => user._id !== currentUser._id);
+    };
+
+    const otherUser = selectedChat && !selectedChat.isGroupChat ? getOtherUser(selectedChat) : null;
+
     return (
         <div className={`md:w-[50%] lg:w-[70%] w-[90%] border-4 border-green-300 rounded-lg relative ${selectedChat ? 'block' : 'hidden'} md:block`}>
             {!selectedChat ? (
@@ -157,23 +163,20 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 <>
                     <div className='flex flex-row justify-between md:justify-center mx-3'>
                         <IoMdArrowBack className='mt-4 w-10 h-5 block md:hidden' onClick={handleBack} />
-                        <h1 className='mt-1 text-lg mr-[5rem] sm:mr-44 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
+                        <h1 className='mt-1 text-lg mr-[4rem] sm:mr-40 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
                             <div className="flex gap-3 mt-2">
                                 <Avatar
-                                    alt={selectedChat.isGroupChat ? selectedChat.chatName : selectedChat.users[1].username}
-                                    img={selectedChat.isGroupChat ? "https://cdn-icons-png.flaticon.com/512/681/681494.png" : selectedChat.users[1].profilePicture}
+                                    alt={selectedChat.isGroupChat ? selectedChat.chatName : otherUser.username}
+                                    img={selectedChat.isGroupChat ? "https://cdn-icons-png.flaticon.com/512/681/681494.png" : otherUser.profilePicture}
                                     rounded
                                     className="w-10 h-7"
                                 />
-                                <span>{selectedChat.isGroupChat ? selectedChat.chatName : selectedChat.users[1].username}</span>
+                                <span>{selectedChat.isGroupChat ? selectedChat.chatName : otherUser.username}</span>
                             </div>
                         </h1>
                     </div>
                     <hr className="mt-2 border-t-2 border-gray-300" />
-                    {/* <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] md:h-[67.7vh] h-[69vh] overflow-y-hidden'>
-                        Chat content
-                    </div> */}
-                    <Chats fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} selectedChatId={selectedChat._id} />
+                    <Chats fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} selectedChatId={selectedChat._id} isGroupChat={selectedChat.isGroupChat} />
                 </>
             )}
             <Modal show={showProfileModel} onClose={() => {
@@ -184,10 +187,11 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 <Modal.Body>
                     {selectedChat && !selectedChat.isGroupChat ? (
                         <div className="flex flex-col justify-center items-center gap-2">
-                            <img src={selectedChat.users[1].profilePicture} alt='user' className='rounded-full w-20 h-20 object-cover' />
-                            <h1 className='text-2xl font-semibold ml-3'>{selectedChat.users[1].name}</h1>
-                            <h1 className='text-xs font-semibold ml-3'>@{selectedChat.users[1].username}</h1>
-                            <h1 className='text-md font-semibold ml-3'>{selectedChat.users[1].bio}</h1>
+                            <img src={otherUser.profilePicture} alt='user' className='rounded-full w-20 h-20 object-cover' />
+                            <h1 className='text-2xl font-semibold ml-3'>{otherUser.name}</h1>
+                            <h1 className='text-xs font-semibold ml-3'>@{otherUser.username}</h1>
+                            <h1 className='text-md font-semibold ml-3'>{otherUser.bio}</h1>
+                            <Button color='red' className='border-b w-[70%] mt-5' onClick={() => handleDelete(selectedChat._id)}>Delete Chat</Button>
                         </div>
                     ) : (
                         selectedChat && selectedChat.isGroupChat &&
@@ -196,67 +200,90 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                             <h1 className='text-2xl font-semibold ml-3'>{selectedChat.chatName}</h1>
                             <h1 className='text-md font-semibold ml-3'>Admin: {selectedChat.groupAdmin.name}</h1>
                             <h1 className='text-md font-semibold ml-3'>Members:</h1>
-                            <ul className="flex flex-col gap-1 w-[100%]">
-                                {selectedUsers
-                                    .filter(member => member.username !== selectedChat.groupAdmin.username)
-                                    .map(member => (
-                                        <li key={member._id} className="flex justify-between bg-purple-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg gap-1 items-center w-[100%]">
-                                            <div className='flex gap-3'>
-                                                <Avatar
-                                                    alt={member.username}
-                                                    img={member.profilePicture}
-                                                    rounded
-                                                    className="w-10 h-7"
-                                                />
-                                                <span>{member.username}</span>
-                                            </div>
-                                            <MdPersonRemove className="mr-2 h-5 w-5 cursor-pointer" onClick={() => handleRemoveUser(member._id)} />
-                                        </li>
-                                    ))}
-                            </ul>
-                            <TextInput
-                                id='groupname'
-                                type="text"
-                                onChange={handleChange}
-                                className="border-b w-[100%]"
-                                placeholder='Group Name'
-                                value={formData.groupname}
-                            />
-                            <div className='relative flex items-center w-[100%]'>
-                                <MdSearch className="absolute ml-2 h-5 w-5 cursor-pointer" onClick={handleSearch} />
-                                <TextInput
-                                    type="text"
-                                    placeholder="Search Users.."
-                                    icon={MdSearch}
-                                    value={searchValue}
-                                    onChange={(e) => setSearchValue(e.target.value)}
-                                    onFocus={() => setShowResults(true)}
-                                    className="border-b my-2 w-[100%]"
-                                    style={{ height: "6vh", outline: "none" }}
-                                />
-                                {showResults && searchResults.length > 0 && (
-                                    <div className="absolute top-12 left-0 w-full bg-white border border-gray-300 rounded-md shadow-md z-10">
-                                        <ul className="max-h-40 overflow-y-auto">
-                                            {searchResults.map((result) => (
-                                                <li key={result._id} className="flex items-center cursor-pointer bg-gray-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg" onClick={() => handleAddUser(result)}>
-                                                    <Avatar
-                                                        alt='user'
-                                                        img={result.profilePicture}
-                                                        rounded
-                                                        className="w-10 h-6 mr-2"
-                                                    />
-                                                    <span>{result.username}</span>
+                            {selectedChat.groupAdmin._id === currentUser._id ? (
+                                <>
+                                    <ul className="flex flex-col gap-1 w-[100%]">
+                                        {selectedUsers
+                                            .filter(member => member.username !== selectedChat.groupAdmin.username)
+                                            .map(member => (
+                                                <li key={member._id} className="flex justify-between bg-purple-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg gap-1 items-center w-[100%]">
+                                                    <div className='flex gap-3'>
+                                                        <Avatar
+                                                            alt={member.username}
+                                                            img={member.profilePicture}
+                                                            rounded
+                                                            className="w-10 h-7"
+                                                        />
+                                                        <span>{member.username}</span>
+                                                    </div>
+                                                    <MdPersonRemove className="mr-2 h-5 w-5 cursor-pointer" onClick={() => handleRemoveUser(member._id)} />
                                                 </li>
                                             ))}
-                                        </ul>
+                                    </ul>
+                                    <TextInput
+                                        id='groupname'
+                                        type="text"
+                                        onChange={handleChange}
+                                        className="border-b w-[100%]"
+                                        placeholder='Group Name'
+                                        value={formData.groupname}
+                                    />
+                                    <div className='relative flex items-center w-[100%]'>
+                                        <MdSearch className="absolute ml-2 h-5 w-5 cursor-pointer" onClick={handleSearch} />
+                                        <TextInput
+                                            type="text"
+                                            placeholder="Search Users.."
+                                            icon={MdSearch}
+                                            value={searchValue}
+                                            onChange={(e) => setSearchValue(e.target.value)}
+                                            onFocus={() => setShowResults(true)}
+                                            className="border-b my-2 w-[100%]"
+                                            style={{ height: "6vh", outline: "none" }}
+                                        />
+                                        {showResults && searchResults.length > 0 && (
+                                            <div className="absolute top-12 left-0 w-full bg-white border border-gray-300 rounded-md shadow-md z-10">
+                                                <ul className="max-h-40 overflow-y-auto">
+                                                    {searchResults.map((result) => (
+                                                        <li key={result._id} className="flex items-center cursor-pointer bg-gray-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg" onClick={() => handleAddUser(result)}>
+                                                            <Avatar
+                                                                alt='user'
+                                                                img={result.profilePicture}
+                                                                rounded
+                                                                className="w-10 h-6 mr-2"
+                                                            />
+                                                            <span>{result.username}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                            <div className='flex justify-center flex-col gap-2'>
-                                <Button color='green' className='border-b w-[100%]' onClick={handleSubmit}>Update Group</Button>
+                                </>) : (
+                                <ul className="flex flex-col gap-1 w-[100%]">
+                                    {selectedUsers
+                                        .filter(member => member.username !== selectedChat.groupAdmin.username)
+                                        .map(member => (
+                                            <li key={member._id} className="flex justify-between bg-purple-200 hover:bg-blue-300 text-black px-1 py-2 mb-2 rounded-lg gap-1 items-center w-[100%]">
+                                                <div className='flex gap-3'>
+                                                    <Avatar
+                                                        alt={member.username}
+                                                        img={member.profilePicture}
+                                                        rounded
+                                                        className="w-10 h-7"
+                                                    />
+                                                    <span>{member.username}</span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                </ul>
+                            )}
+                            < div className='flex justify-center flex-col gap-2'>
                                 {
                                     (selectedChat.groupAdmin._id === currentUser._id) ? (
-                                        <Button color='red' className='border-b w-[100%]' onClick={() => handleDelete(selectedChat._id)}>Delete Group</Button>
+                                        <>
+                                            <Button color='green' className='border-b w-[100%]' onClick={handleSubmit}>Update Group</Button>
+                                            <Button color='red' className='border-b w-[100%]' onClick={() => handleDelete(selectedChat._id)}>Delete Group</Button>
+                                        </>
                                     ) : (
                                         <Button color='red' className='border-b w-[100%]' onClick={() => handleLeaveGroup(selectedChat._id)}>Leave Group</Button>
                                     )
@@ -266,7 +293,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                     )}
                 </Modal.Body>
             </Modal>
-        </div>
+        </div >
     );
 };
 
