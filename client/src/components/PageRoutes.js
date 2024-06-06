@@ -6,4 +6,4 @@ import Header from './pages/Header'
 import SignInPage from './pages/SignInPage'
 import ChatPage from './Chat/ChatPage'
 
-export { Home, Posts, MyPosts, AddPosts, Header, Search, SignInPage, ChatPage }
+export { Home, Posts, MyPosts, AddPosts, Header, SignInPage, ChatPage }

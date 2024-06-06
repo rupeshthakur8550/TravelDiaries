@@ -6,7 +6,11 @@ export default {
     'node_modules/flowbite-react/lib/esm/**/*.js',
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        'lg': '1045px',
+      },
+    },
   },
   plugins: [require('flowbite/plugin'),],
 }
