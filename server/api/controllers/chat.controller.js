@@ -1,5 +1,6 @@
 import { errorHandler } from "../utils/error.js";
 import Chat from '../models/chat.model.js'
+import Message from '../models/message.model.js';
 import User from '../models/user.model.js'
 
 export const accessChat = async (req, res, next) => {
@@ -156,7 +157,8 @@ export const updateGroupChat = async (req, res, next) => {
 export const deleteGroupChat = async (req, res, next) => {
     try {
         const chat = await Chat.findByIdAndDelete(req.params.chatId);
-        res.status(200).json('Group chat has been deleted');
+        const messages = await Message.deleteMany({ chat: req.params.chatId });
+        res.status(200).json('Group chat and all associated messages have been deleted');
     } catch (error) {
         next(error);
     }

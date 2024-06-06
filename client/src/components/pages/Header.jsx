@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Avatar, Button, Dropdown, Navbar } from 'flowbite-react'
+import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { HiSearch } from "react-icons/hi";
 import { signoutSuccess } from '../../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 
@@ -9,6 +10,7 @@ const Header = () => {
   const { currentUser } = useSelector(state => state.user);
   const [headerValue, setHeaderValue] = useState(currentUser ? '' : 'Home');
   const [linkValue, setLinkValue] = useState(currentUser ? '/allposts' : '/');
+  const [showSearchInput, setShowSearchInput] = useState(false);
   const path = useLocation().pathname;
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,6 +34,11 @@ const Header = () => {
   const handleDropdownItemClick = (value, link) => {
     setHeaderValue(value);
     setLinkValue(link);
+    if (value === 'Search') {
+      setShowSearchInput(true);
+    } else {
+      setShowSearchInput(false);
+    }
     navigate(link);
   };
 
@@ -59,33 +66,66 @@ const Header = () => {
               <div className='hidden sm:flex justify-center items-center lg:gap-5 md:gap-0'>
                 <NavLink
                   to="/allposts"
-                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
+                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold hidden sm:block`}
                 >
                   Feed
                 </NavLink>
-                <NavLink
-                  to="/search"
-                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
-                >
-                  Search
-                </NavLink>
+                {showSearchInput && (
+                  <TextInput
+                    type="text"
+                    placeholder="Search Items.."
+                    icon={HiSearch}
+                    // onChange={(e) => setSearch(e.target.value)}
+                    className="border-b my-1 block sm:hidden"
+                    style={{ height: "5vh", outline: "none" }}
+                  />
+                )}
+                <TextInput
+                  type="text"
+                  placeholder="Search Items.."
+                  icon={HiSearch}
+                  // onChange={(e) => setSearch(e.target.value)}
+                  className="border-b hidden sm:block w-[25vw]"
+                  style={{ height: "5.5vh", outline: "none" }}
+                />
                 <NavLink
                   to="/addPosts"
-                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
+                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold hidden sm:block`}
                 >
-                  Upload
+                  Add Posts
                 </NavLink>
                 <NavLink
                   to="/messages"
-                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold`}
+                  className={({ isActive }) => `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold hidden sm:block`}
                 >
                   Chats
                 </NavLink>
-
+                <NavLink
+                  to={linkValue}
+                  className={({ isActive }) => `block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold mr-2 md:mr-3 block sm:hidden`}
+                >
+                  {headerValue === 'Search Item' ? "" : headerValue}
+                </NavLink>
+                <div className='block sm:hidden mr-4'>
+                  <Dropdown inline>
+                    <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Feed', '/allposts')}>
+                      Feed
+                    </Dropdown.Item>
+                    <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Search', "/allposts")}>
+                      Search
+                    </Dropdown.Item>
+                    <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Add Posts', "/addPosts")}>
+                      Add Posts
+                    </Dropdown.Item>
+                    <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Chat', '/messages')}>
+                      Chat
+                    </Dropdown.Item>
+                  </Dropdown>
+                </div>
               </div>
             </div>
             <div className='flex gap-2'>
-              <h1 className={`text-sm font-medium truncate lg:block py-2 pr-4 pl-3 hidden md:hidden`} style={{ fontVariant: "petite-caps" }}>
+              <h1 className={`text-sm font-medium truncate py-2 pr-4 pl-3 hidden md:block`} style={{ fontVariant: "petite-caps" }}>
                 Welcome, {<span className='text-green-600'>{currentUser.name}</span>}
               </h1>
               <Dropdown

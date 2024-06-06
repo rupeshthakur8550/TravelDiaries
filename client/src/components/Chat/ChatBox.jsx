@@ -111,6 +111,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
             if (res.ok) {
                 setSelectedChat(null);
                 setFetchAgain(prev => !prev);
+                setShowProfileModel(false);
             } else {
                 console.error('Error deleting group:', res.statusText);
             }

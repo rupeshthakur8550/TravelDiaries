@@ -4,7 +4,7 @@ import assets from '../../assets/assets';
 import SigninForm from '../LoginSignup/Login';
 import SignupForm from '../LoginSignup/Signup';
 import ResetpassForm from '../LoginSignup/PassReset';
-import Footer from '../footer/Footer';
+import Footer from '../pages/Footer';
 
 export const ScreenMode = {
   SIGN_IN: 'SIGN_IN',

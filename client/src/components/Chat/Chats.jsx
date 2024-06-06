@@ -116,7 +116,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
     const groupedMessages = groupMessages(messages);
 
     return (
-        <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] sm:h-[75.7vh] h-[70.8vh] overflow-y-hidden'>
+        <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] h-[75.7vh] overflow-y-hidden'>
             {loading ? (
                 <div className='flex justify-center items-center h-full'>
                     <h1 className='text-center text-3xl animate-pulse'>Loading .....</h1>
