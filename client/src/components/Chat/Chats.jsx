@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
 import io from 'socket.io-client';
 
-const ENDPOINT = 'http://localhost:4000';
-var socket, selectedChatCompare;
+const ENDPOINT = import.meta.env.ENDPOINT_SOCKET;
+let socket;
 
 const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
     const { currentUser } = useSelector(state => state.user);
@@ -15,34 +15,34 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const [socketConnected, setSocketConnected] = useState(false);
+    const previousMessagesRef = useRef([]);
 
     useEffect(() => {
-        socket = io(ENDPOINT);
-        socket.emit('setup', currentUser);
-        socket.on('connection', () => setSocketConnected(true));
-    }, []);
+        if (!socket) {
+            socket = io(ENDPOINT);
+            socket.emit('setup', currentUser);
+            socket.on('connection', () => setSocketConnected(true));
+        }
+    }, [currentUser]);
 
     useEffect(() => {
-        socket.on('message received', (newMessageReceived) => {
-            setMessages((prevMessages) => {
-                const updatedMessages = [...prevMessages, newMessageReceived];
-                // Mark received message as read if it belongs to selected chat
+        if (socket) {
+            socket.on('message received', (newMessageReceived) => {
                 if (newMessageReceived.chat._id === selectedChatId) {
-                    updatedMessages.forEach(message => {
-                        if (message._id === newMessageReceived._id) {
-                            message.isRead = true;
+                    setMessages((prevMessages) => {
+                        if (!prevMessages.find(msg => msg._id === newMessageReceived._id)) {
+                            return [...prevMessages, newMessageReceived];
                         }
+                        return prevMessages;
                     });
                 }
-                return updatedMessages;
             });
-        });
-    }, [socket, selectedChatId]);
+        }
+    }, [selectedChatId]);
 
     useEffect(() => {
         if (selectedChatId) {
             fetchMessages();
-            selectedChatCompare = selectedChatId;
         }
     }, [selectedChatId, fetchAgain]);
 
@@ -52,7 +52,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
             const response = await fetch(`/api/message/getmessages/${selectedChatId}`);
             const data = await response.json();
             if (response.ok) {
-                setMessages(data.map(message => ({ ...message, isRead: message.chat._id === selectedChatId }))); // Mark fetched messages as read for selected chat
+                setMessages(data.map(message => ({ ...message, isRead: message.chat._id === selectedChatId })));
                 socket.emit('join chat', selectedChatId);
             } else {
                 console.error('Error fetching messages', data.message);
@@ -81,7 +81,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
                 const data = await response.json();
                 if (response.ok) {
                     socket.emit('new message', data);
-                    setMessages([...messages, data]);
+                    setMessages((prevMessages) => [...prevMessages, data]);
                     setFetchAgain(true);
                     setNewMessage('');
                 } else {
@@ -137,7 +137,6 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
         if (currentGroup) {
             grouped.push(currentGroup);
         }
-
         return grouped;
     };
 
@@ -152,7 +151,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
             ) : (
                 <div ref={historyRef} className='flex flex-col overflow-y-auto p-2' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {groupedMessages.map(group => (
-                        <div key={group.messages[0]._id} className={`flex flex-col items-${group.sender._id === currentUser._id ? 'end' : 'start'} my-1`}>
+                        <div key={`${group.sender._id}-${group.messages[0]._id}`} className={`flex flex-col items-${group.sender._id === currentUser._id ? 'end' : 'start'} my-1`}>
                             <div className="flex items-end">
                                 {isGroupChat && group.sender._id !== currentUser._id && (
                                     <div className='w-52 sm:w-24 md:w-40 lg:w-20'>
