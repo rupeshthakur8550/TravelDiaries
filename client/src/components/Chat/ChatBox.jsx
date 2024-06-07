@@ -164,7 +164,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 <>
                     <div className='flex flex-row justify-between md:justify-center mx-3'>
                         <IoMdArrowBack className='mt-4 w-10 h-5 block md:hidden' onClick={handleBack} />
-                        <h1 className='mt-1 text-lg mr-[4rem] sm:mr-40 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
+                        <h1 className='mt-1 text-lg mr-[5rem] sm:mr-40 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
                             <div className="flex gap-3 mt-2">
                                 <Avatar
                                     alt={selectedChat.isGroupChat ? selectedChat.chatName : otherUser.username}

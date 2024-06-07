@@ -11,7 +11,7 @@ if (!encryptionKey) {
 }
 
 // Function to encrypt the message content
-const encryptMessage = (content) => {
+export const encryptMessage = (content) => {
     const iv = crypto.randomBytes(16); // Initialization vector
     const cipher = crypto.createCipheriv(algorithm, encryptionKey, iv);
     let encrypted = cipher.update(content, 'utf8', 'hex');
@@ -23,7 +23,7 @@ const encryptMessage = (content) => {
 };
 
 // Function to decrypt the message content
-const decryptMessage = (message) => {
+export const decryptMessage = (message) => {
     if (!message || typeof message.content !== 'string' || typeof message.iv !== 'string') {
         throw new Error('Invalid message format. Expected properties: content, iv.');
     }
@@ -67,7 +67,14 @@ export const sendMessage = async (req, res, next) => {
         });
 
         await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
-        res.json(message);
+
+        // Decrypt message content for sending back in response
+        const decryptedMessageContent = decryptMessage(message);
+        const decryptedMessage = {
+            ...message.toObject(),
+            content: decryptedMessageContent
+        };
+        res.json(decryptedMessage);
     } catch (error) {
         next(error);
     }
@@ -88,7 +95,7 @@ export const allMessages = async (req, res, next) => {
                 };
             } catch (error) {
                 console.error(`Failed to decrypt message with id ${message._id}:`, error);
-                return message; // Return the message as is if decryption fails
+                return message;
             }
         });
 

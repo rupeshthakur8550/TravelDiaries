@@ -3,6 +3,10 @@ import { IoSend } from "react-icons/io5";
 import { TextInput } from 'flowbite-react';
 import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
+import io from 'socket.io-client';
+
+const ENDPOINT = 'http://localhost:4000';
+var socket, selectedChatCompare;
 
 const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
     const { currentUser } = useSelector(state => state.user);
@@ -10,38 +14,61 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState('');
+    const [socketConnected, setSocketConnected] = useState(false);
 
-    // Function to fetch messages
+    useEffect(() => {
+        socket = io(ENDPOINT);
+        socket.emit('setup', currentUser);
+        socket.on('connection', () => setSocketConnected(true));
+    }, []);
+
+    useEffect(() => {
+        socket.on('message received', (newMessageReceived) => {
+            setMessages((prevMessages) => {
+                const updatedMessages = [...prevMessages, newMessageReceived];
+                // Mark received message as read if it belongs to selected chat
+                if (newMessageReceived.chat._id === selectedChatId) {
+                    updatedMessages.forEach(message => {
+                        if (message._id === newMessageReceived._id) {
+                            message.isRead = true;
+                        }
+                    });
+                }
+                return updatedMessages;
+            });
+        });
+    }, [socket, selectedChatId]);
+
+    useEffect(() => {
+        if (selectedChatId) {
+            fetchMessages();
+            selectedChatCompare = selectedChatId;
+        }
+    }, [selectedChatId, fetchAgain]);
+
     const fetchMessages = async () => {
         setLoading(true);
         try {
             const response = await fetch(`/api/message/getmessages/${selectedChatId}`);
             const data = await response.json();
             if (response.ok) {
-                setMessages(data);
+                setMessages(data.map(message => ({ ...message, isRead: message.chat._id === selectedChatId }))); // Mark fetched messages as read for selected chat
+                socket.emit('join chat', selectedChatId);
             } else {
                 console.error('Error fetching messages', data.message);
             }
         } catch (error) {
-            console.log('Error fetching messages', error);
+            console.error('Error fetching messages', error);
         } finally {
             setLoading(false);
         }
     };
 
-    // Use effect to fetch messages when component mounts or selectedChatId changes
-    useEffect(() => {
-        if (selectedChatId) {
-            fetchMessages();
-        }
-    }, [selectedChatId, fetchAgain]);
-
     const sendMessage = async (e) => {
         e.preventDefault();
-        if (newMessage) {
-            setNewMessage('');
+        if (newMessage.trim()) {
             try {
-                const response = await fetch('api/message/', {
+                const response = await fetch('/api/message/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -49,17 +76,19 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
                     body: JSON.stringify({
                         content: newMessage,
                         chatId: selectedChatId,
-                    })
+                    }),
                 });
                 const data = await response.json();
                 if (response.ok) {
+                    socket.emit('new message', data);
                     setMessages([...messages, data]);
-                    setFetchAgain(!fetchAgain);
+                    setFetchAgain(true);
+                    setNewMessage('');
                 } else {
                     console.error('Error sending message', data.message);
                 }
             } catch (error) {
-                console.log('Error sending message', error);
+                console.error('Error sending message', error);
             }
         }
     };
@@ -74,16 +103,15 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
         }
     }, [messages]);
 
-    // Helper function to group messages by sender and timestamp
     const groupMessages = (messages) => {
         const grouped = [];
         let currentGroup = null;
 
-        messages.forEach(message => {
+        messages.forEach((message) => {
             const messageTime = new Date(message.createdAt).getTime();
             if (currentGroup && currentGroup.sender._id === message.sender._id) {
                 const lastMessageTime = new Date(currentGroup.messages[currentGroup.messages.length - 1].createdAt).getTime();
-                if (messageTime - lastMessageTime < 5 * 60 * 1000) { // 5 minutes threshold
+                if (messageTime - lastMessageTime < 5 * 60 * 1000) {
                     currentGroup.messages.push(message);
                     currentGroup.lastTime = message.createdAt;
                 } else {
@@ -91,7 +119,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
                     currentGroup = {
                         sender: message.sender,
                         messages: [message],
-                        lastTime: message.createdAt
+                        lastTime: message.createdAt,
                     };
                 }
             } else {
@@ -101,7 +129,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
                 currentGroup = {
                     sender: message.sender,
                     messages: [message],
-                    lastTime: message.createdAt
+                    lastTime: message.createdAt,
                 };
             }
         });
@@ -175,7 +203,9 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
                     onChange={typingHandler}
                     value={newMessage}
                 />
-                <IoSend className='w-6 h-6 ml-2 cursor-pointer' onClick={sendMessage} />
+                <button type="submit">
+                    <IoSend className='w-6 h-6 ml-2 cursor-pointer' />
+                </button>
             </form>
         </div>
     );
