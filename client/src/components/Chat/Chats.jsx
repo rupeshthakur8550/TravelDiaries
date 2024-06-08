@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
 import io from 'socket.io-client';
 
-const ENDPOINT = import.meta.env.ENDPOINT_SOCKET;
+const ENDPOINT = import.meta.env.VITE_ENDPOINT_SOCKET;
 let socket;
 
 const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
@@ -143,7 +143,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
     const groupedMessages = groupMessages(messages);
 
     return (
-        <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] h-[75.7vh] overflow-y-hidden'>
+        <div className='flex m-1 flex-col justify-end bg-[#E8E8E8] sm:h-[75.2vh] h-[76.7vh] overflow-y-hidden'>
             {loading ? (
                 <div className='flex justify-center items-center h-full'>
                     <h1 className='text-center text-3xl animate-pulse'>Loading .....</h1>
@@ -154,7 +154,7 @@ const Chats = ({ fetchAgain, setFetchAgain, selectedChatId, isGroupChat }) => {
                         <div key={`${group.sender._id}-${group.messages[0]._id}`} className={`flex flex-col items-${group.sender._id === currentUser._id ? 'end' : 'start'} my-1`}>
                             <div className="flex items-end">
                                 {isGroupChat && group.sender._id !== currentUser._id && (
-                                    <div className='w-52 sm:w-24 md:w-40 lg:w-20'>
+                                    <div className='w-10'>
                                         <img
                                             src={group.sender.profilePicture}
                                             alt={group.sender.name}

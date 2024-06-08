@@ -162,19 +162,20 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 </>
             ) : (
                 <>
-                    <div className='flex flex-row justify-between md:justify-center mx-3'>
+                    <div className='flex flex-row justify-between items-center mx-3'>
                         <IoMdArrowBack className='mt-4 w-10 h-5 block md:hidden' onClick={handleBack} />
-                        <h1 className='mt-1 text-lg mr-[5rem] sm:mr-40 md:mr-0 cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
-                            <div className="flex gap-3 mt-2">
+                        <h1 className='flex-grow text-center mt-1 text-lg cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
+                            <div className="flex justify-center items-center gap-3">
                                 <Avatar
                                     alt={selectedChat.isGroupChat ? selectedChat.chatName : otherUser.username}
                                     img={selectedChat.isGroupChat ? "https://cdn-icons-png.flaticon.com/512/681/681494.png" : otherUser.profilePicture}
                                     rounded
-                                    className="w-10 h-7"
+                                    className="w-10 h-10"
                                 />
                                 <span>{selectedChat.isGroupChat ? selectedChat.chatName : otherUser.username}</span>
                             </div>
                         </h1>
+                        <div className='w-10 h-5 block md:hidden' />
                     </div>
                     <hr className="mt-2 border-t-2 border-gray-300" />
                     <Chats fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} selectedChatId={selectedChat._id} isGroupChat={selectedChat.isGroupChat} />
