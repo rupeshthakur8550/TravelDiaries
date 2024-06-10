@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import otpRoutes from './routes/otp.route.js';
 import messageRoutes from './routes/message.route.js';
+import postRoutes from './routes/posts.route.js'
 import chatRoutes from './routes/chat.route.js';
 import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
@@ -57,6 +58,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/message', messageRoutes);
+app.use('/api/post', postRoutes);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
