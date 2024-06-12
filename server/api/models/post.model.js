@@ -11,7 +11,8 @@ const postSchema = new mongoose.Schema({
     },
     imageUrl: {
         type: String,
-        required: true
+        required: true,
+        default: 'https://kinsta.com/wp-content/uploads/2017/11/how-to-start-a-travel-blog.png'
     },
     location: {
         type: String,
@@ -48,6 +49,11 @@ const postSchema = new mongoose.Schema({
     safetyTips: {
         type: [String],
         required: true
+    },
+    category: {
+        type: [String],
+        required: true,
+        default: ['Uncategorized']
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
