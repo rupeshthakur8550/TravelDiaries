@@ -2,9 +2,9 @@ import { errorHandler } from "../utils/error.js";
 import Post from '../models/post.model.js';
 
 export const addPost = async (req, res, next) => {
-    const { title, description, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location } = req.body;
+    const { title, category, description, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location } = req.body;
 
-    const fields = [title, description, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location];
+    const fields = [title, category, description, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location];
     for (let field of fields) {
         if (!field || field.trim() === "") {
             return res.status(400).json({ message: "Please fill all the fields" });
@@ -13,6 +13,7 @@ export const addPost = async (req, res, next) => {
 
     const newPost = new Post({
         title,
+        category,
         description,
         imageUrl,
         howToReach,
