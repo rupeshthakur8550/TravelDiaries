@@ -2,19 +2,13 @@ import { errorHandler } from "../utils/error.js";
 import Post from '../models/post.model.js';
 
 export const addPost = async (req, res, next) => {
-    const { title, category, description, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location } = req.body;
-
-    const fields = [title, category, description, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location];
-    for (let field of fields) {
-        if (!field || field.trim() === "") {
-            return res.status(400).json({ message: "Please fill all the fields" });
-        }
-    }
+    const { title, category, description, accessoriesNeeded, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location } = req.body;
 
     const newPost = new Post({
         title,
         category,
         description,
+        accessoriesNeeded,
         imageUrl,
         howToReach,
         whereToStay,
@@ -37,7 +31,7 @@ export const addPost = async (req, res, next) => {
 
 export const getPosts = async (req, res, next) => {
     try {
-        const posts = await Post.find();
+        const posts = await Post.find().populate('userId', 'profilePicture username');
         res.status(200).json(posts);
     } catch (err) {
         next(errorHandler(err, res));
