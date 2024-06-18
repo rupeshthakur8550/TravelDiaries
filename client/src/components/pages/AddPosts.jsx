@@ -17,71 +17,95 @@ const AddPosts = () => {
 
   const navigate = useNavigate();
 
-  const handleUploadImage = async () => {
-    try {
-      if (!file) {
-        setImageUploadError('Please select an image');
-        return;
-      }
-      setImageUploadError(null);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFile(file);
+  };
+
+  const uploadImage = () => {
+    return new Promise((resolve, reject) => {
       const storage = getStorage(app);
-      const fileName = new Date().getTime() + '-' + file.name;
+      const fileName = new Date().getTime() + file.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
+
+      setImageUploadProgress(0);
+      setImageUploadError('Image is uploading...');
+
       uploadTask.on(
         'state_changed',
         (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageUploadProgress(progress.toFixed(0));
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setImageUploadProgress(progress);
         },
         (error) => {
-          setImageUploadError('Image upload failed');
-          setImageUploadProgress(null);
+          setImageUploadError('Could not upload image (File must be less than 2MB)');
+          setFile(null);
+          reject(error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setFormData((prevData) => ({ ...prevData, imageUrl: downloadURL }));
+            setImageUploadError('Image uploaded successfully');
             setImageUploadProgress(null);
-            setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
+            resolve(downloadURL);
+          }).catch((error) => {
+            reject(error);
           });
         }
       );
-    } catch (error) {
-      setImageUploadError('Image upload failed');
-      setImageUploadProgress(null);
-      console.log(error);
-    }
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData); // Log form data to console
-
-    // Commented out API call
-    /*
+    // console.log(formData);
     try {
-      const res = await fetch('/api/post/addpost', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const isFormDataComplete = Object.values(formData).every(value => {
+        if (typeof value === 'string') {
+          return value.trim() !== '';
+        } else if (Array.isArray(value)) {
+          return value.length > 0 && value.every(item => item.trim() !== '');
+        }
+        return false; // or handle other types as needed
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setAddPostError(data.message);
+
+      if (!isFormDataComplete) {
+        setAddPostError("Please fill in all the fields.");
         return;
       }
+      if (file) {
+        const imageUrl = await uploadImage();
+        if (imageUrl.trim() !== '') {
+          const updatedFormData = { ...formData, imageUrl };
 
-      if (res.ok) {
-        setAddPostError(null);
-        navigate(`/post/${data.slug}`);
+          console.log(updatedFormData);
+
+          const res = await fetch('/api/post/addpost', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedFormData),
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            setAddPostError(data.message);
+            return;
+          }
+
+          setAddPostError(null);
+          navigate('/allposts');
+        } else {
+          setAddPostError("Image URL is empty.");
+        }
+      } else {
+        setAddPostError("Image not uploaded");
       }
     } catch (error) {
       setAddPostError('Something went wrong');
     }
-    */
   };
 
   const categories = [
@@ -108,12 +132,18 @@ const AddPosts = () => {
 
   const handleDropdownItemClick = (category) => {
     setSelectedCategory(category);
-    setFormData({ ...formData, category: category });
+    setFormData((prevData) => ({ ...prevData, category: category }));
   };
 
   const handleDropdownLevelItemClick = (level) => {
     setSelectedLevel(level);
-    setFormData({ ...formData, difficultyLevel: level });
+    setFormData((prevData) => ({ ...prevData, difficultyLevel: level }));
+  };
+
+  const handleArrayChange = (e, key) => {
+    const value = e.target.value;
+    const array = value.split(', ').map(item => item.trim());
+    setFormData((prevData) => ({ ...prevData, [key]: array }));
   };
 
   return (
@@ -128,9 +158,7 @@ const AddPosts = () => {
             required
             id='title'
             className='flex-1'
-            onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
           <Dropdown
             label={selectedCategory}
@@ -151,23 +179,13 @@ const AddPosts = () => {
           <FileInput
             type='file'
             accept='image/*'
-            onChange={(e) => setFile(e.target.files[0])}
+            onChange={handleImageChange}
           />
-          <Button
-            type='button'
-            gradientDuoTone='purpleToBlue'
-            size='sm'
-            outline
-            onClick={handleUploadImage}
-            disabled={imageUploadProgress !== null}
-          >
-            {imageUploadProgress ? `Uploading: ${imageUploadProgress}%` : 'Upload Image'}
-          </Button>
         </div>
         {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
-        {formData.image && (
+        {formData.imageUrl && (
           <img
-            src={formData.image}
+            src={formData.imageUrl}
             alt='upload'
             className='w-full h-72 object-cover'
           />
@@ -178,15 +196,14 @@ const AddPosts = () => {
           placeholder='Write Brief Description Here...'
           className='h-72 mb-[4.5rem] sm:mb-12'
           required
-          onChange={(value) => {
-            setFormData({ ...formData, description: value });
-          }}
+          onChange={(value) => setFormData({ ...formData, description: value })}
         />
         <Label>How To Reach</Label>
         <Textarea
-          type='text' id='howToReach' placeholder='How To Reach' onChange={(e) => {
-            setFormData({ ...formData, howToReach: e.target.value });
-          }}
+          type='text'
+          id='howToReach'
+          placeholder='How To Reach'
+          onChange={(e) => setFormData({ ...formData, howToReach: e.target.value })}
           className='flex-1'
         />
         <Label>Where To Stay</Label>
@@ -196,22 +213,30 @@ const AddPosts = () => {
           required
           id='whereToStay'
           className='flex-1'
-          onChange={(e) =>
-            setFormData({ ...formData, whereToStay: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, whereToStay: e.target.value })}
         />
         <Label>Safety Tips</Label>
         <Textarea
-          type='text' id='safetyTips' placeholder='Safety Tips' onChange={(e) => {
-            setFormData({ ...formData, safetyTips: e.target.value });
-          }}
+          type='text'
+          id='safetyTips'
+          placeholder='Safety Tips (comma separated)'
+          onChange={(e) => handleArrayChange(e, 'safetyTips')}
           className='flex-1'
         />
         <Label>What to Wear</Label>
         <Textarea
-          type='text' id='whatToWear' placeholder='What to Wear' onChange={(e) => {
-            setFormData({ ...formData, whatToWear: e.target.value });
-          }}
+          type='text'
+          id='whatToWear'
+          placeholder='What to Wear'
+          onChange={(e) => setFormData({ ...formData, whatToWear: e.target.value })}
+          className='flex-1'
+        />
+        <Label>Accessories Needed</Label>
+        <Textarea
+          type='text'
+          id='accessoriesNeeded'
+          placeholder='Accessories Needed (comma separated)'
+          onChange={(e) => handleArrayChange(e, 'accessoriesNeeded')}
           className='flex-1'
         />
         <Label>Location</Label>
@@ -221,20 +246,16 @@ const AddPosts = () => {
           required
           id='location'
           className='flex-1'
-          onChange={(e) =>
-            setFormData({ ...formData, location: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
         />
-        <Label>Duartion to Reach Out</Label>
+        <Label>Duration to Reach Out</Label>
         <TextInput
           type='text'
           placeholder='Duration'
           required
           id='duration'
           className='flex-1'
-          onChange={(e) =>
-            setFormData({ ...formData, duration: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
         />
         <Label>Best Time to Visit</Label>
         <TextInput
@@ -243,9 +264,7 @@ const AddPosts = () => {
           required
           id='bestTimeToVisit'
           className='flex-1'
-          onChange={(e) =>
-            setFormData({ ...formData, bestTimeToVisit: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, bestTimeToVisit: e.target.value })}
         />
         <Label>Difficulty Level</Label>
         <Dropdown
@@ -262,7 +281,7 @@ const AddPosts = () => {
             </Dropdown.Item>
           ))}
         </Dropdown>
-        <Button type='submit' gradientDuoTone='purpleToPink'>
+        <Button type='submit' gradientDuoTone='purpleToPink' className='mt-5'>
           Add Post
         </Button>
         {addPostError && (

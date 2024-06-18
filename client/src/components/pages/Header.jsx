@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { HiSearch } from "react-icons/hi";
 import { signoutSuccess } from '../../redux/user/userSlice';
+import { setSearchValue, setSearchResults } from '../../redux/app/appSlice'
 import { useDispatch } from 'react-redux';
 
 const Header = () => {

@@ -17,9 +17,8 @@ function App() {
             <Route path="/myposts" element={<MyPosts />} />
             <Route path="/addposts" element={<AddPosts />} />
             <Route path="/messages" element={<ChatPage />} />
-            <Route path="/allposts" element={<Posts />}>
-              <Route path="briefinfo" element={<BriefInfoPost />} />
-            </Route>
+            <Route path="/allposts" element={<Posts />} />
+            <Route path="/briefinfopost" element={<BriefInfoPost />} />
           </Route>
           <Route path="/signin" element={<SignInPage />} />
         </Routes>
