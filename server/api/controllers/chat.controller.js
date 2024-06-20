@@ -154,7 +154,7 @@ export const updateGroupChat = async (req, res, next) => {
     }
 };
 
-export const deleteGroupChat = async (req, res, next) => {
+export const deleteChat = async (req, res, next) => {
     try {
         const chat = await Chat.findByIdAndDelete(req.params.chatId);
         const messages = await Message.deleteMany({ chat: req.params.chatId });
