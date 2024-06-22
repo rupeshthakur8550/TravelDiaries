@@ -1,13 +1,13 @@
-// useUserSearchAndSelect.js
 import { useState } from 'react';
-import { useChatState } from "./Context/ChatProvider";
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedChat, setChats } from '../../redux/chat/chatSlice';;
 
 const useUserSearchAndSelect = () => {
+    const dispatch = useDispatch();
     const [searchValue, setSearchValue] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const { setSelectedChat, setChats } = useChatState();
 
     const handleSearch = async () => {
         if (!searchValue) {
@@ -42,8 +42,8 @@ const useUserSearchAndSelect = () => {
             if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
 
-            setChats(prevChats => [data, ...prevChats]);
-            setSelectedChat(data);
+            dispatch(setChats([data]));
+            dispatch(setSelectedChat(data));
             setShowResults(false);
             setSearchValue('');
             setSearchResults([]);

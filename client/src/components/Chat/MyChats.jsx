@@ -2,15 +2,18 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { MdSearch } from "react-icons/md";
 import { Avatar, Button, Modal, TextInput } from 'flowbite-react';
 import { MdPersonRemove, MdPersonAdd } from "react-icons/md";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import SearchResults from './SearchResults';
-import { useChatState } from './Context/ChatProvider';
+import { setChats, setSelectedChat } from '../../redux/chat/chatSlice';
 import useUserSearchAndSelect from './useUserSearchAndSelect';
 
 const MyChats = ({ fetchAgain, setFetchAgain }) => {
+    const dispatch = useDispatch();
     const { currentUser } = useSelector(state => state.user);
     const { searchValue, setSearchValue, searchResults, loading, handleSearch, handleSelectUser, showResults, setShowResults, handleCancel } = useUserSearchAndSelect();
-    const { setSelectedChat, selectedChat, chats, setChats } = useChatState();
+    const selectedChat = useSelector((state) => state.chat.selectedChat);
+    const chats = useSelector((state) => state.chat.chats);
+
     const [groupSearchValue, setGroupSearchValue] = useState('');
     const [groupName, setGroupName] = useState('');
     const [groupSearchResults, setGroupSearchResults] = useState([]);
@@ -27,25 +30,14 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                 });
                 if (!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
-                // console.log(data);
-                setChats(data);
+                dispatch(setChats(data)); // Update Redux state with fetched chats
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
 
         fetchChats();
-    }, [fetchAgain]);
-
-    // Debounce search functionality
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            handleSearch();
-            handleGroupSearch();
-        }, 500);
-
-        return () => clearTimeout(delayDebounceFn);
-    }, [searchValue, groupSearchValue]);
+    }, [fetchAgain, dispatch]);
 
     const handleGroupSearch = async () => {
         if (!groupSearchValue) {
@@ -65,6 +57,15 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             setGroupLoading(false);
         }
     };
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            handleSearch();
+            handleGroupSearch();
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchValue, groupSearchValue, handleSearch, handleGroupSearch]);
 
     // Memoize the getSender function
     const getSender = useMemo(() => {
@@ -124,7 +125,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             }
 
             const data = await res.json();
-            setChats([data, ...chats]);
+            dispatch(setChats([data, ...chats])); // Update Redux state with new chat
             setSelectedUsers([]);
             setGroupName('');
             setShowModal(false);
@@ -166,14 +167,13 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                     />
                 )}
                 <hr className="border-t-2 border-gray-300" />
-                <div className='relative z-0 flex flex-col overflow-y-auto p-2' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {chats ? (
-                        <div >
+                <div className='relative z-0 flex flex-col overflow-y-auto p-2 h-96' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    {chats && chats.length > 0 ? (
+                        <div>
                             {chats.map((chat) => (
                                 <div
-                                    onClick={() => setSelectedChat(chat)}
-                                    className={`cursor-pointer ${selectedChat === chat ? 'bg-lime-400 bg-opacity-40 rounded-md backdrop-filter backdrop-blur-lg' : ''
-                                        }`}
+                                    onClick={() => dispatch(setSelectedChat(chat))}
+                                    className={`cursor-pointer ${selectedChat === chat ? 'bg-lime-400 bg-opacity-40 rounded-md backdrop-filter backdrop-blur-lg' : ''}`}
                                     key={chat._id}
                                 >
                                     <div className='m-2'>
@@ -195,13 +195,15 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                             ))}
                         </div>
                     ) : (
-                        <ChatLoading />
+                        <div className='flex justify-center items-center h-full'>
+                            <h1 className='text-center text-3xl animate-pulse'>No Chats Available...</h1>
+                        </div>
                     )}
                 </div>
             </div>
             <Modal show={showModal} onClose={() => {
-                setShowGroupChatResults(false)
-                setShowModal(false)
+                setShowGroupChatResults(false);
+                setShowModal(false);
                 setGroupSearchResults([]);
                 setGroupSearchValue('');
             }} popup size='md'>
@@ -280,7 +282,6 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                                             )}
                                         </div>
                                     )}
-
                                 </div>
                             </div>
                         </div>

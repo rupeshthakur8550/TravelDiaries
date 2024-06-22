@@ -10,21 +10,26 @@ export const test = (req, res) => {
 
 export const updateUser = async (req, res, next) => {
     try {
-        const { password, username, name, mobileNo, dateOfBirth, bio } = req.body;
+        const { password, username, name, mobileNo, dateOfBirth, bio, email, profilePicture } = req.body;
 
-        if (req.user.id != req.params.userId) {
+        if (req.user.id !== req.params.userId) {
             return next(errorHandler(400, 'You are not allowed to update this user'));
         }
 
+        let updatedFields = {};
+
         if (password) {
             if (password.length < 6) {
-                return next(errorHandler(400, 'Password must be at least 6 characters'))
+                return next(errorHandler(400, 'Password must be at least 6 characters'));
             }
-            password = bcryptjs.hashSync(password, 10);
+            updatedFields.password = bcryptjs.hashSync(password, 10);
         }
 
-        if (name && name.trim() === "") {
-            return next(errorHandler(400, 'Name should be filled'));
+        if (name) {
+            if (name.trim() === "") {
+                return next(errorHandler(400, 'Name should be filled'));
+            }
+            updatedFields.name = name;
         }
 
         if (username) {
@@ -40,36 +45,55 @@ export const updateUser = async (req, res, next) => {
             if (username !== username.toLowerCase()) {
                 return next(errorHandler(400, 'Username must be lowercase'));
             }
-            if (!username.match(/^[a-zA-Z0-9-_@#$^*]+$/)) {
-                return next(errorHandler(400, 'Username can only contain letters and numbers'));
+            if (!/^[a-zA-Z0-9-_@#$^*]+$/.test(username)) {
+                return next(errorHandler(400, 'Username can only contain letters, numbers, and special characters -_@#$^*'));
             }
+            updatedFields.username = username;
         }
 
         if (mobileNo) {
             if (mobileNo.length < 14 || mobileNo.length > 15) {
                 return next(errorHandler(400, 'Enter Valid Mobile Number'));
             }
+            updatedFields.mobileNo = mobileNo;
         }
 
         if (dateOfBirth) {
-            if (dateOfBirth === null || dateOfBirth === undefined) {
+            if (!dateOfBirth) {
                 return next(errorHandler(400, 'Enter Valid Date of Birth'));
             }
+            updatedFields.dateOfBirth = dateOfBirth;
         }
 
+        if (email) {
+            updatedFields.email = email;
+        }
+
+        if (profilePicture) {
+            updatedFields.profilePicture = profilePicture;
+        }
+
+        updatedFields.bio = bio;
+
+        const existingUser = await User.findById(req.params.userId);
+
+        // Determine profile completion status
+        const isProfileComplete = (field) => field !== undefined && field !== null && field !== '';
+
+        const profileCompleteStatus =
+            isProfileComplete(updatedFields.username || existingUser.username) &&
+            isProfileComplete(updatedFields.password || existingUser.password) &&
+            isProfileComplete(updatedFields.name || existingUser.name) &&
+            isProfileComplete(updatedFields.mobileNo || existingUser.mobileNo) &&
+            isProfileComplete(updatedFields.dateOfBirth || existingUser.dateOfBirth) &&
+            isProfileComplete(updatedFields.email || existingUser.email) &&
+            isProfileComplete(updatedFields.profilePicture || existingUser.profilePicture) &&
+            isProfileComplete(updatedFields.bio || existingUser.bio);
+
+        updatedFields.profile_complete_status = profileCompleteStatus;
+
         const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
-            $set: {
-                username,
-                email: req.body.email,
-                profilePicture: req.body.profilePicture,
-                password,
-                name,
-                bio,
-                mobileNo,
-                dateOfBirth,
-                verification: "verified",
-                profile_complete_status: dateOfBirth && mobileNo && bio ? true : false
-            },
+            $set: updatedFields
         }, { new: true });
 
         const { password: removedPassword, ...rest } = updatedUser._doc;

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useChatState } from './Context/ChatProvider';
+import { useSelector, useDispatch } from 'react-redux';
 import { IoMdArrowBack } from "react-icons/io";
 import { MdPersonRemove, MdSearch } from "react-icons/md";
 import { Avatar, Button, Modal, TextInput } from 'flowbite-react';
+import { setSelectedChat } from '../../redux/chat/chatSlice';
 import useUserSearchAndSelect from './useUserSearchAndSelect';
 import Chats from './Chats';
 
 const ChatBox = ({ fetchAgain, setFetchAgain }) => {
-    const { currentUser } = useSelector(state => state.user);
-    const { selectedChat, setSelectedChat } = useChatState();
+    const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.user.currentUser);
+    const selectedChat = useSelector((state) => state.chat.selectedChat);
     const [showProfileModel, setShowProfileModel] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [formData, setFormData] = useState({ groupname: '', users: [] });
@@ -43,7 +44,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
     }, [searchValue]);
 
     const handleBack = () => {
-        setSelectedChat(null);
+        dispatch(setSelectedChat(null));
     };
 
     const handleShowProfile = () => {
@@ -74,42 +75,27 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            const response = await fetch('/api/chat/updategroupchat', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    chatId: selectedChat._id,
-                    chatName: formData.groupname,
-                    addUsers: selectedUsers.filter(user => !selectedChat.users.some(u => u._id === user._id)),
-                    removeUsers: selectedChat.users.filter(user => !selectedUsers.some(u => u._id === user._id))
-                }),
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setSelectedChat(data); // Update selectedChat with the latest data
-                setShowProfileModel(false);
-                setFetchAgain(prev => !prev);
-            } else {
-                console.error('Error updating group:', data.message);
-            }
-        } catch (error) {
-            console.error('Error updating group:', error);
-        }
+        dispatch(updateGroupChat({
+            chatId: selectedChat._id,
+            chatName: formData.groupname,
+            addUsers: selectedUsers.filter(user => !selectedChat.users.some(u => u._id === user._id)),
+            removeUsers: selectedChat.users.filter(user => !selectedUsers.some(u => u._id === user._id))
+        })).then(() => {
+            setShowProfileModel(false);
+            setFetchAgain(prev => !prev);
+        });
     };
 
     const handleDelete = async (chatId) => {
         try {
             console.log(chatId);
-            const res = await fetch(`/api/chat/deletegroupchat/${chatId}`, {
+            const res = await fetch(`/api/chat/deletechat/${chatId}`, {
                 method: "DELETE"
             });
             if (res.ok) {
-                setSelectedChat(null);
+                dispatch(setSelectedChat(null));
                 setFetchAgain(prev => !prev);
                 setShowProfileModel(false);
             } else {
@@ -140,7 +126,6 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
             console.error('Error leaving group:', error);
         }
     };
-
     const getOtherUser = (chat) => {
         return chat.users.find(user => user._id !== currentUser._id);
     };

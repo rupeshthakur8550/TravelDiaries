@@ -3,11 +3,13 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import userReducer from './user/userSlice';
 import chatReducer from './chat/chatSlice';
+import appReducer from './app/appSlice'
 
 // Combine reducers
 const rootReducer = combineReducers({
     user: userReducer,
     chat: chatReducer,
+    app: appReducer
 });
 
 // Persist configuration
