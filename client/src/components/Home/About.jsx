@@ -6,7 +6,7 @@ const About = () => {
 
   return (
     <>
-      <section id='about' className="banner relative overflow-hidden bg-cover bg-center flex justify-center items-center mx-2  h-[190vh] md:h-[110vh]" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <section id='about' className="banner relative overflow-hidden bg-cover bg-center flex justify-center items-center mx-2  h-[210vh] md:h-[110vh]" style={{ backgroundImage: `url(${backgroundImage})` }}>
         <div className="container mx-auto">
           <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black to-transparent opacity-50"></div>
           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>

@@ -1,18 +1,16 @@
-import React, { useState } from 'react'
-import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react'
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import React, { useState } from 'react';
+import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { HiSearch } from "react-icons/hi";
 import { signoutSuccess } from '../../redux/user/userSlice';
-import { setSearchValue, setSearchResults } from '../../redux/app/appSlice'
-import { useDispatch } from 'react-redux';
+import { setSearchValue } from '../../redux/app/appSlice';
 
 const Header = () => {
   const { currentUser } = useSelector(state => state.user);
-  const [headerValue, setHeaderValue] = useState(currentUser ? '' : 'Home');
+  const [headerValue, setHeaderValue] = useState(currentUser ? 'Explore' : 'Home');
   const [linkValue, setLinkValue] = useState(currentUser ? '/allposts' : '/');
   const [showSearchInput, setShowSearchInput] = useState(false);
-  const path = useLocation().pathname;
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -35,11 +33,7 @@ const Header = () => {
   const handleDropdownItemClick = (value, link) => {
     setHeaderValue(value);
     setLinkValue(link);
-    if (value === 'Search') {
-      setShowSearchInput(true);
-    } else {
-      setShowSearchInput(false);
-    }
+    setShowSearchInput(value === 'Search Item');
     navigate(link);
   };
 
@@ -65,47 +59,53 @@ const Header = () => {
         {currentUser ? (
           <>
             <div className='flex items-baseline justify-evenly'>
-              <div className='hidden md:flex justify-center items-center lg:gap-5 md:gap-0 lg:ml-20 md:ml-0'>
-                <NavLink to='/allposts' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg`}>
+              <div className='flex justify-center items-center lg:gap-5 md:gap-0 lg:ml-20 md:ml-0'>
+                <NavLink to='/allposts' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg hidden md:block`}>
                   Explore
                 </NavLink>
+                <NavLink to='/addPosts' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg hidden md:block`}>
+                  Add Posts
+                </NavLink>
+                <TextInput
+                  type="text"
+                  placeholder="Search Items.."
+                  icon={HiSearch}
+                  style={{ height: "5vh", outline: "none" }}
+                  onChange={(e) => {
+                    dispatch(setSearchValue(e.target.value));
+                  }}
+                  className="border-b hidden md:block w-[25vw] "
+                />
                 {showSearchInput && (
                   <TextInput
                     type="text"
                     placeholder="Search Items.."
                     icon={HiSearch}
-                    // onChange={(e) => setSearch(e.target.value)}
-                    className="border-b my-1 block sm:hidden"
                     style={{ height: "5vh", outline: "none" }}
+                    onChange={(e) => {
+                      dispatch(setSearchValue(e.target.value));
+                    }}
+                    className="border-b block w-[43vw] md:hidden ml-2"
                   />
                 )}
-                <TextInput
-                  type="text"
-                  placeholder="Search Items.."
-                  icon={HiSearch}
-                  // onChange={(e) => setSearch(e.target.value)}
-                  onClick={() => navigate('/allposts')}
-                  className="border-b hidden md:block w-[25vw]"
-                  style={{ height: "5.5vh", outline: "none" }}
-                />
-                <NavLink to='/addPosts' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg`}>
-                  Add Posts
-                </NavLink>
-                <NavLink to='/messages' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg`}>
+                <NavLink to='/messages' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg hidden md:block`}>
                   Chat
                 </NavLink>
               </div>
             </div>
-            <div className='flex gap-2'>
-              <div className='flex md:hidden items-center gap-2 mx-2'>
-                <NavLink to='/allposts' className={({ isActive }) => `duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold text-md`}>
-                  {headerValue === "Search" ? "" : headerValue}
-                </NavLink>
-                <Dropdown inline className='w-36'>
+            <div className='flex items-center gap-2'>
+              <div className='flex md:hidden items-center gap-1 mr-1 justify-center'>
+                <Dropdown inline className='w-36' label={
+                  <NavLink
+                    to={linkValue}
+                    className={({ isActive }) => `block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold mr-1 md:mr-3 block sm:hidden`}
+                  >
+                    {headerValue === 'Search Item' ? "" : headerValue}
+                  </NavLink>}>
                   <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Explore', '/allposts')}>
                     Explore
                   </Dropdown.Item>
-                  <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Search', "/allposts")}>
+                  <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Search Item', "/allposts")}>
                     Search
                   </Dropdown.Item>
                   <Dropdown.Item className='text-md' onClick={() => handleDropdownItemClick('Add Posts', "/addPosts")}>
@@ -163,14 +163,13 @@ const Header = () => {
             >
               Contact Us
             </NavLink>
-            <NavLink
-              to={linkValue}
-              className={({ isActive }) => `block py-2 px-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold text-md block sm:hidden`}
-            >
-              {headerValue}
-            </NavLink>
             <div className='block sm:hidden mr-5'>
-              <Dropdown inline>
+              <Dropdown inline arrowIcon={false} label={<NavLink
+                to={linkValue}
+                className={({ isActive }) => `block py-2 px-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold text-md block sm:hidden`}
+              >
+                {headerValue}
+              </NavLink>}>
                 <Dropdown.Item className='text-md' onClick={() => {
                   scrollToSection('home');
                   handleDropdownItemClick('Home', '/');
@@ -200,7 +199,7 @@ const Header = () => {
         )}
       </Navbar>
     </div>
-  )
+  );
 }
 
-export default Header
+export default Header;

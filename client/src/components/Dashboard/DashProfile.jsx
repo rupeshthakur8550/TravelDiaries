@@ -164,7 +164,7 @@ function DashProfile() {
 
                 <TextInput type='text' id='name' placeholder='Name' defaultValue={currentUser.name} onChange={handleChange} className='w-[90%]' />
                 <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} className='w-[90%]' />
-                <Textarea type='text' id='bio' placeholder='Bio' defaultValue={currentUser.bio || ''} onChange={handleChange} className='w-[90%]' />
+                <Textarea type='text' id='bio' rows={5} placeholder='Bio' defaultValue={currentUser.bio || ''} onChange={handleChange} className='w-[90%]' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} />
                 <div className='flex justify-center items-center gap-2 w-[90%]' style={{ position: 'relative' }}>
                     <TextInput
                         ref={emailInputRef}

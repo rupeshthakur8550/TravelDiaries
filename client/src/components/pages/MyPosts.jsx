@@ -17,7 +17,7 @@ function MyPosts() {
           </div>
           <div>
             <Typography variant='h5'>Posts</Typography>
-            <Typography className='text-center' style={{ fontSize: '20px' }}>0</Typography>
+            <Typography className='text-center' style={{ fontSize: '20px' }}>{currentUser && currentUser.posts && currentUser.posts.length || 0}</Typography>
           </div>
         </div>
         <Typography className='text-center pb-4 text-base md:text-lg px-3'>{currentUser.bio}</Typography>

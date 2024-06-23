@@ -1,24 +1,24 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const appSlice = createSlice({
     name: 'app',
     initialState: {
-        searchValue: null,
+        searchValue: '',
         searchResults: null,
         selectedResult: null,
     },
     reducers: {
         setSearchValue(state, action) {
-            state.searchValue = action.payload
+            state.searchValue = action.payload;
         },
         setSearchResults(state, action) {
-            state.searchResults = action.payload
+            state.searchResults = action.payload;
         },
         setSelectedResult(state, action) {
-            state.selectedResult = action.payload
+            state.selectedResult = action.payload;
         },
-    }
-})
+    },
+});
 
 export const { setSearchResults, setSearchValue, setSelectedResult } = appSlice.actions;
 

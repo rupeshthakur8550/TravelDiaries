@@ -78,9 +78,6 @@ const AddPosts = () => {
         const imageUrl = await uploadImage();
         if (imageUrl.trim() !== '') {
           const updatedFormData = { ...formData, imageUrl };
-
-          console.log(updatedFormData);
-
           const res = await fetch('/api/post/addpost', {
             method: 'POST',
             headers: {

@@ -88,20 +88,19 @@ export const getPostsByUser = async (req, res, next) => {
     }
 };
 
-export const searchPostsByLocation = async (req, res, next) => {
-    const searchQuery = req.query.search;
+export const searchPosts = async (req, res, next) => {
     try {
+        const searchQuery = req.query.search;
         const keyword = searchQuery ? {
             $or: [
                 { location: { $regex: searchQuery, $options: "i" } },
                 { title: { $regex: searchQuery, $options: "i" } },
             ],
-            userid: { $ne: req.user.id }
         } : {};
         const posts = await Post.find(keyword);
         res.status(200).json(posts);
-    } catch (err) {
-        next(errorHandler(err, res));
+    } catch (error) {
+        next(error);
     }
 };
 
