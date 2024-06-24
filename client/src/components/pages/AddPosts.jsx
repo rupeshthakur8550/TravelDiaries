@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Button, FileInput, Dropdown, TextInput, Label, Textarea } from 'flowbite-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../../firebase.js';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setSelectedChat } from '../../redux/chat/chatSlice.js';
 
 const AddPosts = () => {
   const [file, setFile] = useState(null);
@@ -16,11 +18,19 @@ const AddPosts = () => {
   const [selectedLevel, setSelectedLevel] = useState('Select Difficulty Level');
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setFile(file);
   };
+
+  useEffect(() => {
+    if (location.pathname !== '/messages') {
+      dispatch(setSelectedChat(null));
+    }
+  }, [location.pathname, dispatch]);
 
   const uploadImage = () => {
     return new Promise((resolve, reject) => {
@@ -145,7 +155,7 @@ const AddPosts = () => {
 
   return (
     <div className='p-3 max-w-3xl mx-auto min-h-screen my-16'>
-      <h1 className='text-center text-3xl my-7 font-semibold'>Create a Post</h1>
+      <h1 className='text-center text-3xl my-7 font-semibold'>Share Memory</h1>
       <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <Label>Title</Label>
         <div className='flex gap-4 flex-row justify-between'>

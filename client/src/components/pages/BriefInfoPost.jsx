@@ -26,6 +26,14 @@ const BriefInfoPost = () => {
                             <li key={index}>{item}</li>
                         ))}
                     </ul>
+                    <h2 className="text-xl font-semibold mb-2">Category</h2>
+                    <p className="text-gray-700 mb-4">
+                        {post.category}
+                    </p>
+                    <h2 className="text-xl font-semibold mb-2">Location</h2>
+                    <p className="text-gray-700 mb-4">
+                        {post.location}
+                    </p>
                     <h2 className="text-xl font-semibold mb-2">Where to Stay</h2>
                     <p className="text-gray-700 mb-4">
                         {post.whereToStay}

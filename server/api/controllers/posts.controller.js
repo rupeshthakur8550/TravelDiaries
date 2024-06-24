@@ -29,15 +29,6 @@ export const addPost = async (req, res, next) => {
     }
 };
 
-export const getPosts = async (req, res, next) => {
-    try {
-        const posts = await Post.find().populate('userId', 'profilePicture username');
-        res.status(200).json(posts);
-    } catch (err) {
-        next(errorHandler(err, res));
-    }
-};
-
 export const getPostById = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -88,21 +79,48 @@ export const getPostsByUser = async (req, res, next) => {
     }
 };
 
+export const getPosts = async (req, res, next) => {
+    try {
+        const posts = await Post.find({ visibility: true }).populate('userId', 'profilePicture username');
+        res.status(200).json(posts);
+    } catch (err) {
+        next(errorHandler(err, res));
+    }
+};
+
 export const searchPosts = async (req, res, next) => {
     try {
         const searchQuery = req.query.search;
         const keyword = searchQuery ? {
-            $or: [
-                { location: { $regex: searchQuery, $options: "i" } },
-                { title: { $regex: searchQuery, $options: "i" } },
-            ],
-        } : {};
-        const posts = await Post.find(keyword);
+            $and: [
+                {
+                    $or: [
+                        { location: { $regex: searchQuery, $options: "i" } },
+                        { title: { $regex: searchQuery, $options: "i" } },
+                    ],
+                },
+                { visibility: true }
+            ]
+        } : { visibility: true };
+        const posts = await Post.find(keyword).populate('userId', 'profilePicture username');
         res.status(200).json(posts);
     } catch (error) {
         next(error);
     }
 };
 
-
-
+export const postVisibilityChange = async (req, res, next) => {
+    const postId = req.params.id;
+    const visibility = req.body.visibility;
+    try {
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        post.visibility = visibility;
+        await post.save();
+        res.status(200).json({ message: 'Post visibility updated successfully' });
+    } catch (error) {
+        next(error);
+    }
+};

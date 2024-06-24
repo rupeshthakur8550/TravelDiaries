@@ -55,6 +55,11 @@ const postSchema = new mongoose.Schema({
         required: true,
         default: ['Uncategorized']
     },
+    visibility: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -63,19 +63,6 @@ const Header = () => {
                 <NavLink to='/allposts' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg hidden md:block`}>
                   Explore
                 </NavLink>
-                <NavLink to='/addPosts' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg hidden md:block`}>
-                  Add Posts
-                </NavLink>
-                <TextInput
-                  type="text"
-                  placeholder="Search Items.."
-                  icon={HiSearch}
-                  style={{ height: "5vh", outline: "none" }}
-                  onChange={(e) => {
-                    dispatch(setSearchValue(e.target.value));
-                  }}
-                  className="border-b hidden md:block w-[25vw] "
-                />
                 {showSearchInput && (
                   <TextInput
                     type="text"
@@ -88,6 +75,19 @@ const Header = () => {
                     className="border-b block w-[43vw] md:hidden ml-2"
                   />
                 )}
+                <TextInput
+                  type="text"
+                  placeholder="Search Items.."
+                  icon={HiSearch}
+                  style={{ height: "5vh", outline: "none" }}
+                  onChange={(e) => {
+                    dispatch(setSearchValue(e.target.value));
+                  }}
+                  className="border-b hidden md:block w-[25vw] "
+                />
+                <NavLink to='/addPosts' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg hidden md:block`}>
+                  Add Posts
+                </NavLink>
                 <NavLink to='/messages' className={({ isActive }) => `px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"} border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent md:border-0 hover:text-teal-600 lg:p-0 font-semibold font-mono text-lg hidden md:block`}>
                   Chat
                 </NavLink>

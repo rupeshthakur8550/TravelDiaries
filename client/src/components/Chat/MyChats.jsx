@@ -71,7 +71,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
     const getSender = useMemo(() => {
         return (loggedUser, users) => {
             if (users && users.length > 0) {
-                const sender = users[0]._id === loggedUser?._id ? users[1] : users[0];
+                const sender = users.find(user => user._id !== loggedUser._id);
                 return (
                     <div className="flex items-center h-10 px-3">
                         <Avatar
@@ -92,14 +92,10 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
     // Memoize the handleGroup function
     const handleGroup = useMemo(() => {
         return (userToAdd) => {
-            if (selectedUsers.includes(userToAdd)) {
+            if (selectedUsers.some(user => user._id === userToAdd._id)) {
                 return;
             }
-            setSelectedUsers((prevSelectedUsers) => {
-                setGroupSearchResults([]);
-                setGroupSearchValue('');
-                return [...prevSelectedUsers, userToAdd];
-            });
+            setSelectedUsers(prevSelectedUsers => [...prevSelectedUsers, userToAdd]);
         };
     }, [selectedUsers]);
 
@@ -116,7 +112,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: groupName,
-                    users: JSON.stringify(selectedUsers.map((user) => user._id))
+                    users: selectedUsers.map(user => user._id)
                 })
             });
 
@@ -131,6 +127,14 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             setShowModal(false);
         } catch (error) {
             console.error('Error:', error);
+        }
+    };
+
+    const handleChatClick = (chat) => {
+        if (selectedChat && selectedChat._id === chat._id) {
+            dispatch(setSelectedChat(null)); // Deselect chat if already selected
+        } else {
+            dispatch(setSelectedChat(chat)); // Select the chat for conversation
         }
     };
 
@@ -172,7 +176,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                         <div>
                             {chats.map((chat) => (
                                 <div
-                                    onClick={() => dispatch(setSelectedChat(chat))}
+                                    onClick={() => handleChatClick(chat)} // Modify click handler to toggle selectedChat
                                     className={`cursor-pointer ${selectedChat === chat ? 'bg-lime-400 bg-opacity-40 rounded-md backdrop-filter backdrop-blur-lg' : ''}`}
                                     key={chat._id}
                                 >

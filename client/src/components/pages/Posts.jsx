@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Card, Spinner } from 'flowbite-react';
-import { useSelector } from 'react-redux';
+import { setSelectedChat } from '../../redux/chat/chatSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Posts = () => {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector(state => state.user);
   const { searchValue } = useSelector(state => state.app);
   const [posts, setPosts] = useState([]);
@@ -14,6 +16,12 @@ const Posts = () => {
   const location = useLocation();
   const isBriefInfo = location.pathname.includes('briefinfo');
   const loggedInUserId = currentUser._id;
+
+  useEffect(() => {
+    if (location.pathname !== '/messages') {
+      dispatch(setSelectedChat(null));
+    }
+  }, [location.pathname, dispatch]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -72,6 +80,8 @@ const Posts = () => {
                     <>
                       <img src={post.userId.profilePicture} alt={post.userId.username} className="w-10 h-10 rounded-full" />
                       <span className="ml-4 font-semibold">{post.userId.username}</span>
+                      <span className="ml-4 font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
+                      <span className="ml-4 font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
                     </>
                   )}
                 </div>
@@ -79,7 +89,8 @@ const Posts = () => {
                 <img src={post.imageUrl} alt={post.title} className="w-full h-64 object-cover" />
                 <div className="p-4">
                   <div dangerouslySetInnerHTML={{ __html: post.description }} className="text-gray-700 mb-4" />
-                  <p className="text-gray-500 mt-2">{post.category}</p>
+                  <h4 className="font-semibold text-gray-800 block sm:hidden">Location : <span className=' font-medium text-black'>{post.location}</span></h4>
+                  <h4 className="font-semibold text-gray-800 block sm:hidden">Category : <span className=' font-medium text-black'>{post.category}</span></h4>
                 </div>
               </Card>
             ))}
