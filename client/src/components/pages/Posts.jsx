@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Card, Spinner } from 'flowbite-react';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
+import { formatDistanceToNow, format } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Posts = () => {
@@ -68,6 +69,18 @@ const Posts = () => {
     navigate('/briefinfopost', { state: { post } });
   };
 
+  const formatPostDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const differenceInDays = (now - date) / (1000 * 60 * 60 * 24);
+
+    if (differenceInDays > 7) {
+      return format(date, 'dd/MM/yyyy');
+    } else {
+      return formatDistanceToNow(date, { addSuffix: true });
+    }
+  };
+
   return (
     <>
       <div className='min-h-screen mt-20'>
@@ -79,9 +92,16 @@ const Posts = () => {
                   {post.userId && (
                     <>
                       <img src={post.userId.profilePicture} alt={post.userId.username} className="w-10 h-10 rounded-full" />
-                      <span className="ml-4 font-semibold">{post.userId.username}</span>
-                      <span className="ml-4 font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
-                      <span className="ml-4 font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
+                      <div className='flex flex-col'>
+                        <div className='flex gap-3' style={{ fontFamily: 'monospace' }}>
+                          <span className="ml-4 font-semibold">{post.userId.username}</span>
+                          <span className=" font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
+                          <span className=" font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
+                        </div>
+                        <div className='mt-[-6px]'>
+                          <span className="ml-4 font-semibold text-xs">{formatPostDate(post.createdAt)}</span>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
