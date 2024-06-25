@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CiMenuKebab } from "react-icons/ci";
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
+import { formatDistanceToNow, format } from 'date-fns';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 const MyPosts = () => {
@@ -15,7 +16,6 @@ const MyPosts = () => {
   const [postToDelete, setPostToDelete] = useState(null);
 
   const navigate = useNavigate();
-
   const location = useLocation();
 
   useEffect(() => {
@@ -102,6 +102,18 @@ const MyPosts = () => {
     }
   };
 
+  const formatPostDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const differenceInDays = (now - date) / (1000 * 60 * 60 * 24);
+
+    if (differenceInDays > 7) {
+      return format(date, 'dd/MM/yyyy');
+    } else {
+      return formatDistanceToNow(date, { addSuffix: true });
+    }
+  };
+
   return (
     <>
       <div className='md:w-[50%] lg:w-[26%] sm:w-[60%] w-[90%] mx-auto pt-12 md:pt-14 mt-10'>
@@ -133,9 +145,16 @@ const MyPosts = () => {
                 {post.userId && (
                   <>
                     <img src={currentUser.profilePicture} alt={currentUser.username} className="w-10 h-10 rounded-full" />
-                    <span className="ml-4 font-semibold">{currentUser.username}</span>
-                    <span className="ml-4 font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
-                    <span className="ml-4 font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
+                    <div className='flex flex-col'>
+                      <div className='flex gap-3' style={{ fontFamily: 'monospace' }}>
+                        <span className="ml-4 font-semibold">{currentUser.username}</span>
+                        <span className=" font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
+                        <span className=" font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
+                      </div>
+                      <div className='mt-[-6px]'>
+                        <span className="ml-4 font-semibold text-xs">{formatPostDate(post.createdAt)}</span>
+                      </div>
+                    </div>
                   </>
                 )}
               </div>
