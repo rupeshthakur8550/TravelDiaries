@@ -1,5 +1,6 @@
 import { errorHandler } from "../utils/error.js";
 import Post from '../models/post.model.js';
+import User from "../models/user.model.js";
 
 export const addPost = async (req, res, next) => {
     const { title, category, description, accessoriesNeeded, imageUrl, howToReach, whereToStay, whatToWear, duration, bestTimeToVisit, difficultyLevel, safetyTips, location } = req.body;
@@ -23,6 +24,14 @@ export const addPost = async (req, res, next) => {
 
     try {
         const post = await newPost.save();
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return next(errorHandler(404, 'User Not Found'));
+        }
+
+        user.posts.push(post._id);
+        await user.save();
+
         res.status(201).json(post);
     } catch (err) {
         next(errorHandler(err, res));

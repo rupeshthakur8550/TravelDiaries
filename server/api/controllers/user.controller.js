@@ -1,6 +1,7 @@
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 import User from '../models/user.model.js';
+import Post from '../models/post.model.js'
 import { sendEmail } from './otp.controller.js'
 import Query from '../models/queries.model.js';
 
@@ -195,4 +196,24 @@ export const allUsers = async (req, res, next) => {
     res.send(users);
 }
 
+export const getUserDetails = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+        const user = await User.findById(id)
+            .select('username name profilePicture bio posts')
+            .populate({
+                path: 'posts',
+                model: Post,
+                match: { visibility: true },
+                select: 'title description imageUrl location howToReach accessoriesNeeded whereToStay whatToWear duration bestTimeToVisit difficultyLevel safetyTips category createdAt updatedAt'
+            });
+
+        if (!user) {
+            return next(errorHandler(404, 'User Not Found'));
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+}
 
