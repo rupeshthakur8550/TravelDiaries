@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, CircularProgress } from '@mui/material';
 import { Button, Card, Dropdown, Modal } from 'flowbite-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CiMenuKebab } from "react-icons/ci";
@@ -12,6 +12,7 @@ const MyPosts = () => {
   const dispatch = useDispatch();
   const { currentUser, error } = useSelector(state => state.user);
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [deleteShowModal, setDeleteShowModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
 
@@ -26,6 +27,7 @@ const MyPosts = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
       try {
         const res = await fetch('/api/post/getuserposts', {
           method: 'GET',
@@ -38,6 +40,8 @@ const MyPosts = () => {
         setPosts(data);
       } catch (err) {
         console.error("Error fetching posts:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -113,6 +117,14 @@ const MyPosts = () => {
       return formatDistanceToNow(date, { addSuffix: true });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <>

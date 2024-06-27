@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
 import { Button, Card } from 'flowbite-react';
+import { setSelectedChat } from '../../redux/chat/chatSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useUserSearchAndSelect from '../Chat/useUserSearchAndSelect';
+import { useDispatch } from 'react-redux';
 
 const formatPostDate = (dateString) => {
     const date = new Date(dateString);
@@ -10,9 +13,17 @@ const formatPostDate = (dateString) => {
 
 const ViewUser = () => {
     const location = useLocation();
+    const dispatch = useDispatch();
     const { userId } = location.state;
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const { handleSelectUser } = useUserSearchAndSelect();
+
+    useEffect(() => {
+        if (location.pathname !== '/messages') {
+            dispatch(setSelectedChat(null));
+        }
+    }, [location.pathname, dispatch]);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -46,7 +57,11 @@ const ViewUser = () => {
                     </div>
                 </div>
                 <Typography className='text-center pb-4 text-base md:text-lg px-3'>{user.bio}</Typography>
-                <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[90%] md:w-96 md:self-center mx-auto'>
+                <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[90%] md:w-96 md:self-center mx-auto'
+                    onClick={() => {
+                        handleSelectUser(user._id);
+                        navigate('/messages');
+                    }}>
                     Message User
                 </Button>
             </div>

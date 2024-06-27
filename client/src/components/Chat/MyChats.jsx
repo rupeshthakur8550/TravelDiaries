@@ -95,6 +95,8 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             if (selectedUsers.some(user => user._id === userToAdd._id)) {
                 return;
             }
+            setGroupSearchResults([]);
+            setGroupSearchValue('');
             setSelectedUsers(prevSelectedUsers => [...prevSelectedUsers, userToAdd]);
         };
     }, [selectedUsers]);
@@ -234,7 +236,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                                         onChange={(e) => setGroupSearchValue(e.target.value)}
                                         onFocus={() => setShowGroupChatResults(true)}
                                         className="border-b my-2 w-[100%]"
-                                        style={{ height: "5vh", outline: "none" }}
+                                        style={{ height: "6vh", outline: "none" }}
                                     />
                                 </div>
                                 <div className='w-[100%] mt-2 relative h-auto'>

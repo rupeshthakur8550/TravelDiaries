@@ -156,7 +156,7 @@ const AddPosts = () => {
   return (
     <div className='p-3 max-w-3xl mx-auto min-h-screen my-16'>
       <h1 className='text-center text-3xl my-7 font-semibold'>Share Memory</h1>
-      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+      <form className='flex flex-col gap-4 md:mx-0 mx-5' onSubmit={handleSubmit}>
         <Label>Title</Label>
         <div className='flex gap-4 flex-row justify-between'>
           <TextInput

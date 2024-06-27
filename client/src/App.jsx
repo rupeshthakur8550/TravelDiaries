@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Home, Posts, MyPosts, AddPosts, SignInPage, Header, ChatPage } from '../src/components/PageRoutes';
+import { Home, Posts, MyProfile, AddPosts, SignInPage, Header, ChatPage } from '../src/components/PageRoutes';
 import './App.css';
 import Dashboard from './components/pages/Dashboard';
 import PrivateRoute from './components/pages/PrivateRoute';
@@ -15,7 +15,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/myposts" element={<MyPosts />} />
+            <Route path="/myprofile" element={<MyProfile />} />
             <Route path="/addposts" element={<AddPosts />} />
             <Route path="/messages" element={<ChatPage />} />
             <Route path="/allposts" element={<Posts />} />

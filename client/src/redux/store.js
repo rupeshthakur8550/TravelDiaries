@@ -17,7 +17,7 @@ const persistConfig = {
     key: 'root',
     storage,
     version: 1,
-    whitelist: ['user', 'chat'],  // Add the slices you want to persist
+    whitelist: ['user', 'chat', 'app'],  // Add the slices you want to persist
 };
 
 // Create persisted reducer

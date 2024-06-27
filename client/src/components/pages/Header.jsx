@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { HiSearch } from "react-icons/hi";
 import { signoutSuccess } from '../../redux/user/userSlice';
@@ -132,7 +132,7 @@ const Header = () => {
                   <span className='block text-sm w-36 text-center'>@{currentUser.username}</span>
                   <span className='block text-sm font-medium truncate text-center'>{currentUser.name}</span>
                 </Dropdown.Header>
-                <Link to={'/myposts'}>
+                <Link to={'/myprofile'}>
                   <Dropdown.Item className='text-md'>Profile</Dropdown.Item>
                 </Link>
                 <Dropdown.Divider />
