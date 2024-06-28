@@ -168,7 +168,7 @@ export const leaveGroupChat = async (req, res, next) => {
     const { userId } = req.body;
 
     if (!userId) {
-        return next(errorHandler(400, 'UserId and GroupId params not sent with request'));
+        return next(errorHandler(400, 'UserId param not sent with request'));
     }
 
     try {
@@ -189,7 +189,11 @@ export const leaveGroupChat = async (req, res, next) => {
         // Remove the user from the group members array
         group.users = group.users.filter(memberId => memberId.toString() !== userId);
         await group.save();
-        res.status(200).json({ message: 'User has been removed from the group' });
+
+        // Delete all messages sent by the user in this group
+        await Message.deleteMany({ sender: userId, chat: req.params.chatId });
+
+        res.status(200).json({ message: 'User has been removed from the group and their messages have been deleted' });
     } catch (error) {
         next(errorHandler(500, error.message));
     }
