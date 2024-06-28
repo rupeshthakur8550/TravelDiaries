@@ -6,6 +6,10 @@ import { Avatar, Button, Modal, TextInput } from 'flowbite-react';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
 import useUserSearchAndSelect from './useUserSearchAndSelect';
 import Chats from './Chats';
+import io from 'socket.io-client';
+
+const ENDPOINT = import.meta.env.VITE_ENDPOINT_SOCKET;
+let socket;
 
 const ChatBox = ({ fetchAgain, setFetchAgain }) => {
     const dispatch = useDispatch();
@@ -33,7 +37,47 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
         } else {
             setFormData({ groupname: '', users: [] });
         }
-    }, [selectedChat]);
+    }, [selectedChat, fetchAgain]);
+
+    useEffect(() => {
+        if (!socket) {
+            socket = io(ENDPOINT);
+            socket.on('connection');
+            socket.emit('setup', currentUser);
+        }
+    }, [currentUser]);
+
+    useEffect(() => {
+        if (!socket.connected) {
+            socket = io(ENDPOINT);
+            socket.on('connection', () => console.log("socket connected"));
+            socket.emit('setup', currentUser);
+        }
+
+        if (socket) {
+            socket.on('chat deleted', (deletedChatId) => {
+                if (selectedChat && selectedChat._id === deletedChatId) {
+                    dispatch(setSelectedChat(null));
+                    setFetchAgain(prev => !prev);
+                }
+            });
+
+            socket.on('user left group', (groupId) => {
+                if (selectedChat && selectedChat._id === groupId) {
+                    dispatch(setSelectedChat(null));
+                    setFetchAgain(prev => !prev);
+                }
+            });
+        }
+
+        return () => {
+            if (socket) {
+                socket.off('chat deleted');
+                socket.off('user left group');
+                socket.disconnect();
+            }
+        };
+    }, [selectedChat, dispatch, setFetchAgain]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -90,16 +134,21 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
 
     const handleDelete = async (chatId) => {
         try {
-            console.log(chatId);
             const res = await fetch(`/api/chat/deletechat/${chatId}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             });
             if (res.ok) {
+                const chatUsers = selectedChat.users.map(user => user._id);
+                socket.emit('chat deleted', chatId, chatUsers);
                 dispatch(setSelectedChat(null));
                 setFetchAgain(prev => !prev);
                 setShowProfileModel(false);
             } else {
-                console.error('Error deleting group:', res.statusText);
+                const errorData = await res.json();
+                console.error('Error deleting group:', errorData);
             }
         } catch (error) {
             console.error('Error deleting group:', error);
@@ -116,16 +165,19 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 body: JSON.stringify({ userId: currentUser._id })
             });
             if (res.ok) {
+                socket.emit('user left group', chatId, currentUser._id);
                 setSelectedChat(null);
                 setFetchAgain(prev => !prev);
                 setShowProfileModel(false);
             } else {
-                console.error('Error leaving group:', res.statusText);
+                const errorData = await res.json();
+                console.error('Error leaving group:', errorData);
             }
         } catch (error) {
             console.error('Error leaving group:', error);
         }
     };
+
     const getOtherUser = (chat) => {
         return chat.users.find(user => user._id !== currentUser._id);
     };
@@ -136,7 +188,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
         <div className={`md:w-[50%] lg:w-[70%] w-[90%] border-4 border-green-300 rounded-lg relative ${selectedChat ? 'block' : 'hidden'} md:block`}>
             {!selectedChat ? (
                 <>
-                    <h1 className='text-center mt-3 font-semibold font-mono text-xl'>ChatBox</h1>
+                    <h1 className='text-center mt-3 font-semibold font-mono text-xl my-3'>ChatBox</h1>
                     <hr className="mt-3 border-t-2 border-gray-300" />
                     <div className='flex justify-center items-center h-[95%]'>
                         <div className="text-gray-500 text-center">
@@ -147,10 +199,10 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 </>
             ) : (
                 <>
-                    <div className='flex flex-row justify-between items-center mx-3'>
-                        <IoMdArrowBack className='mt-4 w-10 h-5 block md:hidden' onClick={handleBack} />
-                        <h1 className='flex-grow text-center mt-1 text-lg cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
-                            <div className="flex justify-center items-center gap-3">
+                    <div className='flex flex-row justify-between items-center mx-3 my-[2px]'>
+                        <IoMdArrowBack className='w-10 h-5 block md:hidden' onClick={handleBack} />
+                        <h1 className='flex-grow text-center justify-center text-lg cursor-pointer' style={{ fontVariant: 'unicase' }} onClick={handleShowProfile}>
+                            <div className="flex justify-center items-center gap-3 my-1">
                                 <Avatar
                                     alt={selectedChat.isGroupChat ? selectedChat.chatName : otherUser.username}
                                     img={selectedChat.isGroupChat ? "https://cdn-icons-png.flaticon.com/512/681/681494.png" : otherUser.profilePicture}
@@ -162,7 +214,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                         </h1>
                         <div className='w-10 h-5 block md:hidden' />
                     </div>
-                    <hr className="mt-2 border-t-2 border-gray-300" />
+                    <hr className="mb-1 border-t-2 border-gray-300" />
                     <Chats fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} selectedChatId={selectedChat._id} isGroupChat={selectedChat.isGroupChat} />
                 </>
             )}

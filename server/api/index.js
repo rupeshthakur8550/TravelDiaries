@@ -51,6 +51,18 @@ io.on('connection', (socket) => {
             socket.in(user._id).emit('message received', newMessage);
         });
     });
+
+    // Listen for chat deletion
+    socket.on('chat deleted', async (deletedChatId, userIds) => {
+        userIds.forEach(userId => {
+            socket.in(userId).emit('chat deleted', deletedChatId);
+        });
+    });
+
+    // Listen for user leaving a group
+    socket.on('user left group', async (groupId, userId) => {
+        socket.in(userId).emit('user left group', groupId);
+    });
 });
 
 app.use('/api/user', userRoutes);

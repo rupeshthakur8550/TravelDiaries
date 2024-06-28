@@ -54,6 +54,7 @@ const useUserSearchAndSelect = () => {
 
     const handleCancel = () => {
         setShowResults(false);
+        setSearchValue('');
         setSearchResults([]);
     };
 
