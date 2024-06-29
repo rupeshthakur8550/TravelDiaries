@@ -3,12 +3,20 @@ import { Typography } from '@mui/material';
 import { Button, Card } from 'flowbite-react';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { formatDistanceToNow, format } from 'date-fns';
 import useUserSearchAndSelect from '../Chat/useUserSearchAndSelect';
 import { useDispatch } from 'react-redux';
 
 const formatPostDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString();
+    const now = new Date();
+    const differenceInDays = (now - date) / (1000 * 60 * 60 * 24);
+
+    if (differenceInDays > 7) {
+        return format(date, 'dd/MM/yyyy');
+    } else {
+        return formatDistanceToNow(date, { addSuffix: true });
+    }
 };
 
 const ViewUser = () => {

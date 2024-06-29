@@ -129,7 +129,7 @@ const MyPosts = () => {
   return (
     <>
       <div className='md:w-[50%] lg:w-[26%] sm:w-[60%] w-[90%] mx-auto pt-12 md:pt-14 mt-10'>
-        <div className='flex px-4 justify-between py-3 gap-6 md:gap-8 mb-1'>
+        <div className='flex mx-2 justify-between items-center py-3 gap-4 md:gap-8 mb-1'>
           <img className="w-16 h-16 rounded-full" src={currentUser.profilePicture} alt="User Profile" />
           <div>
             <Typography variant='h5' className='text-nowrap'>{currentUser.name}</Typography>

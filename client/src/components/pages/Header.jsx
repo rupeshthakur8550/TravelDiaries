@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,11 +8,21 @@ import { setSearchValue } from '../../redux/app/appSlice';
 
 const Header = () => {
   const { currentUser } = useSelector(state => state.user);
-  const [headerValue, setHeaderValue] = useState(currentUser ? 'Explore' : 'Home');
-  const [linkValue, setLinkValue] = useState(currentUser ? '/allposts' : '/');
+  const [headerValue, setHeaderValue] = useState('Home');
+  const [linkValue, setLinkValue] = useState('/');
   const [showSearchInput, setShowSearchInput] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser) {
+      setHeaderValue('Explore');
+      setLinkValue('/allposts');
+    } else {
+      setHeaderValue('Home');
+      setLinkValue('/');
+    }
+  }, [currentUser]);
 
   const handleSignout = async () => {
     try {

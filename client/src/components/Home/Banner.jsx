@@ -11,7 +11,7 @@ function Banner() {
         <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>
         <div className="banner-content text-center text-white flex flex-col justify-center">
           <h1 className="text-5xl font-medium tracking-wider mb-8">Welcome To <span className='px-2 py-1 bg-gradient-to-r from-fuchsia-700 from-20% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg inline-block text-transparent bg-clip-text'>Travel Diaries</span></h1>
-          <h3 className="text-xl font-semibold mb-12 border-b border-gray-400 pb-2 ml-4 mr-4">
+          <h3 className="text-xl font-semibold mb-12 border-b border-orange-500 pb-2 ml-4 mr-4">
             We Travel not to 'Escape Life', but for Life not to 'Escape Us'
           </h3>
           <Link to="/signin">
