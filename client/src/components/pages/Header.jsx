@@ -82,7 +82,7 @@ const Header = () => {
                     onChange={(e) => {
                       dispatch(setSearchValue(e.target.value));
                     }}
-                    className="border-b block w-[43vw] md:hidden ml-3"
+                    className="border-b block w-[36vw] md:hidden ml-3"
                   />
                 )}
                 <TextInput
