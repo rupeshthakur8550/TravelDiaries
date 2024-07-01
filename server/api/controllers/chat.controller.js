@@ -72,22 +72,30 @@ export const fetchChat = async (req, res, next) => {
 
 export const createGroupChat = async (req, res, next) => {
     try {
-        if (!req.body.users || !req.body.name) {
-            throw errorHandler(400, "Please fill all the fields");
+        const { users, name } = req.body;
+
+        if (!users || !name) {
+            return next(errorHandler(400, "Please fill all the fields"));
         }
 
-        var users = JSON.parse(req.body.users);
+        let parsedUsers;
 
-        if (users.length < 2) {
-            throw errorHandler(400, "More than 2 users are required to form a group chat");
+        try {
+            parsedUsers = Array.isArray(users) ? users : JSON.parse(users);
+        } catch (error) {
+            return next(errorHandler(400, "Invalid users format"));
         }
 
-        users = users.map(user => typeof user === 'object' ? user.id : user);
-        users.push(req.user.id);
+        if (parsedUsers.length < 2) {
+            return next(errorHandler(400, "More than 2 users are required to form a group chat"));
+        }
+
+        const userIds = parsedUsers.map(user => typeof user === 'object' ? user.id : user);
+        userIds.push(req.user.id);
 
         const groupChat = await Chat.create({
-            chatName: req.body.name,
-            users: users,
+            chatName: name,
+            users: userIds,
             isGroupChat: true,
             groupAdmin: req.user.id,
         });
@@ -108,7 +116,6 @@ export const updateGroupChat = async (req, res, next) => {
     try {
         let updatedChat;
 
-        // Update chat name if provided
         if (chatName) {
             updatedChat = await Chat.findByIdAndUpdate(
                 chatId,
@@ -117,20 +124,18 @@ export const updateGroupChat = async (req, res, next) => {
             );
         }
 
-        // Add users if provided
         if (addUsers && addUsers.length > 0) {
             updatedChat = await Chat.findByIdAndUpdate(
                 chatId,
-                { $addToSet: { users: { $each: addUsers } } }, // Use $addToSet to avoid duplicates
+                { $addToSet: { users: { $each: addUsers } } },
                 { new: true }
             );
         }
 
-        // Remove users if provided
         if (removeUsers && removeUsers.length > 0) {
             updatedChat = await Chat.findByIdAndUpdate(
                 chatId,
-                { $pullAll: { users: removeUsers } }, // Use $pullAll to remove multiple users at once
+                { $pullAll: { users: removeUsers } },
                 { new: true }
             );
         }
@@ -143,7 +148,6 @@ export const updateGroupChat = async (req, res, next) => {
         const users = await User.find({ _id: { $in: updatedChat.users } }).select('username name profilePicture');
         const groupAdmin = await User.findById(updatedChat.groupAdmin).select('username name profilePicture');
 
-        // Send the updated chat as response with detailed user and admin info
         res.json({
             ...updatedChat.toObject(),
             users,

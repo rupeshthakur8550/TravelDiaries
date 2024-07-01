@@ -123,7 +123,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             }
 
             const data = await res.json();
-            dispatch(setChats([data, ...chats])); // Update Redux state with new chat
+            dispatch(setChats([data, ...chats]));
             setSelectedUsers([]);
             setGroupName('');
             setShowModal(false);

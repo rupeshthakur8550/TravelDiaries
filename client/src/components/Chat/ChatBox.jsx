@@ -119,17 +119,32 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(updateGroupChat({
-            chatId: selectedChat._id,
-            chatName: formData.groupname,
-            addUsers: selectedUsers.filter(user => !selectedChat.users.some(u => u._id === user._id)),
-            removeUsers: selectedChat.users.filter(user => !selectedUsers.some(u => u._id === user._id))
-        })).then(() => {
-            setShowProfileModel(false);
-            setFetchAgain(prev => !prev);
-        });
+        try {
+            const response = await fetch('/api/chat/updategroupchat', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chatId: selectedChat._id,
+                    chatName: formData.groupname,
+                    addUsers: selectedUsers.filter(user => !selectedChat.users.some(u => u._id === user._id)),
+                    removeUsers: selectedChat.users.filter(user => !selectedUsers.some(u => u._id === user._id))
+                }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                dispatch(setSelectedChat(data));
+                setShowProfileModel(false);
+                setFetchAgain(prev => !prev);
+            } else {
+                console.error('Error updating group:', data.message);
+            }
+        } catch (error) {
+            console.error('Error updating group:', error);
+        }
     };
 
     const handleDelete = async (chatId) => {
