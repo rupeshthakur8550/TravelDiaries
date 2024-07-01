@@ -77,7 +77,7 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 socket.disconnect();
             }
         };
-    }, [selectedChat, dispatch, setFetchAgain]);
+    }, [selectedChat, dispatch, setFetchAgain, socket]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -180,8 +180,8 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
                 body: JSON.stringify({ userId: currentUser._id })
             });
             if (res.ok) {
+                dispatch(setSelectedChat(null));
                 socket.emit('user left group', chatId, currentUser._id);
-                setSelectedChat(null);
                 setFetchAgain(prev => !prev);
                 setShowProfileModel(false);
             } else {
