@@ -6,6 +6,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import SearchResults from './SearchResults';
 import { setChats, setSelectedChat } from '../../redux/chat/chatSlice';
 import useUserSearchAndSelect from './useUserSearchAndSelect';
+import io from 'socket.io-client';
+
+const ENDPOINT = import.meta.env.VITE_ENDPOINT_SOCKET;
+let socket;
 
 const MyChats = ({ fetchAgain, setFetchAgain }) => {
     const dispatch = useDispatch();
@@ -23,6 +27,21 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
     const [showGroupChatResults, setShowGroupChatResults] = useState(false);
 
     useEffect(() => {
+        if (!socket) {
+            socket = io(ENDPOINT);
+            socket.emit('setup', currentUser);
+            socket.on('connected');
+        }
+
+        socket.on('chat created', (newChat) => {
+            dispatch(setChats((prevChats) => {
+                return Array.isArray(prevChats) ? [...prevChats, newChat] : [newChat];
+            }));
+            setFetchAgain(prev => !prev);
+        });
+    }, [currentUser, dispatch]);
+
+    useEffect(() => {
         const fetchChats = async () => {
             try {
                 const res = await fetch(`/api/chat/fetch`, {
@@ -30,7 +49,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                 });
                 if (!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
-                dispatch(setChats(data)); // Update Redux state with fetched chats
+                dispatch(setChats(Array.isArray(data) ? data : []));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -63,11 +82,9 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             handleSearch();
             handleGroupSearch();
         }, 500);
-
         return () => clearTimeout(delayDebounceFn);
     }, [searchValue, groupSearchValue, handleSearch, handleGroupSearch]);
 
-    // Memoize the getSender function
     const getSender = useMemo(() => {
         return (loggedUser, users) => {
             if (users && users.length > 0) {
@@ -89,7 +106,6 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
         };
     }, []);
 
-    // Memoize the handleGroup function
     const handleGroup = useMemo(() => {
         return (userToAdd) => {
             if (selectedUsers.some(user => user._id === userToAdd._id)) {
@@ -123,6 +139,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             }
 
             const data = await res.json();
+            socket.emit('new chat', data);
             dispatch(setChats([data, ...chats]));
             setSelectedUsers([]);
             setGroupName('');
@@ -134,9 +151,9 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
 
     const handleChatClick = (chat) => {
         if (selectedChat && selectedChat._id === chat._id) {
-            dispatch(setSelectedChat(null)); // Deselect chat if already selected
+            dispatch(setSelectedChat(null));
         } else {
-            dispatch(setSelectedChat(chat)); // Select the chat for conversation
+            dispatch(setSelectedChat(chat));
         }
     };
 
@@ -174,11 +191,11 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                 )}
                 <hr className="border-t-2 border-gray-300" />
                 <div className='relative z-0 flex flex-col overflow-y-auto p-2 h-96' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {chats && chats.length > 0 ? (
+                    {Array.isArray(chats) && chats.length > 0 ? (
                         <div>
                             {chats.map((chat) => (
                                 <div
-                                    onClick={() => handleChatClick(chat)} // Modify click handler to toggle selectedChat
+                                    onClick={() => handleChatClick(chat)}
                                     className={`cursor-pointer ${selectedChat === chat ? 'bg-lime-400 bg-opacity-40 rounded-md backdrop-filter backdrop-blur-lg' : ''}`}
                                     key={chat._id}
                                 >
@@ -261,7 +278,6 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
                                         </ul>
                                     )}
                                 </div>
-
                                 <div className='relative w-[100%] mt-3'>
                                     {showGroupChatResults && (
                                         <div className='flex flex-col items-center w-[100%]'>

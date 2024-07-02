@@ -63,7 +63,6 @@ export const fetchChat = async (req, res, next) => {
             path: "latestMessage.sender",
             select: "name profilePicture username bio",
         });
-
         res.status(200).json(chats);
     } catch (error) {
         next(errorHandler(400, error.message));

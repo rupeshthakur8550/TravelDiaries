@@ -5,7 +5,7 @@ import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import otpRoutes from './routes/otp.route.js';
 import messageRoutes from './routes/message.route.js';
-import postRoutes from './routes/posts.route.js'
+import postRoutes from './routes/posts.route.js';
 import chatRoutes from './routes/chat.route.js';
 import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
@@ -40,28 +40,33 @@ io.on('connection', (socket) => {
 
     socket.on('join chat', (room) => {
         socket.join(room);
-    })
+    });
 
-    socket.on('new message', async (newMessage) => {
-        var chat = newMessage.chat;
+    socket.on('new message', (newMessage) => {
+        const chat = newMessage.chat;
         if (!chat.users) return console.log('chat.users not defined');
 
-        chat.users.forEach(async (user) => {
+        chat.users.forEach((user) => {
             if (user._id == newMessage.sender._id) return;
             socket.in(user._id).emit('message received', newMessage);
         });
     });
 
-    // Listen for chat deletion
-    socket.on('chat deleted', async (deletedChatId, userIds) => {
-        userIds.forEach(userId => {
+    socket.on('chat deleted', (deletedChatId, userIds) => {
+        userIds.forEach((userId) => {
             socket.in(userId).emit('chat deleted', deletedChatId);
         });
     });
 
-    // Listen for user leaving a group
-    socket.on('user left group', async (groupId, userId) => {
+    socket.on('user left group', (groupId, userId) => {
         socket.in(userId).emit('user left group', groupId);
+    });
+
+    socket.on('new chat', (newChat) => {
+        if (!newChat.users) return console.log('chat.users not defined');
+        newChat.users.forEach((user) => {
+            socket.in(user._id).emit('chat created', newChat);
+        });
     });
 });
 
