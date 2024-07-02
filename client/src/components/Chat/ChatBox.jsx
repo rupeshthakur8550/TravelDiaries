@@ -42,42 +42,24 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
     useEffect(() => {
         if (!socket) {
             socket = io(ENDPOINT);
+            socket.emit('setup', currentUser);
             socket.on('connection');
-            socket.emit('setup', currentUser);
-        }
-    }, [currentUser]);
-
-    useEffect(() => {
-        if (!socket.connected) {
-            socket = io(ENDPOINT);
-            socket.on('connection', () => console.log("socket connected"));
-            socket.emit('setup', currentUser);
         }
 
-        if (socket) {
-            socket.on('chat deleted', (deletedChatId) => {
-                if (selectedChat && selectedChat._id === deletedChatId) {
-                    dispatch(setSelectedChat(null));
-                    setFetchAgain(prev => !prev);
-                }
-            });
-
-            socket.on('user left group', (groupId) => {
-                if (selectedChat && selectedChat._id === groupId) {
-                    dispatch(setSelectedChat(null));
-                    setFetchAgain(prev => !prev);
-                }
-            });
-        }
-
-        return () => {
-            if (socket) {
-                socket.off('chat deleted');
-                socket.off('user left group');
-                socket.disconnect();
+        socket.on('chat deleted', (deletedChatId) => {
+            if (selectedChat && selectedChat._id === deletedChatId) {
+                dispatch(setSelectedChat(null));
+                setFetchAgain(prev => !prev);
             }
-        };
-    }, [selectedChat, dispatch, setFetchAgain, socket]);
+        });
+
+        socket.on('user left group', (groupId) => {
+            if (selectedChat && selectedChat._id === groupId) {
+                dispatch(setSelectedChat(null));
+                setFetchAgain(prev => !prev);
+            }
+        });
+    }, [currentUser, dispatch, selectedChat]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {

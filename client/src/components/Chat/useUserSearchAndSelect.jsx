@@ -1,13 +1,33 @@
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedChat, setChats } from '../../redux/chat/chatSlice';;
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedChat, setChats } from '../../redux/chat/chatSlice';
+import io from 'socket.io-client';
+
+const ENDPOINT = import.meta.env.VITE_ENDPOINT_SOCKET;
+let socket;
 
 const useUserSearchAndSelect = () => {
     const dispatch = useDispatch();
+    const { currentUser } = useSelector(state => state.user);
     const [searchValue, setSearchValue] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
+
+    useEffect(() => {
+        if (!socket) {
+            socket = io(ENDPOINT);
+            socket.emit('setup', currentUser);
+            socket.on('connected');
+        }
+
+        socket.on('chat created', (newChat) => {
+            dispatch(setChats((prevChats) => {
+                return Array.isArray(prevChats) ? [...prevChats, newChat] : [newChat];
+            }));
+            setFetchAgain(prev => !prev);
+        });
+    }, [currentUser, dispatch]);
 
     const handleSearch = async () => {
         if (!searchValue) {
@@ -41,8 +61,8 @@ const useUserSearchAndSelect = () => {
 
             if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
-
-            dispatch(setChats([data]));
+            socket.emit('new chat', data);
+            dispatch(setChats([data, ...chats]));
             dispatch(setSelectedChat(data));
             setShowResults(false);
             setSearchValue('');

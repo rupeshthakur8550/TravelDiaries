@@ -141,6 +141,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             const data = await res.json();
             socket.emit('new chat', data);
             dispatch(setChats([data, ...chats]));
+            dispatch(setSelectedChat(data));
             setSelectedUsers([]);
             setGroupName('');
             setShowModal(false);
