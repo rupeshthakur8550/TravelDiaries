@@ -10,6 +10,7 @@ import OAuth from './OAuth';
 const Login = ({ onSwitchMode }) => {
 
     const [formData, setFormData] = useState({});
+    const [response, setReponse] = useState('');
     const { loading, error: errorMessage } = useSelector(state => state.user);
     const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const Login = ({ onSwitchMode }) => {
 
     const handleChange = (e) => {
         setFormData(prevData => ({ ...prevData, [e.target.id]: e.target.value.trim() }));
-    };    
+    };
 
     const handleEmailVerify = async (e) => {
         e.preventDefault();
@@ -33,7 +34,7 @@ const Login = ({ onSwitchMode }) => {
                 dispatch(signInFailure('User not found'));
             } else {
                 setShowModal(false);
-                dispatch(signInSuccess('Username has been sent to your email'));
+                setReponse('Check your email, username has beeen sent');
             }
         } catch (error) {
             dispatch(signInFailure(error.message));
@@ -168,6 +169,11 @@ const Login = ({ onSwitchMode }) => {
                                 {errorMessage}
                             </Alert>)
                         }
+                        {response && (
+                            <Alert className='mt-5 self-center' severity="success">
+                                {response}
+                            </Alert>)
+                        }
                     </Stack>
                 </Stack>
             </form>
@@ -200,8 +206,8 @@ const Login = ({ onSwitchMode }) => {
                     </div>
                     {errorMessage && (
                         <Alert className='mt-5 self-center' severity={errorMessage.includes('Username') ? 'success' : 'error'}>
-                        {errorMessage}
-                    </Alert>)
+                            {errorMessage}
+                        </Alert>)
                     }
                 </div>
             </Modal>
