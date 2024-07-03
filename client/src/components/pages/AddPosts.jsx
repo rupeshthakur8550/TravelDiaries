@@ -16,6 +16,7 @@ const AddPosts = () => {
   const [addPostError, setAddPostError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('Select Category');
   const [selectedLevel, setSelectedLevel] = useState('Select Difficulty Level');
+  const [previewImage, setPreviewImage] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const AddPosts = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setFile(file);
+    setPreviewImage(URL.createObjectURL(file));
   };
 
   useEffect(() => {
@@ -69,7 +71,6 @@ const AddPosts = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(formData);
     try {
       const isFormDataComplete = Object.values(formData).every(value => {
         if (typeof value === 'string') {
@@ -190,12 +191,14 @@ const AddPosts = () => {
           />
         </div>
         {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
-        {formData.imageUrl && (
-          <img
-            src={formData.imageUrl}
-            alt='upload'
-            className='w-full h-72 object-cover'
-          />
+        {previewImage && (
+          <div className="w-full h-64 bg-gray-200 flex items-center justify-center sm:h-96 lg:h-64">
+            <img
+              className="w-full h-full object-contain"
+              src={previewImage}
+              alt='Selected'
+            />
+          </div>
         )}
         <Label>Description</Label>
         <ReactQuill
@@ -288,7 +291,7 @@ const AddPosts = () => {
             </Dropdown.Item>
           ))}
         </Dropdown>
-        <Button type='submit' gradientDuoTone='purpleToPink' className='mt-5'>
+        <Button type='submit' gradientDuoTone="pinkToOrange" className='mt-5 lg:w-40 self-center'>
           Add Post
         </Button>
         {addPostError && (

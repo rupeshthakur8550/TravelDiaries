@@ -55,7 +55,7 @@ const MyPosts = () => {
   };
 
   const handleEdit = (post) => {
-    // Handle edit
+    navigate('/editpost', { state: { post } });
   };
 
   const handleAvailability = async (postId, currentVisibility) => {

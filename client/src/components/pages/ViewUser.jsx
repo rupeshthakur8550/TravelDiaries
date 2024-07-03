@@ -4,6 +4,7 @@ import { Button, Card } from 'flowbite-react';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow, format } from 'date-fns';
+import { SiGooglemessages } from "react-icons/si";
 import useUserSearchAndSelect from '../Chat/useUserSearchAndSelect';
 import { useDispatch } from 'react-redux';
 
@@ -65,12 +66,19 @@ const ViewUser = () => {
                     </div>
                 </div>
                 <Typography className='text-center pb-4 text-base md:text-lg px-3'>{user.bio}</Typography>
-                <Button gradientDuoTone="pinkToOrange" outline type='submit' className='w-[90%] md:w-96 md:self-center mx-auto'
+                {/* <Button color='green' outline type='submit' className='w-[90%] md:w-96 md:self-center mx-auto'
                     onClick={() => {
                         handleSelectUser(user._id);
                         navigate('/messages');
                     }}>
                     Message User
+                </Button> */}
+                <Button color='green' type='submit' className='m-2 h-9 self-center mx-auto' onClick={() => {
+                    handleSelectUser(user._id);
+                    navigate('/messages');
+                }}>
+                    Message User
+                    <SiGooglemessages className="ml-2 h-5 w-5" />
                 </Button>
             </div>
             <div className="flex flex-col items-center gap-4 p-4 mt-5">

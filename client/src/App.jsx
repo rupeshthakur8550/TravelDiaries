@@ -5,6 +5,7 @@ import Dashboard from './components/pages/Dashboard';
 import PrivateRoute from './components/pages/PrivateRoute';
 import BriefInfoPost from './components/pages/BriefInfoPost';
 import ViewUser from './components/pages/ViewUser';
+import UpdatePosts from './components/pages/UpdatePosts';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/messages" element={<ChatPage />} />
             <Route path="/allposts" element={<Posts />} />
             <Route path="/briefinfopost" element={<BriefInfoPost />} />
+            <Route path="/editpost" element={<UpdatePosts />} />
             <Route path="/viewuser" element={<ViewUser />} />
           </Route>
           <Route path="/signin" element={<SignInPage />} />
