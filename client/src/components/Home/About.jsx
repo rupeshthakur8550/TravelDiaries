@@ -1,24 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import backgroundImage from '../../assets/images/Bkg1.png';
 import { FaMapMarkerAlt, FaUsers, FaLeaf } from 'react-icons/fa';
 
 const About = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const aboutSection = document.querySelector('#about');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      });
+    }, {
+      threshold: 0.1,
+    });
+
+    if (aboutSection) {
+      observer.observe(aboutSection);
+    }
+
+    return () => {
+      if (aboutSection) {
+        observer.unobserve(aboutSection);
+      }
+    };
+  }, []);
 
   return (
     <>
-      <section id='about' className="banner relative overflow-hidden bg-cover bg-center flex justify-center items-center mx-2  h-[210vh] md:h-[110vh]" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <section id='about' className="banner relative overflow-hidden bg-cover bg-center flex justify-center items-center h-[210vh] md:h-[110vh]" style={{ backgroundImage: `url(${backgroundImage})` }}>
         <div className="container mx-auto">
           <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black to-transparent opacity-50"></div>
           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-          <div className="text-black text-justify md:text-center">
+          <div className="text-black text-justify md:text-center" style={{ animation: isVisible ? 'fadeIn 1s ease-out' : 'none' }}>
             <h1 className="text-2xl md:text-4xl font-mono tracking-wider text-center mb-8 mt-20"> - About Us - </h1>
-            <p className="text-lg lg:text-xl mx-8 mb-4 ">
+            <p className="text-lg lg:text-xl mx-8 mb-4 " style={{ animation: isVisible ? 'slideIn 1s ease-out 0.2s forwards' : 'none' }}>
               Welcome to Travel Diaries, your ultimate destination for discovering the world through the eyes of fellow travelers.
             </p>
-            <p className="text-lg lg:text-xl mx-8 mb-2 text-justify">
+            <p className="text-lg lg:text-xl mx-8 mb-2 text-justify" style={{ animation: isVisible ? 'slideIn 1s ease-out 0.6s forwards' : 'none' }}>
               At Travel Diaries, we aim to inspire, connect, and empower travelers globally. Our platform fosters a vibrant community where adventurers of all levels can share experiences, insights, and adventures. Whether you're a seasoned explorer or a first-time adventurer, Travel Diaries is your guide to exploring the world with confidence and curiosity.
             </p>
-            <div className="container mx-auto px-4 py-16 flex flex-col gap-8 md:flex-row md:gap-12">
+            <div className={`container mx-auto px-4 py-16 flex flex-col gap-8 md:flex-row md:gap-12 ${isVisible ? 'animate-slide-in-left' : ''}`}>
               <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
                 <FaMapMarkerAlt className="text-4xl text-primary" /> {/* Replace with your desired color class */}
                 <h3 className="text-xl font-medium mb-2">Authentic & Trustworthy Travel Content</h3>
@@ -95,7 +121,6 @@ const About = () => {
               fill="#141923"
             ></path>
           </svg>
-
         </div>
       </section>
     </>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { HiSearch } from "react-icons/hi";
 import { signoutSuccess } from '../../redux/user/userSlice';
@@ -11,8 +11,29 @@ const Header = () => {
   const [headerValue, setHeaderValue] = useState('Home');
   const [linkValue, setLinkValue] = useState('/');
   const [showSearchInput, setShowSearchInput] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const isHomePage = location.pathname === '/';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Update header and link values based on user and current route
+    setHeaderValue(currentUser ? 'Explore' : 'Home');
+    setLinkValue(currentUser ? '/allposts' : '/');
+  }, [currentUser, location.pathname]);
 
   useEffect(() => {
     if (currentUser) {
@@ -50,18 +71,21 @@ const Header = () => {
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
     if (section) {
+      const offset = -60;
+      const sectionPosition = section.offsetTop + offset;
       window.scrollTo({
-        top: section.offsetTop,
+        top: sectionPosition,
         behavior: 'smooth'
       });
     }
   };
-
   return (
-    <div className='fixed top-0 left-0 right-0 shadow-lg z-50 mx-2 mt-1 mb-2'>
-      <Navbar>
-        <Link to='/' className='whitespace-nowrap text-sm sm:text-xl font-extrabold bg-gradient-to-r from-white from-30% via-orange-300 to-rose-500 rounded-lg text-white' style={{ fontVariant: 'unicase' }}>
-          <span className='px-2 py-1 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg inline-block text-transparent bg-clip-text'>
+    <div className={`fixed top-0 left-0 right-0 ${isHomePage ? (scrolled ? 'bg-white shadow-lg' : 'bg-transparent') : 'bg-white shadow-lg'} z-50 mx-2 mt-1 mb-2`}>
+      <Navbar className={`${isHomePage ? (scrolled ? 'bg-white' : 'bg-transparent') : 'bg-white'}`}>
+        <Link to='/'
+          className={`whitespace-nowrap text-xl sm:text-2xl font-extrabold rounded-lg ${isHomePage && !scrolled ? 'bg-transparent text-white' : 'bg-white text-black'}`}
+          style={{ fontVariant: 'unicase' }}>
+          <span className='px-2 py-1 bg-gradient-to-r from-fuchsia-700 from-35% via-sky-500 via-69% to-emerald-500 to-90% rounded-lg inline-block text-transparent bg-clip-text'>
             Travel
           </span>
           Diaries
@@ -154,29 +178,29 @@ const Header = () => {
           <div className='flex flex-wrap items-center'>
             <NavLink
               to="/"
-              className={({ isActive }) => `block py-2 px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold text-md hidden sm:block`}
+              className={({ isActive }) => `block py-2 px-3 duration-200 ${isActive ? (isHomePage && !scrolled ? "text-orange-400" : "text-orange-700") : (isHomePage && !scrolled ? "text-gray-200" : "text-gray-700")} font-semibold text-md hidden sm:block`}
               onClick={() => scrollToSection('home')}
             >
               Home
             </NavLink>
             <NavLink
-              to="#"
-              className={({ isActive }) => `block py-2 pr-[1vw] pl-[1vw] px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold text-md hidden sm:block`}
+              to="/"
+              className={({ isActive }) => `block py-2 pr-[1vw] pl-[1vw] px-3 duration-200 ${isActive ? (isHomePage && !scrolled ? "text-orange-400" : "text-orange-700") : (isHomePage && !scrolled ? "text-gray-200" : "text-gray-700")} font-semibold text-md hidden sm:block`}
               onClick={() => scrollToSection('about')}
             >
               About
             </NavLink>
             <NavLink
-              to="#"
-              className={({ isActive }) => `block py-2 px-3 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold text-md mr-2 md:mr-3 hidden sm:block`}
+              to="/"
+              className={({ isActive }) => `block py-2 px-3 duration-200 ${isActive ? (isHomePage && !scrolled ? "text-orange-400" : "text-orange-700") : (isHomePage && !scrolled ? "text-gray-200" : "text-gray-700")} font-semibold text-md mr-2 md:mr-3 hidden sm:block`}
               onClick={() => scrollToSection('contact')}
             >
               Contact Us
             </NavLink>
             <div className='block sm:hidden mr-5'>
-              <Dropdown inline arrowIcon={false} label={<NavLink
+              <Dropdown inline arrowIcon={false} className={`${isHomePage && !scrolled ? "bg-transparent" : ""}`} label={<NavLink
                 to={linkValue}
-                className={({ isActive }) => `block py-2 px-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-900"} font-semibold text-md block sm:hidden`}
+                className={({ isActive }) => `block py-2 px-2 duration-200 ${isActive ? (isHomePage && !scrolled ? "text-white" : "text-orange-400") : (isHomePage && !scrolled ? "text-gray-200" : "text-gray-700")} font-semibold bg-transparent text-md block sm:hidden`}
               >
                 {headerValue}
               </NavLink>}>
@@ -201,7 +225,11 @@ const Header = () => {
               </Dropdown>
             </div>
             <Link to="/signin">
-              <Button gradientDuoTone="purpleToPink" outline>
+              <Button
+                gradientDuoTone={(isHomePage && scrolled) || !isHomePage ? "pinkToOrange" : ''}
+                outline={!isHomePage || scrolled}
+                className={`${isHomePage && !scrolled ? 'bg-transparent text-white border-white' : ''}`}
+              >
                 Sign In
               </Button>
             </Link>
