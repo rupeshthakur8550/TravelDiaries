@@ -7,6 +7,8 @@ import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
 import { formatDistanceToNow, format } from 'date-fns';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { deleteObject, getStorage, ref } from 'firebase/storage';
+import { app } from '../../firebase.js';
 
 const MyPosts = () => {
   const dispatch = useDispatch();
@@ -78,15 +80,18 @@ const MyPosts = () => {
     }
   };
 
-  const handleDelete = (postId) => {
-    setPostToDelete(postId);
+  const handleDelete = (post) => {
+    setPostToDelete(post);
     setDeleteShowModal(true);
   };
 
   const confirmDelete = async () => {
     if (postToDelete) {
       try {
-        const res = await fetch(`/api/post/deletepost/${postToDelete}`, {
+        const storage = getStorage(app);
+        const existingImageRef = ref(storage, postToDelete.imageUrl);
+        await deleteObject(existingImageRef);
+        const res = await fetch(`/api/post/deletepost/${postToDelete._id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -187,7 +192,7 @@ const MyPosts = () => {
                   Update
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item className='text-md font-semibold text-red-700 justify-center' onClick={() => handleDelete(post._id)}>
+                <Dropdown.Item className='text-md font-semibold text-red-700 justify-center' onClick={() => handleDelete(post)}>
                   Delete
                 </Dropdown.Item>
               </Dropdown>

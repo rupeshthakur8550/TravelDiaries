@@ -37,7 +37,7 @@ const Commitments = () => {
                 <h1 className="text-2xl md:text-4xl font-mono tracking-wider mb-12 text-center">- Our Commitments -</h1>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                <div className={`flex justify-center items-center gap-2 md:w-2/4 mb-4 md:mr-2 ${isVisible ? 'animate-slide-in-left' : ''}`}>
+                <div className={`flex justify-center items-center gap-2 md:w-2/4 mb-4 md:mr-2`} style={{ animation: isVisible ? 'slideInLeft 1s ease-out forwards' : 'none' }}>
                     <img src={benefit1} alt="tour" className="w-[40%] rounded-bl-[120px] rounded-tr-[20px] h-[70%] transition duration-300 transform hover:scale-105 hover:rounded-none" />
                     <img src={benefit2} alt="tour" className="w-[40%] rounded-tr-[120px] rounded-bl-[20px] transition duration-300 transform hover:scale-105 hover:rounded-none" />
                 </div>

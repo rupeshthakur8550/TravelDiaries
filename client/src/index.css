@@ -14,10 +14,6 @@
     }
 }
 
-.animate-slide-in-left {
-    animation: slideInLeft 1s ease-out forwards;
-}
-
 @keyframes slideIn {
     from {
         transform: translateY(20px);

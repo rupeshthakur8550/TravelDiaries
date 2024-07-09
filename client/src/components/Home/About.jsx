@@ -44,7 +44,7 @@ const About = () => {
             <p className="text-lg lg:text-xl mx-8 mb-2 text-justify" style={{ animation: isVisible ? 'slideIn 1s ease-out 0.6s forwards' : 'none' }}>
               At Travel Diaries, we aim to inspire, connect, and empower travelers globally. Our platform fosters a vibrant community where adventurers of all levels can share experiences, insights, and adventures. Whether you're a seasoned explorer or a first-time adventurer, Travel Diaries is your guide to exploring the world with confidence and curiosity.
             </p>
-            <div className={`container mx-auto px-4 py-16 flex flex-col gap-8 md:flex-row md:gap-12 ${isVisible ? 'animate-slide-in-left' : ''}`}>
+            <div className={`container mx-auto px-4 py-16 flex flex-col gap-8 md:flex-row md:gap-12`} style={{ animation: isVisible ? 'slideInLeft 1.5s ease-out forwards' : 'none' }}>
               <div className="flex flex-col items-center justify-center gap-4 bg-white shadow-md rounded-lg p-6 md:w-1/2">
                 <FaMapMarkerAlt className="text-4xl text-primary" /> {/* Replace with your desired color class */}
                 <h3 className="text-xl font-medium mb-2">Authentic & Trustworthy Travel Content</h3>

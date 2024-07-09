@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { DatePicker } from 'antd';
 import { TextField, Typography } from '@mui/material';
-import { getDownloadURL, getStorage, uploadBytesResumable, ref } from 'firebase/storage';
+import { getDownloadURL, getStorage, uploadBytesResumable, ref, deleteObject } from 'firebase/storage';
 import { app } from '../../firebase.js';
 
 function DashProfile() {
@@ -45,10 +45,17 @@ function DashProfile() {
     };
 
     const uploadImage = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const storage = getStorage(app);
-            const fileName = new Date().getTime() + imageFile.name;
+            const fileName = `users/${currentUser._id}/${new Date().getTime()}_${imageFile.name}`;
+            // const fileName = new Date().getTime() + imageFile.name;
             const storageRef = ref(storage, fileName);
+            if (currentUser.profilePicture !== 'https://freesvg.org/img/abstract-user-flat-4.png') {
+                const existingImageRef = ref(storage, currentUser.profilePicture);
+                await deleteObject(existingImageRef);
+            }
+            setImageFileUrl(null);
+
             const uploadTask = uploadBytesResumable(storageRef, imageFile);
             setImageUploadError('Profile is Uploading...');
 
@@ -117,7 +124,7 @@ function DashProfile() {
                 setImageUploadError(null);
                 setUpdateUserSuccess("User's profile updated successfully");
                 setFormData({}); // Reset form data
-                setTimeout(() => navigate('/myposts'), 1000); // Navigate after a delay
+                setTimeout(() => navigate('/myprofile'), 1000);
             }
         } catch (error) {
             dispatch(updateFailure(error.message));

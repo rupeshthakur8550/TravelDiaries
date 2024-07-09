@@ -36,10 +36,12 @@ const UpdatePosts = () => {
     }, [location.pathname, dispatch]);
 
     const uploadImage = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const storage = getStorage(app);
-            const fileName = new Date().getTime() + file.name;
+            const fileName = `users/${currentUser._id}/${'Posts'}/${new Date().getTime()}_${imageFile.name}`;
             const storageRef = ref(storage, fileName);
+            const existingImageRef = ref(storage, post.imageUrl);
+            await deleteObject(existingImageRef);
             const uploadTask = uploadBytesResumable(storageRef, file);
 
             setImageUploadProgress(0);
