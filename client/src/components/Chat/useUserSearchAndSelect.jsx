@@ -17,16 +17,29 @@ const useUserSearchAndSelect = () => {
     useEffect(() => {
         if (!socket) {
             socket = io(ENDPOINT);
-            socket.emit('setup', currentUser);
-            socket.on('connected');
+
+            socket.on('connect', () => {
+                socket.emit('setup', currentUser);
+            });
+
+            socket.on('connect_error', (err) => {
+                console.error('Socket connection error:', err);
+            });
+
+            socket.on('chat created', (newChat) => {
+                dispatch(setChats((prevChats) => {
+                    return Array.isArray(prevChats) ? [...prevChats, newChat] : [newChat];
+                }));
+            });
         }
 
-        socket.on('chat created', (newChat) => {
-            dispatch(setChats((prevChats) => {
-                return Array.isArray(prevChats) ? [...prevChats, newChat] : [newChat];
-            }));
-            setFetchAgain(prev => !prev);
-        });
+        // Clean up the socket connection on component unmount
+        return () => {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        };
     }, [currentUser, dispatch]);
 
     const handleSearch = async () => {
@@ -62,13 +75,13 @@ const useUserSearchAndSelect = () => {
             if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
             socket.emit('new chat', data);
-            dispatch(setChats([data, ...chats]));
+            dispatch(setChats((prevChats) => [data, ...prevChats]));
             dispatch(setSelectedChat(data));
             setShowResults(false);
             setSearchValue('');
             setSearchResults([]);
         } catch (error) {
-            console.log(error.message);
+            console.error('Error selecting user:', error);
         }
     };
 

@@ -30,7 +30,7 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
         if (!socket) {
             socket = io(ENDPOINT);
             socket.emit('setup', currentUser);
-            socket.on('connected');
+            socket.on('connected', () => console.log('Connected to socket server'));
         }
 
         socket.on('chat created', (newChat) => {
@@ -39,7 +39,18 @@ const MyChats = ({ fetchAgain, setFetchAgain }) => {
             }));
             setFetchAgain(prev => !prev);
         });
-    }, [currentUser, dispatch]);
+
+        socket.on('chat deleted', (deletedChatId) => {
+            dispatch(setChats((prevChats) => prevChats.filter((chat) => chat._id !== deletedChatId)));
+            setFetchAgain(prev => !prev);
+        });
+
+        return () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
+    }, [currentUser, dispatch, setFetchAgain]);
 
     useEffect(() => {
         const fetchChats = async () => {
