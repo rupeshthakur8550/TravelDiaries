@@ -304,7 +304,7 @@ const UpdatePosts = () => {
                         </Dropdown.Item>
                     ))}
                 </Dropdown>
-                <Button type='submit' gradientDuoTone="pinkToOrange" className='mt-5 lg:w-40 self-center'>
+                <Button type='submit' gradientDuoTone="pinkToOrange" className='mt-5 lg:w-72 w-60 self-center'>
                     Update Memory
                 </Button>
                 {addPostError && (
