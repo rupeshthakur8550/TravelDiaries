@@ -7,7 +7,7 @@ import { HiUsers, HiHome, HiUserCircle } from "react-icons/hi2";
 import { signoutSuccess } from '../../redux/user/userSlice'
 import { useDispatch, useSelector } from 'react-redux';
 
-function DashSidebar() {
+const Sidebars = () => {
     const { currentUser } = useSelector(state => state.user);
     const location = useLocation();
     const [tab, setTab] = useState('');
@@ -36,19 +36,19 @@ function DashSidebar() {
         }
     }
     return (
-        <Sidebar className='w-full md:w-56 md:mt-20 border-y-2 border-gray-900 rounded-md' style={{ boxShadow: '0px 10px 10px 0px #aaaaaa' }}>
+        <Sidebar className='md:w-56 md:mt-20 border-2 border-gray-300 rounded-md'>
             <Sidebar.Items>
                 <Sidebar.ItemGroup>
-                    <Link to='/dashboard?tab=profile'>
-                        <Sidebar.Item active={tab === 'profile'} icon={HiUserCircle} label={currentUser.isAdmin ? "Admin" : "User"} labelColor="dark" as='div'>
-                            Profile
-                        </Sidebar.Item>
-                    </Link>
-                    {currentUser.isAdmin &&
+                    {currentUser.isAdmin ?
                         <>
-                            <Link to='/dashboard?tab=dashboard'>
-                                <Sidebar.Item active={tab === 'dashboard'} icon={HiHome} as='div' >
+                            <Link to="/dashboard?tab=dashboard" >
+                                <Sidebar.Item icon={HiHome} active={tab === 'dashboard'} as="div">
                                     Dashboard
+                                </Sidebar.Item>
+                            </Link>
+                            <Link to='/dashboard?tab=profile'>
+                                <Sidebar.Item active={tab === 'profile'} icon={HiUserCircle} label={currentUser.isAdmin ? "Admin" : "User"} labelColor="dark" as='div'>
+                                    Profile
                                 </Sidebar.Item>
                             </Link>
                             <Link to='/dashboard?tab=allposts'>
@@ -61,17 +61,27 @@ function DashSidebar() {
                                     All Users
                                 </Sidebar.Item>
                             </Link>
+                            <Sidebar.Item icon={HiArrowRight} className="cursor-pointer" onClick={handleSignOut}>
+                                Sign Out
+                            </Sidebar.Item>
+                        </>
+                        :
+                        <>
+                            <Link to='/dashboard?tab=profile'>
+                                <Sidebar.Item active={tab === 'profile'} icon={HiUserCircle} label={currentUser.isAdmin ? "Admin" : "User"} labelColor="dark" as='div'>
+                                    Profile
+                                </Sidebar.Item>
+                            </Link>
+                            <Sidebar.Item icon={HiArrowRight} className="cursor-pointer" onClick={handleSignOut}>
+                                Sign Out
+                            </Sidebar.Item>
                         </>
                     }
-                    <Sidebar.Item icon={HiArrowRight} className="cursor-pointer" onClick={handleSignOut}>
-                        Sign Out
-                    </Sidebar.Item>
                 </Sidebar.ItemGroup>
             </Sidebar.Items>
         </Sidebar>
     );
 }
 
-export default DashSidebar;
+export default Sidebars;
 
-//5:38:00 resume for admin functionality

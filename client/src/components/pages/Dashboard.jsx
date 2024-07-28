@@ -5,6 +5,7 @@ import DashProfile from '../Dashboard/DashProfile';
 import DashDashboard from '../Dashboard/DashDashboard';
 import DashUsers from '../Dashboard/DashUsers'
 import DashPosts from '../Dashboard/DashPosts'
+import Sidebars from '../Dashboard/Sidebar'
 
 function Dashboard() {
   const location = useLocation();
@@ -17,23 +18,30 @@ function Dashboard() {
     }
   }, [location.search]);
   return (
-    <div className='min-h-screen flex flex-col md:flex-row'>
-      <div className='hidden md:w-56 md:inline-block'>
-        <DashSidebar />
+    <div className='flex flex-row max-h-screen'>
+      <div className='min-w-36 mx-5 h-[86vh]'>
+        <Sidebars />
       </div>
-      {tab === 'profile' && <div className='max-w-lg mx-auto p-3 w-full'>
-        <DashProfile />
-      </div>}
-      {tab === 'dashboard' && <div className='max-w-lg mx-auto p-3 w-full'>
-        <DashDashboard />
-      </div>}
-      {tab === 'allusers' && <div className='max-w-lg mx-auto p-3 w-full'>
-        <DashUsers />
-      </div>}
-      {tab === 'allposts' && <div className='max-w-lg mx-auto p-3 w-full'>
-        <DashPosts />
-      </div>}
+      <div >
+      </div>
     </div>
+    // <div className='h-screen flex flex-col md:flex-row'>
+    //   <div className='hidden md:w-56 h-full md:inline-block'>
+    //     <DashSidebar />
+    //   </div>
+    //   {tab === 'profile' && <div className='max-w-lg mx-auto p-3 w-full'>
+    //     <DashProfile />
+    //   </div>}
+    //   {tab === 'dashboard' && <div className='max-w-lg mx-auto p-3 w-full'>
+    //     <DashDashboard />
+    //   </div>}
+    //   {tab === 'allusers' && <div className='max-w-lg mx-auto p-3 w-full'>
+    //     <DashUsers />
+    //   </div>}
+    //   {tab === 'allposts' && <div className='max-w-lg mx-auto p-3 w-full'>
+    //     <DashPosts />
+    //   </div>}
+    // </div>
   )
 }
 
