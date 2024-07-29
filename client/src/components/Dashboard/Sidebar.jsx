@@ -36,7 +36,7 @@ const Sidebars = () => {
         }
     }
     return (
-        <Sidebar className='md:w-56 md:mt-20 border-2 border-gray-300 rounded-md'>
+        <Sidebar className='md:w-56 md:mt-20 mx-5 h-[87vh] border-2 border-gray-300 rounded-md'>
             <Sidebar.Items>
                 <Sidebar.ItemGroup>
                     {currentUser.isAdmin ?

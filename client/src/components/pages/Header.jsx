@@ -166,18 +166,25 @@ const Header = () => {
                   <span className='block text-sm w-36 text-center'>@{currentUser.username}</span>
                   <span className='block text-sm font-medium truncate text-center'>{currentUser.name}</span>
                 </Dropdown.Header>
-                {currentUser.isAdmin &&
+                {currentUser.isAdmin ?
                   <>
                     <Link to={'/dashboard?tab=dashboard'}>
                       <Dropdown.Item className='text-md'>Dashboard</Dropdown.Item>
                     </Link>
                     <Dropdown.Divider />
+                    <Link to={'/myprofile'}>
+                      <Dropdown.Item className='text-md'>Profile</Dropdown.Item>
+                    </Link>
+                    <Dropdown.Divider />
+                  </>
+                  :
+                  <>
+                    <Link to={'/myprofile'}>
+                      <Dropdown.Item className='text-md'>Profile</Dropdown.Item>
+                    </Link>
+                    <Dropdown.Divider />
                   </>
                 }
-                <Link to={'/myprofile'}>
-                  <Dropdown.Item className='text-md'>Profile</Dropdown.Item>
-                </Link>
-                <Dropdown.Divider />
                 <Dropdown.Item className='text-md' onClick={handleSignout}>Sign Out</Dropdown.Item>
               </Dropdown>
             </div>

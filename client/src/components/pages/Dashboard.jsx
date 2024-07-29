@@ -5,7 +5,6 @@ import DashProfile from '../Dashboard/DashProfile';
 import DashDashboard from '../Dashboard/DashDashboard';
 import DashUsers from '../Dashboard/DashUsers'
 import DashPosts from '../Dashboard/DashPosts'
-import Sidebars from '../Dashboard/Sidebar'
 
 function Dashboard() {
   const location = useLocation();
@@ -18,30 +17,23 @@ function Dashboard() {
     }
   }, [location.search]);
   return (
-    <div className='flex flex-row max-h-screen'>
-      <div className='min-w-36 mx-5 h-[86vh]'>
-        <Sidebars />
+    <div className='h-screen flex flex-col md:flex-row'>
+      <div className='hidden md:w-56 h-full md:inline-block'>
+        <DashSidebar />
       </div>
-      <div >
-      </div>
+      {tab === 'profile' && <div className='md:p-10 mt-10 mx-auto w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+        <DashProfile />
+      </div>}
+      {tab === 'dashboard' && <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+        <DashDashboard />
+      </div>}
+      {tab === 'allusers' && <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+        <DashUsers />
+      </div>}
+      {tab === 'allposts' && <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+        <DashPosts />
+      </div>}
     </div>
-    // <div className='h-screen flex flex-col md:flex-row'>
-    //   <div className='hidden md:w-56 h-full md:inline-block'>
-    //     <DashSidebar />
-    //   </div>
-    //   {tab === 'profile' && <div className='max-w-lg mx-auto p-3 w-full'>
-    //     <DashProfile />
-    //   </div>}
-    //   {tab === 'dashboard' && <div className='max-w-lg mx-auto p-3 w-full'>
-    //     <DashDashboard />
-    //   </div>}
-    //   {tab === 'allusers' && <div className='max-w-lg mx-auto p-3 w-full'>
-    //     <DashUsers />
-    //   </div>}
-    //   {tab === 'allposts' && <div className='max-w-lg mx-auto p-3 w-full'>
-    //     <DashPosts />
-    //   </div>}
-    // </div>
   )
 }
 
