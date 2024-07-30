@@ -5,6 +5,7 @@ import DashProfile from '../Dashboard/DashProfile';
 import DashDashboard from '../Dashboard/DashDashboard';
 import DashUsers from '../Dashboard/DashUsers'
 import DashPosts from '../Dashboard/DashPosts'
+import DashUpdateProfile from '../Dashboard/DashUpdateProfile';
 
 function Dashboard() {
   const location = useLocation();
@@ -32,6 +33,9 @@ function Dashboard() {
       </div>}
       {tab === 'allposts' && <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
         <DashPosts />
+      </div>}
+      {tab === 'updateProfile' && <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+        <DashUpdateProfile />
       </div>}
     </div>
   )

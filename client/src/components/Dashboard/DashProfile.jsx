@@ -7,6 +7,7 @@ import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
 import { formatDistanceToNow, format } from 'date-fns';
 import { CiMenuKebab } from "react-icons/ci";
+import { FaUserEdit } from "react-icons/fa";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { app } from '../../firebase.js';
@@ -132,15 +133,20 @@ const Profile = () => {
         );
     }
 
+    const handleProfileUpdate = async () => {
+        navigate('/dashboard?tab=updateProfile')
+    }
+
     return (
         <div className="relative">
             <img src={Banner} className="box w-full md:h-64 h-44 object-cover rounded-lg" alt="Profile Banner" />
-            <div className="absolute flex flex-col justify-center md:top-[10rem] top-[8rem] left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg text-gray-950 bg-opacity-10 backdrop-filter backdrop-blur-sm border border-opacity-30 border-white w-[93%] min-h-80 p-4">
-                <img className="absolute self-center md:-top-20 -top-14 border-4 shadow-lg w-32 md:h-32 rounded-full" src={currentUser.profilePicture} alt="User Profile" />
+            <div className="absolute flex flex-col justify-center md:top-[10rem] top-[8rem] left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg text-gray-950 bg-opacity-20 backdrop-filter backdrop-blur-sm border border-opacity-30 border-white w-[93%] md:w-[60%] min-h-80 p-4">
+                <img className="absolute self-center md:-top-20 -top-14 border-4 shadow-lg w-32 h-32 rounded-full" src={currentUser.profilePicture} alt="User Profile" />
+                <FaUserEdit className='absolute self-end top-3 w-5 h-5 text-white hover:cursor-pointer' onClick={handleProfileUpdate} />
                 <div className='md:mt-5 mt-14'>
                     <Typography className='text-nowrap text-center'>@{currentUser.username}</Typography>
                     <Typography variant='h5' className='text-nowrap text-center pb-4'>{currentUser.name}</Typography>
-                    <Typography className='text-center pb-4 text-base md:text-lg lg:px-40'>{currentUser.bio}</Typography>
+                    <Typography className='text-center pb-4 text-base md:text-lg'>{currentUser.bio}</Typography>
                 </div>
             </div>
             <div className="flex flex-col items-center gap-4 p-4 mt-72 md:mt-60">

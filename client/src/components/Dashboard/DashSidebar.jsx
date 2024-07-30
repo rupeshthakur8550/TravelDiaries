@@ -51,6 +51,8 @@ const DashSidebar = () => {
                                     Profile
                                 </Sidebar.Item>
                             </Link>
+                            <Link to="/dashboard?tab=updateProfile" >
+                            </Link>
                             <Link to='/dashboard?tab=allposts'>
                                 <Sidebar.Item active={tab === 'allposts'} icon={MdDynamicFeed} as='div' >
                                     All Posts

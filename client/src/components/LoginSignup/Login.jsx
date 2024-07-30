@@ -2,14 +2,15 @@ import { Alert, Button, Stack, TextField, Typography, colors } from '@mui/materi
 import { ScreenMode } from '../pages/SignInPage';
 import React, { useState } from 'react';
 import { Spinner, Modal } from 'flowbite-react';
+import { IoEye, IoEyeOff } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { signInFailure, signInStart, signInSuccess } from '../../redux/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import OAuth from './OAuth';
 
 const Login = ({ onSwitchMode }) => {
-
     const [formData, setFormData] = useState({});
+    const [passVisibility, setPassVisibility] = useState(false);
     const [response, setReponse] = useState('');
     const { loading, error: errorMessage } = useSelector(state => state.user);
     const [showModal, setShowModal] = useState(false);
@@ -59,7 +60,7 @@ const Login = ({ onSwitchMode }) => {
             }
             if (res.ok) {
                 dispatch(signInSuccess(data));
-                data.profile_complete_status ? navigate('/allposts') : navigate('/dashboard?tab=profile');
+                data.profile_complete_status ? navigate('/allposts') : navigate('/dashboard?tab=updateProfile');
             }
         } catch (error) {
             dispatch(signInFailure(error.message));
@@ -103,12 +104,26 @@ const Login = ({ onSwitchMode }) => {
                                 </Stack>
                                 <Stack spacing={1}>
                                     <Typography color={colors.grey[800]}>Password</Typography>
-                                    <TextField
-                                        onChange={handleChange}
-                                        type='password'
-                                        id='password'
-                                        placeholder="********"
-                                    />
+                                    <div className="relative">
+                                        <TextField
+                                            onChange={handleChange}
+                                            type={passVisibility ? 'text' : 'password'}
+                                            id='password'
+                                            placeholder="********"
+                                            fullWidth
+                                        />
+                                        {!passVisibility ? (
+                                            <IoEye
+                                                className='absolute top-1/2 transform -translate-y-1/2 right-3 w-6 h-6 hover:cursor-pointer'
+                                                onClick={() => setPassVisibility(!passVisibility)}
+                                            />
+                                        ) : (
+                                            <IoEyeOff
+                                                className='absolute top-1/2 transform -translate-y-1/2 right-3 w-6 h-6 hover:cursor-pointer'
+                                                onClick={() => setPassVisibility(!passVisibility)}
+                                            />
+                                        )}
+                                    </div>
                                 </Stack>
                             </Stack>
                             <Button
