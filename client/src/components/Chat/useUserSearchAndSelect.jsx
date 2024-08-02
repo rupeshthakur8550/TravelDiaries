@@ -74,12 +74,12 @@ const useUserSearchAndSelect = () => {
 
             if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
-            socket.emit('new chat', data);
-            dispatch(setChats((prevChats) => [data, ...prevChats]));
-            dispatch(setSelectedChat(data));
             setShowResults(false);
             setSearchValue('');
             setSearchResults([]);
+            socket.emit('new chat', data);
+            dispatch(setChats((prevChats) => [data, ...prevChats]));
+            dispatch(setSelectedChat(data));
         } catch (error) {
             console.error('Error selecting user:', error);
         }
