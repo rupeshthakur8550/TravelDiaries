@@ -2,6 +2,7 @@ import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 import OTP from '../models/otpVerification.model.js';
 import nodemailer from 'nodemailer'
+import User from "../models/user.model.js";
 
 const generateOTP = (length) => {
     const digits = '0123456789';
@@ -87,6 +88,12 @@ const format = async (sotp, email) => {
 
 export const sendMail = async (req, res, next) => {
     const { email, type } = req.body;
+
+    const validUser = await User.findOne({ email });
+
+    if (!validUser) {
+        return next(errorHandler(404, 'User not found.'));
+    }
 
     if (type === "send") {
         try {

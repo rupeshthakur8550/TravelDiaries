@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Alert, Button, Stack, TextField, Typography, colors } from '@mui/material';
 import { Spinner, Modal } from 'flowbite-react';
+import { IoEye, IoEyeOff } from "react-icons/io5";
 import { ScreenMode } from '../pages/SignInPage';
 
 const Reset = ({ onSwitchMode }) => {
     const [formData, setFormData] = useState({});
     const [errorMessage, setErrorMessage] = useState(null);
+    const [passVisibility, setPassVisibility] = useState(false);
     const [loading, setLoading] = useState(false);
     const [verifyValue, setVerifyValue] = useState('Verify');
     const [showModal, setShowModal] = useState(false);
@@ -156,8 +158,19 @@ const Reset = ({ onSwitchMode }) => {
                                     type="password"
                                     id='npassword'
                                     placeholder="********"
-                                    disabled={verifyValue === 'Verify' ? true : false}
+                                    disabled={verifyValue === 'verified' ? false : true}
                                 />
+                                {!passVisibility ? (
+                                    <IoEye
+                                        className='absolute top-1/2 transform -translate-y-1/2 right-3 w-6 h-6 hover:cursor-pointer'
+                                        onClick={() => setPassVisibility(!passVisibility)}
+                                    />
+                                ) : (
+                                    <IoEyeOff
+                                        className='absolute top-1/3 transform -translate-y-1/2 right-3 w-6 h-6 hover:cursor-pointer'
+                                        onClick={() => setPassVisibility(!passVisibility)}
+                                    />
+                                )}
                             </Stack>
                             <Stack spacing={1}>
                                 <Typography color={colors.grey[800]}>Confirm Password</Typography>
@@ -167,8 +180,19 @@ const Reset = ({ onSwitchMode }) => {
                                     type="password"
                                     id='cpassword'
                                     placeholder="********"
-                                    disabled={verifyValue === 'Verify' ? true : false}
+                                    disabled={verifyValue === 'verified' ? false : true}
                                 />
+                                {/* {!passVisibility && verifyValue === 'verified' ? (
+                                    <IoEye
+                                        className='absolute top-1/5 transform -translate-y-1/2 right-3 w-6 h-6 hover:cursor-pointer'
+                                        onClick={() => setPassVisibility(!passVisibility)}
+                                    />
+                                ) : (
+                                    <IoEyeOff
+                                        className='absolute top-1/2 transform -translate-y-1/2 right-3 w-6 h-6 hover:cursor-pointer'
+                                        onClick={() => setPassVisibility(!passVisibility)}
+                                    />
+                                )} */}
                             </Stack>
                         </Stack>
                         <Button
