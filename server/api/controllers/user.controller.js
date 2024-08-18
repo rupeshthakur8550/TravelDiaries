@@ -217,3 +217,16 @@ export const getUserDetails = async (req, res, next) => {
     }
 }
 
+export const getAllUsers = async (req, res, next) => {
+    if (!req.user || !req.user.isAdmin) {
+        return res.status(403).json({});
+    }
+    const user = await User.find({ isAdmin: { $ne: true } })
+        .select('username name profilePicture bio posts')
+        .populate({
+            path: 'posts',
+            model: Post,
+            match: { visibility: true },
+        });
+    res.status(200).json(user);
+}

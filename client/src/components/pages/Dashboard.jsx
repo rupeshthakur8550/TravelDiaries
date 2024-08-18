@@ -28,7 +28,7 @@ function Dashboard() {
       {tab === 'dashboard' && <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
         <DashDashboard />
       </div>}
-      {tab === 'allusers' && <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+      {tab === 'allusers' && <div className='md:p-10 mt-20 md:mt-10 mx-auto w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
         <DashUsers />
       </div>}
       {tab === 'allposts' && <div className='md:p-10 mt-10 mx-auto w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
