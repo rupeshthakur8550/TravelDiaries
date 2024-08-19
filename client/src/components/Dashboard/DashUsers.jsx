@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'flowbite-react';
+import { useNavigate } from 'react-router-dom';
 
 const DashUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -74,19 +76,16 @@ const DashUsers = () => {
                                         className="w-12 h-12 rounded-full object-cover"
                                     />
                                 </td>
-                                <td className="py-4 px-6 border-b text-gray-700 text-nowrap md:text-base text-sm">{user.username}</td>
+                                <td className="py-4 px-6 border-b text-gray-700 text-nowrap md:text-base text-sm cursor-pointer" onClick={() => navigate(`/viewuser`, { state: { userId: user._id } })}>{user.username}</td>
                                 <td className="py-4 px-6 border-b text-gray-700 text-nowrap md:text-base text-sm">{user.name}</td>
                                 <td className="py-4 px-6 border-b text-gray-700 md:text-base text-sm">{user.bio || 'N/A'}</td>
                                 <td className="py-4 px-6 border-b text-gray-700 text-nowrap md:text-base text-sm">{user.posts.length} posts</td>
                                 <td className="py-4 px-6 border-b">
                                     <Dropdown label="Actions" inline arrowIcon={false} size="sm">
-                                        <Dropdown.Item>
-                                            View Profile
+                                        <Dropdown.Item className='text-red-600'>
+                                            Block User
                                         </Dropdown.Item>
-                                        <Dropdown.Item>
-                                            Edit User
-                                        </Dropdown.Item>
-                                        <Dropdown.Item>
+                                        <Dropdown.Item className='text-red-600'>
                                             Delete User
                                         </Dropdown.Item>
                                     </Dropdown>
