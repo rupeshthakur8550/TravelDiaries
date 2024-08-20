@@ -133,3 +133,18 @@ export const postVisibilityChange = async (req, res, next) => {
         next(error);
     }
 };
+
+export const postVerfication = async (req, res, next) => {
+    const postId = req.params.id;
+    try {
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        post.verified = true;
+        await post.save();
+        res.status(200).json({ message: 'Post verification complete and successfully verified' });
+    } catch (error) {
+        next(error);
+    }
+}

@@ -64,6 +64,11 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    verified: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, { timestamps: true });
 

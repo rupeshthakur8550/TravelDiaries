@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyToken } from '../utils/verifyUser.js';
-import { addPost, getPosts, getPostById, updatePost, deletePost, searchPosts, getPostsByUser, postVisibilityChange } from '../controllers/posts.controller.js';
+import { addPost, getPosts, getPostById, updatePost, deletePost, searchPosts, getPostsByUser, postVisibilityChange, postVerfication } from '../controllers/posts.controller.js';
 
 const router = express.Router();
 
@@ -12,5 +12,6 @@ router.delete('/deletepost/:id', verifyToken, deletePost);
 router.get('/searchposts', verifyToken, searchPosts);
 router.get('/getuserposts', verifyToken, getPostsByUser);
 router.put('/postvisibility/:id', verifyToken, postVisibilityChange);
+router.put('/postverification/:id', verifyToken, postVerfication);
 
 export default router;
