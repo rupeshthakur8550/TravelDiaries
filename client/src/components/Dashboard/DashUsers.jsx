@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'flowbite-react';
 import { useNavigate } from 'react-router-dom';
+import { CiMenuKebab } from "react-icons/ci";
 
 const DashUsers = () => {
     const [users, setUsers] = useState([]);
@@ -53,8 +54,9 @@ const DashUsers = () => {
     }
 
     return (
-        <div className="p-1 w-full">
-            <div className="overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
+        <div className="p-2 w-full">
+            {/* Table for larger screens */}
+            <div className="hidden md:block overflow-x-auto rounded-lg shadow-lg border border-gray-300 bg-white">
                 <table className="min-w-full table-auto">
                     <thead>
                         <tr className="bg-gray-100 text-left text-gray-600 font-semibold text-sm">
@@ -63,7 +65,7 @@ const DashUsers = () => {
                             <th className="py-4 px-6 border-b">Name</th>
                             <th className="py-4 px-6 border-b">Bio</th>
                             <th className="py-4 px-6 border-b">Posts</th>
-                            <th className="py-4 px-6 border-b">Actions</th>
+                            <th className="py-4 px-6 border-b">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -73,7 +75,7 @@ const DashUsers = () => {
                                     <img
                                         src={user.profilePicture}
                                         alt={`${user.username}'s profile`}
-                                        className="w-12 h-12 rounded-full object-cover"
+                                        className="md:w-12 md:h-12 w-10 h-10 rounded-full object-cover"
                                     />
                                 </td>
                                 <td className="py-4 px-6 border-b text-gray-700 text-nowrap md:text-base text-sm cursor-pointer" onClick={() => navigate(`/viewuser`, { state: { userId: user._id } })}>{user.username}</td>
@@ -81,8 +83,8 @@ const DashUsers = () => {
                                 <td className="py-4 px-6 border-b text-gray-700 md:text-base text-sm">{user.bio || 'N/A'}</td>
                                 <td className="py-4 px-6 border-b text-gray-700 text-nowrap md:text-base text-sm">{user.posts.length} posts</td>
                                 <td className="py-4 px-6 border-b">
-                                    <Dropdown label="Actions" inline arrowIcon={false} size="sm">
-                                        <Dropdown.Item className='text-red-600'>
+                                    <Dropdown label="Action" inline arrowIcon={false} size="sm">
+                                        <Dropdown.Item className='text-orange-600'>
                                             Block User
                                         </Dropdown.Item>
                                         <Dropdown.Item className='text-red-600'>
@@ -94,6 +96,64 @@ const DashUsers = () => {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Card layout for smaller screens */}
+            <div className="block md:hidden">
+                {users.map((user) => (
+                    <div
+                        key={user._id}
+                        className="border border-gray-300 rounded-lg shadow-md mb-4 p-4 bg-white relative"
+                    >
+                        {/* Action Menu Icon - Positioned at the top right */}
+                        <div className="absolute top-3 right-2">
+                            <Dropdown
+                                arrowIcon={false}
+                                inline
+                                label={<CiMenuKebab className="cursor-pointer" />}
+                            >
+                                <Dropdown.Item className="text-orange-600 text-nowrap">
+                                    Block User
+                                </Dropdown.Item>
+                                <Dropdown.Item className="text-red-600 text-nowrap">
+                                    Delete User
+                                </Dropdown.Item>
+                            </Dropdown>
+                        </div>
+
+                        {/* Profile Section */}
+                        <div className="flex items-center justify-center mb-3">
+                            <img
+                                src={user.profilePicture}
+                                alt={`${user.username}'s profile`}
+                                className="w-14 h-14 rounded-full object-cover mr-4"
+                            />
+                            <div>
+                                <span className="font-semibold text-gray-800">{user.name}</span>
+                                <div
+                                    className="text-sm text-gray-600 cursor-pointer"
+                                    onClick={() =>
+                                        navigate(`/viewuser`, { state: { userId: user._id } })
+                                    }
+                                >
+                                    @{user.username}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Bio Section */}
+                        <p className="text-sm text-center my-3 text-gray-700">
+                            {user.bio || 'N/A'}
+                        </p>
+
+                        {/* Posts Count */}
+                        <div className="flex justify-center mb-3">
+                            <div className="text-base text-gray-600">
+                                <span className="font-bold">Posts:</span> {user.posts.length} posts
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

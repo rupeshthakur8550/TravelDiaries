@@ -5,6 +5,7 @@ import { setSelectedChat } from '../../redux/chat/chatSlice';
 import { formatDistanceToNow, format } from 'date-fns';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { CiMenuKebab } from "react-icons/ci";
+import { VscUnverified, VscVerified } from "react-icons/vsc";
 import { useDispatch, useSelector } from 'react-redux';
 
 const DashPosts = () => {
@@ -152,6 +153,7 @@ const DashPosts = () => {
                                                         <span className="ml-4 font-semibold" onClick={() => navigate(`/viewuser`, { state: { userId: post.userId._id } })}>{post.userId.username}</span>
                                                         <span className=" font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
                                                         <span className=" font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
+                                                        {post.verified ? <VscVerified className='w-5 h-5 font-semibold text-green-600' /> : <VscUnverified className='w-5 h-5 font-semibold text-red-600 rounded-full' />}
                                                     </div>
                                                     <div className='mt-[-6px]'>
                                                         <span className="ml-4 font-semibold text-xs">{formatPostDate(post.createdAt)}</span>
