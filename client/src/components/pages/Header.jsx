@@ -168,7 +168,7 @@ const Header = () => {
                 </Dropdown.Header>
                 {currentUser.isAdmin ?
                   <>
-                    <Link to={'/dashboard?tab=dashboard'}>
+                    <Link to={'/dashboard'}>
                       <Dropdown.Item className='text-md'>Dashboard</Dropdown.Item>
                     </Link>
                     <Dropdown.Divider />

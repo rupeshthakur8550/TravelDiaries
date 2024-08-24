@@ -4,6 +4,8 @@ import { Button, Card, Dropdown, Modal, Spinner } from 'flowbite-react';
 import { setSelectedChat } from '../../redux/chat/chatSlice';
 import { formatDistanceToNow, format } from 'date-fns';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { getStorage, ref, deleteObject } from 'firebase/storage';
+import { app } from '../../firebase.js';
 import { CiMenuKebab } from "react-icons/ci";
 import { VscUnverified, VscVerified } from "react-icons/vsc";
 import { useDispatch, useSelector } from 'react-redux';
@@ -123,7 +125,7 @@ const DashPosts = () => {
                 });
 
                 if (res.ok) {
-                    setPosts(posts.filter(post => post._id !== postToDelete));
+                    setPosts(posts.filter(post => post._id !== postToDelete._id));
                     setDeleteShowModal(false);
                     setPostToDelete(null);
                 } else {
@@ -135,25 +137,48 @@ const DashPosts = () => {
         }
     };
 
+    const handleVerification = async (postId, currentStatus) => {
+        try {
+            const res = await fetch(`/api/post/postverification/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ verified: !currentStatus }),
+            });
+
+            if (res.ok) {
+                setPosts(posts.map(post => post._id === postId ? { ...post, verified: !currentStatus } : post));
+            } else {
+                console.error("Error updating post verification status");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <>
             <div className='min-h-screen'>
                 {!isBriefInfo &&
-                    <div className="flex flex-col items-center gap-4 p-4">
+                    <div className="flex flex-col items-center gap-4 p-4 mt-10 md:mt-0">
                         {posts.map((post) => (
                             <Card key={post._id} className={`${!post.visibility ? 'filter grayscale' : ''} w-full max-w-7xl mx-auto mb-4`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         {post.userId && (
                                             <>
-                                                <img src={post.userId.profilePicture} alt={post.userId.username} className="w-10 h-10 rounded-full"
-                                                />
+                                                <img src={post.userId.profilePicture} alt={post.userId.username} className="w-10 h-10 rounded-full" />
                                                 <div className='flex flex-col'>
                                                     <div className='flex gap-3' style={{ fontFamily: 'monospace' }}>
-                                                        <span className="ml-4 font-semibold" onClick={() => navigate(`/viewuser`, { state: { userId: post.userId._id } })}>{post.userId.username}</span>
-                                                        <span className=" font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
-                                                        <span className=" font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
-                                                        {post.verified ? <VscVerified className='w-5 h-5 font-semibold text-green-600' /> : <VscUnverified className='w-5 h-5 font-semibold text-red-600 rounded-full' />}
+                                                        <span className="ml-4 font-semibold cursor-pointer" onClick={() => navigate(`/viewuser`, { state: { userId: post.userId._id } })}>{post.userId.username}</span>
+                                                        <span className="font-semibold text-gray-800 hidden sm:block"> | {post.location}</span>
+                                                        <span className="font-semibold text-gray-800 hidden sm:block">| {post.category}</span>
+                                                        {post.verified ? (
+                                                            <VscVerified className='w-5 h-5 text-green-600' />
+                                                        ) : (
+                                                            <VscUnverified className='w-5 h-5 text-red-600' />
+                                                        )}
                                                     </div>
                                                     <div className='mt-[-6px]'>
                                                         <span className="ml-4 font-semibold text-xs">{formatPostDate(post.createdAt)}</span>
@@ -168,16 +193,18 @@ const DashPosts = () => {
                                         label={<CiMenuKebab />}
                                         className='w-32'
                                     >
-                                        <Dropdown.Header
-                                            className={`${!post.visibility ? 'text-green-700' : 'text-blue-700'} text-md font-semibold text-center cursor-pointer`}
-                                            onClick={() => handleAvailability(post._id, post.visibility)}
+                                        <Dropdown.Item
+                                            className='text-md font-semibold justify-center cursor-pointer'
+                                            onClick={() => handleVerification(post._id, post.verified)}
                                         >
-                                            {post.visibility ? 'Archive' : 'Unarchive'}
-                                        </Dropdown.Header>
+                                            {post.verified ? 'Unverify' : 'Verify'}
+                                        </Dropdown.Item>
                                         <Dropdown.Divider />
                                         <Dropdown.Item className='text-md font-semibold text-red-700 justify-center' onClick={() => handleDelete(post)}>
                                             Delete
                                         </Dropdown.Item>
+                                        <Dropdown.Divider />
+
                                     </Dropdown>
                                 </div>
                                 <div onClick={() => handleCardClick(post)}>
@@ -185,8 +212,8 @@ const DashPosts = () => {
                                     <img src={post.imageUrl} alt={post.title} className="w-full h-64 object-cover" />
                                     <div className="p-4">
                                         <div dangerouslySetInnerHTML={{ __html: post.description }} className="text-gray-700 mb-4" />
-                                        <h4 className="font-semibold text-gray-800 block sm:hidden">Location : <span className=' font-medium text-black'>{post.location}</span></h4>
-                                        <h4 className="font-semibold text-gray-800 block sm:hidden">Category : <span className=' font-medium text-black'>{post.category}</span></h4>
+                                        <h4 className="font-semibold text-gray-800 block sm:hidden">Location: <span className='font-medium text-black'>{post.location}</span></h4>
+                                        <h4 className="font-semibold text-gray-800 block sm:hidden">Category: <span className='font-medium text-black'>{post.category}</span></h4>
                                     </div>
                                 </div>
                             </Card>
@@ -199,21 +226,18 @@ const DashPosts = () => {
                 <Modal.Body>
                     <div className="text-center">
                         <HiOutlineExclamationCircle className='h-14 w-14 text-gray-500 mb-4 mx-auto' />
-                        <h3 className='mb-5 text-lg text-gray-700'>
-                            Are you sure you want to let go of this cherished and irreplaceable memory?
+                        <h3 className="mb-5 text-lg font-semibold text-gray-900">
+                            Are you sure you want to delete this post?
                         </h3>
-                        <p className='mb-5 text-gray-700 text-justify'>
-                            🌟 This memory holds fragments of laughter and lessons etched into your soul. It has woven itself into the tapestry of your life, dancing with joy and weathering storms. Perhaps it's time to release it, allowing space for new memories to bloom. 🌸
-                        </p>
-                        <div className='flex justify-center gap-5'>
-                            <Button color='failure' onClick={confirmDelete}>Yes, I'm sure</Button>
-                            <Button color='gray' onClick={() => setDeleteShowModal(false)}>No, cancel</Button>
+                        <div className="flex justify-center gap-4">
+                            <Button color="failure" onClick={confirmDelete}>Yes, I'm sure</Button>
+                            <Button color="gray" onClick={() => setDeleteShowModal(false)}>No, cancel</Button>
                         </div>
                     </div>
                 </Modal.Body>
             </Modal>
         </>
     );
-}
+};
 
 export default DashPosts;

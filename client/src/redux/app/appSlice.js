@@ -6,6 +6,7 @@ const appSlice = createSlice({
         searchValue: '',
         searchResults: null,
         selectedResult: null,
+        selectedDashboard: null,
     },
     reducers: {
         setSearchValue(state, action) {
@@ -17,9 +18,12 @@ const appSlice = createSlice({
         setSelectedResult(state, action) {
             state.selectedResult = action.payload;
         },
+        setSelectedDashboard: (state, action) => {
+            state.selectedDashboard = action.payload;
+        }
     },
 });
 
-export const { setSearchResults, setSearchValue, setSelectedResult } = appSlice.actions;
+export const { setSearchResults, setSearchValue, setSelectedResult, setSelectedDashboard } = appSlice.actions;
 
 export default appSlice.reducer;

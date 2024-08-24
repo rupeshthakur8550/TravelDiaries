@@ -99,7 +99,7 @@ const DashUsers = () => {
             </div>
 
             {/* Card layout for smaller screens */}
-            <div className="block md:hidden">
+            <div className="block md:hidden sm:mx-10">
                 {users.map((user) => (
                     <div
                         key={user._id}
