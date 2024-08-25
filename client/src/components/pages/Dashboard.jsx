@@ -1,37 +1,38 @@
-import { useLocation } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import DashSidebar from '../Dashboard/DashSidebar';
 import DashProfile from '../Dashboard/DashProfile';
 import DashDashboard from '../Dashboard/DashDashboard';
-import DashUsers from '../Dashboard/DashUsers'
-import DashPosts from '../Dashboard/DashPosts'
+import DashUsers from '../Dashboard/DashUsers';
+import DashPosts from '../Dashboard/DashPosts';
 import DashUpdateProfile from '../Dashboard/DashUpdateProfile';
+import { useSelector } from 'react-redux';
 
-function Dashboard() {
+const Dashboard = () => {
   const location = useLocation();
-  const [tab, setTab] = useState('dashboard');
+  const { selectedDashboard } = useSelector(state => state.app);
+  const [tab, setTab] = useState('');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get('tab');
     if (tabFromUrl) {
       setTab(tabFromUrl);
-    } else {
-      setTab('dashboard');
     }
+    console.log(selectedDashboard);
   }, [location.search]);
 
   return (
-    <div className='h-screen flex flex-col md:flex-row'>
-      <div className='hidden md:w-56 h-full md:inline-block'>
+    <div className='h-screen flex flex-col sm:flex-row'>
+      <div className={`md:w-56 h-full mt-20 sm:mt-0 ${selectedDashboard != '' ? 'hidden sm:inline-block' : 'inline-block'}`}>
         <DashSidebar />
       </div>
       {tab === 'profile' && (
-        <div className='md:p-10 mt-10 mx-auto w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+        <div className='md:p-10 sm:pr-5 mt-10 mx-auto w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
           <DashProfile />
         </div>
       )}
-      {(tab === 'dashboard') && (
+      {tab === 'dashboard' && (
         <div className='max-w-lg mx-auto p-3 w-full overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
           <DashDashboard />
         </div>

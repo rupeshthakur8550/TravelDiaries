@@ -6,7 +6,7 @@ const appSlice = createSlice({
         searchValue: '',
         searchResults: null,
         selectedResult: null,
-        selectedDashboard: null,
+        selectedDashboard: '',
     },
     reducers: {
         setSearchValue(state, action) {

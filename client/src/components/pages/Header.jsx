@@ -4,7 +4,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { HiSearch } from "react-icons/hi";
 import { signoutSuccess } from '../../redux/user/userSlice';
-import { setSearchValue } from '../../redux/app/appSlice';
+import { setSearchValue, setSelectedDashboard } from '../../redux/app/appSlice';
 
 const Header = () => {
   const { currentUser } = useSelector(state => state.user);
@@ -28,6 +28,17 @@ const Header = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tabFromUrl = urlParams.get('tab');
+
+    if (tabFromUrl === null || tabFromUrl.trim() === '') {
+      dispatch(setSelectedDashboard(null));
+    } else {
+      dispatch(setSelectedDashboard(tabFromUrl));
+    }
+  }, [location.search, dispatch]);
 
   useEffect(() => {
     // Update header and link values based on user and current route

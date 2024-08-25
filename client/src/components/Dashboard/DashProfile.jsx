@@ -39,7 +39,6 @@ const Profile = () => {
                         'Content-Type': 'application/json',
                     },
                 });
-                console.log(currentUser);
                 const data = await res.json();
                 setPosts(data);
             } catch (err) {
